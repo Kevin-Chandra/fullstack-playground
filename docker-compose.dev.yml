@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    command: -p ${POSTGRES_PORT}
+    env_file:
+      - .development.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.development
+    restart: always
+    ports:
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
+    environment:
+      POSTGRES_HOST: db
+    env_file:
+      - .development.env
+    volumes:
+      - ./backend/src:/app/src
+      - ./.development.env:/app/.env
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.development
+    restart: always
+    ports:
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
+    env_file:
+      - .development.env
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/public:/app/public
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
