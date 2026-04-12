@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, Logger } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../libs/entity/user.entity";
@@ -45,15 +50,29 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOneBy({ id: id });
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return this.userRepository.delete({ id: id });
+  async remove(id: number) {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    const result = await this.userRepository.delete({ id: id });
+
+    return result.affected === 1;
   }
 }

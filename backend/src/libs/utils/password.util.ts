@@ -1,10 +1,9 @@
 import * as bcrypt from "bcrypt";
 
-const SALT_ROUND = 12;
-
 export class PasswordUtil {
   static async hash(password: string): Promise<string> {
-    return bcrypt.hash(password, SALT_ROUND);
+    const saltRound = Number(process.env.BCRYPT_HASH_ROUND);
+    return bcrypt.hash(password, saltRound);
   }
 
   static async compare(password: string, hash: string): Promise<boolean> {
