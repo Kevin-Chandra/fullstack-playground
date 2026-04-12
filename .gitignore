@@ -62,3 +62,6 @@ dist/
 .pd/
 cypress/screenshots/
 .aider*
+
+# Claude
+.claude/
