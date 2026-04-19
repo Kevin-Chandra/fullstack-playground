@@ -15,7 +15,7 @@ export class WishService {
 
     private dataSource: DataSource,
   ) {
-    this.logger = new Logger("CheckpointManagement");
+    this.logger = new Logger("Wish Service");
   }
 
   create(createWishDto: CreateWishDto): Promise<Wish> {

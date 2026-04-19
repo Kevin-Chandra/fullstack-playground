@@ -7,6 +7,7 @@ import { typeOrmAsyncConfig } from "./config/typeorm.config";
 import { WishModule } from "./wish/wish.module";
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { GuestModule } from './guest/guest.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
     WishModule,
     UserModule,
     AuthModule,
+    GuestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
