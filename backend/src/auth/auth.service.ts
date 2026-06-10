@@ -59,6 +59,17 @@ export class AuthService {
     return tokens;
   }
 
+  async getProfile(
+    userId: string,
+  ): Promise<{ id: number; username: string }> {
+    const user = await this.userRepository.findOneBy({ id: +userId });
+    if (!user) {
+      throw new UnauthorizedException("Invalid user");
+    }
+
+    return { id: user.id, username: user.username };
+  }
+
   private async getTokens(
     payload: any,
   ): Promise<{ accessToken: string; refreshToken: string }> {

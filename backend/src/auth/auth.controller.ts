@@ -13,6 +13,7 @@ import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { LoginUserId } from "../decorators/user-details-decorator";
 import { RefreshGuard } from "../guards/refresh.guard";
+import { JwtGuard } from "../guards/jwt.guard";
 import ms, { type StringValue } from "ms";
 
 @Controller("auth")
@@ -88,6 +89,12 @@ export class AuthController {
     });
 
     res.status(HttpStatus.OK).send();
+  }
+
+  @Get("me")
+  @UseGuards(JwtGuard)
+  async me(@LoginUserId() userId: string) {
+    return this.authService.getProfile(userId);
   }
 
   @Get("logout")
