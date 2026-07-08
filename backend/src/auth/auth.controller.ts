@@ -82,6 +82,7 @@ export class AuthController {
       maxAge: this.accessTokenMaxAge,
     });
     res.cookie("refresh_token", refreshToken, {
+      signed: true,
       httpOnly: true,
       secure: true,
       sameSite: "strict",
