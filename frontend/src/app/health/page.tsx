@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3011';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function HealthPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');

@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'brand';
 type Size = 'sm' | 'md' | 'lg';
 
 export type DefaultButtonProps = {
@@ -14,21 +14,26 @@ export type DefaultButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-[color,background-color,border-color,box-shadow] duration-150 focus:outline-none focus-visible:ring-3 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50';
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200',
+    'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200',
   secondary:
-    'border border-black/10 text-black hover:bg-black/5 dark:border-white/15 dark:text-white dark:hover:bg-white/10',
+    'border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-100 dark:hover:bg-white/[0.07]',
   ghost:
-    'text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/10',
+    'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/[0.06]',
+  danger: 'bg-red-600 text-white hover:bg-red-500',
+  // Brand CTA (auth screens): accent gradient with the token glow; text uses
+  // the canvas color so it stays inverse to the accent in both schemes.
+  brand:
+    'bg-linear-to-b from-accent-soft to-accent font-semibold text-canvas shadow-glow hover:brightness-105 active:brightness-95',
 };
 
 const sizes: Record<Size, string> = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-10 px-5 text-base',
-  lg: 'h-12 px-6 text-base',
+  sm: 'h-9 px-3.5 text-sm',
+  md: 'h-11 px-5 text-[15px]',
+  lg: 'h-12 px-6 text-[15px]',
 };
 
 export default function DefaultButton({

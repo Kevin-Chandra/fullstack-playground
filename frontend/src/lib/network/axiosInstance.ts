@@ -1,4 +1,5 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+import { createSessionRetryHandler } from "./sessionInterceptor";
 
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -11,10 +12,5 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  },
+  createSessionRetryHandler(axiosInstance),
 );

@@ -1,4 +1,4 @@
 export interface LoginPayload {
-  employeeId: string;
+  username: string;
   password: string;
 }
