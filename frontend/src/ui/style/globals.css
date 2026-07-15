@@ -9,13 +9,14 @@
    color.bg.base/raised/field/brand  → bg-canvas, bg-raised, bg-field, bg-brand
    color.border.subtle/field         → border-edge, border-edge-strong
    color.text.primary/body/muted     → text-ink, text-ink-body, text-muted
-   color.accent.*                    → *-accent, *-accent-strong, *-accent-soft
+   color.accent.*                    → *-accent, *-accent-strong, *-accent-soft,
+                                       text-accent-ink (text on accent fills)
    color.focus.ring                  → ring-focus
    color.error                       → text-error, bg-error/10, …
    typography.scale                  → text-display, text-h1…h5, text-body-lg,
                                        text-body, text-body-sm, text-caption,
                                        text-label, text-code (size+lh+weight+ls)
-   elevation                         → shadow-card, shadow-modal, shadow-glow
+   elevation                         → shadow-card, shadow-modal, shadow-glow(-strong)
    motion                            → fast: duration-150 ease, base:
                                        duration-250 ease, slow: duration-400 ease-out
    ============================================================ */
@@ -34,7 +35,9 @@
   --ds-accent: #b97e58;
   --ds-accent-strong: #a86c47;
   --ds-accent-soft: #d9a284;
+  --ds-accent-ink: #2b1a10; /* text on accent fills; stays dark in both schemes */
   --ds-accent-glow: rgba(185, 126, 88, 0.25);
+  --ds-accent-glow-strong: rgba(185, 126, 88, 0.35);
   --ds-focus: rgba(185, 126, 88, 0.18);
   --ds-error: #c25b5b;
 }
@@ -54,6 +57,7 @@
     --ds-accent-strong: #d9a284;
     --ds-accent-soft: #f3d8c4;
     --ds-accent-glow: rgba(226, 177, 144, 0.3);
+    --ds-accent-glow-strong: rgba(226, 177, 144, 0.42);
     --ds-focus: rgba(232, 185, 150, 0.15);
     --ds-error: #f0a3a3;
   }
@@ -72,6 +76,7 @@
   --color-accent: var(--ds-accent);
   --color-accent-strong: var(--ds-accent-strong);
   --color-accent-soft: var(--ds-accent-soft);
+  --color-accent-ink: var(--ds-accent-ink);
   --color-accent-glow: var(--ds-accent-glow);
   --color-focus: var(--ds-focus);
   --color-error: var(--ds-error);
@@ -81,12 +86,12 @@
   --font-mono: var(--font-jetbrains);
 
   --shadow-glow: 0 6px 20px var(--ds-accent-glow);
+  --shadow-glow-strong: 0 8px 26px var(--ds-accent-glow-strong);
   --shadow-focus: 0 0 0 3px var(--ds-focus);
 }
 
 @theme {
 
-  
   /* typography scale — size + line-height + weight + letter-spacing per step */
   --text-display: 2.5rem;
   --text-display--line-height: 1.15;
@@ -141,11 +146,21 @@
   --spacing-3xl: 3rem;
   --spacing-4xl: 4rem;
 
+  /* Navigation bar sizing */
+  --spacing-rail: 16rem;
+  --spacing-rail-collapsed: 5rem;
+  --spacing-rail-icon: 3rem;
+
   /* radius */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
+
+  /* button radius — one step per button size (rounded-btn-*) */
+  --radius-btn-sm: 8px;
+  --radius-btn-md: 10px;
+  --radius-btn-lg: 12px;
 
   /* elevation (scheme-static; glow/focus live in @theme inline above) */
   --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.35);

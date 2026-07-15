@@ -83,7 +83,7 @@ export default function LoginForm({
 
           <DefaultButton
             type="submit"
-            variant="brand"
+            variant="primary"
             size="lg"
             fullWidth
             loading={submitting}
