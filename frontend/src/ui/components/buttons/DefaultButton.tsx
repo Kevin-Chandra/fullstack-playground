@@ -1,8 +1,9 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "text";
 type Size = "sm" | "md" | "lg";
 type IconPosition = "left" | "right";
+type TextAlignment = "start" | "center" | "end";
 
 export type DefaultButtonProps = {
   children?: ReactNode;
@@ -10,14 +11,14 @@ export type DefaultButtonProps = {
   size?: Size;
   fullWidth?: boolean;
   loading?: boolean;
-  /** Beside children when present; alone (no children) the button collapses
-   *  to a square icon button — pass an aria-label in that case. */
+  label?: string;
+  textAlignment?: TextAlignment;
   icon?: ReactNode;
   iconPosition?: IconPosition;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const base = [
-  "inline-flex items-center justify-center gap-2 font-medium",
+  "inline-flex items-center gap-2 font-medium",
   "transition-[color,background-color,border-color,box-shadow,filter] duration-150",
   "focus:outline-none focus-visible:ring-3 focus-visible:ring-focus",
   "disabled:pointer-events-none",
@@ -41,6 +42,11 @@ const variants: Record<Variant, string> = {
     "hover:bg-ink/6 hover:text-ink-body",
     "disabled:text-muted/60",
   ].join(" "),
+  text: [
+    "text-accent",
+    "hover:text-accent-soft",
+    "disabled:text-muted/60 disabled:no-underline",
+  ].join(" "),
   danger: [
     "border border-error/35 bg-error/8 text-error",
     "hover:border-error/60 hover:bg-error/16",
@@ -48,18 +54,28 @@ const variants: Record<Variant, string> = {
   ].join(" "),
 };
 
-/* height / radius / padding / type step per size */
 const sizes: Record<Size, string> = {
-  sm: "h-8.5 rounded-btn-sm px-3.5 text-caption",
-  md: "h-10.5 rounded-btn-md px-5 text-body-sm",
-  lg: "h-12.5 rounded-btn-lg px-7 text-body",
+  sm: "rounded-btn-sm text-xs [&_svg]:size-4",
+  md: "rounded-btn-md text-body-sm [&_svg]:size-4.5",
+  lg: "rounded-btn-lg text-body [&_svg]:size-5",
 };
 
-/* icon-only buttons collapse to a square and size the glyph per step */
-const iconOnlySizes: Record<Size, string> = {
-  sm: "size-8.5 rounded-btn-sm [&_svg]:size-4",
-  md: "size-10.5 rounded-btn-md [&_svg]:size-4.5",
-  lg: "size-12.5 rounded-btn-lg [&_svg]:size-5",
+const paddingSize: Record<Size, string> = {
+  sm: "px-3 py-2",
+  md: "px-4 py-3",
+  lg: "px-5 py-4",
+};
+
+const iconPadding: Record<Size, string> = {
+  sm: "p-2",
+  md: "p-3",
+  lg: "p-4",
+};
+
+const alignments: Record<TextAlignment, string> = {
+  start: "justify-start",
+  center: "justify-center",
+  end: "justify-end",
 };
 
 export default function DefaultButton({
@@ -68,6 +84,8 @@ export default function DefaultButton({
   size = "md",
   fullWidth = false,
   loading = false,
+  label,
+  textAlignment = "center",
   icon,
   iconPosition = "left",
   disabled,
@@ -75,12 +93,15 @@ export default function DefaultButton({
   className = "",
   ...rest
 }: DefaultButtonProps) {
-  const iconOnly = Boolean(icon) && !children;
+  const iconOnly = Boolean(icon) && !label;
+  const hasLabel = Boolean(label);
 
   const composed = [
     base,
     variants[variant],
-    iconOnly ? iconOnlySizes[size] : sizes[size],
+    sizes[size],
+    iconOnly ? iconPadding[size] : paddingSize[size], //padding
+    iconOnly ? "justify-center" : alignments[textAlignment],
     fullWidth ? "w-full" : "",
     className,
   ]
@@ -93,6 +114,7 @@ export default function DefaultButton({
     return (
       <>
         {iconPosition === "left" ? icon : null}
+        <span>{label}</span>
         {children}
         {iconPosition === "right" ? icon : null}
       </>
