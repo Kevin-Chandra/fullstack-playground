@@ -11,6 +11,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, DataSource } from "typeorm";
 import { PasswordUtil } from "../libs/utils/password.util";
 import { UserStatus } from "../libs/entity/enums/user-status.enum";
+import {
+  FilterOperator,
+  paginate,
+  Paginated,
+  PaginateQuery,
+} from "nestjs-paginate";
+import { paginationConstants } from "../libs/constants/pagination.constants";
 
 @Injectable()
 export class UserService {
@@ -49,8 +56,16 @@ export class UserService {
     return redactedUser;
   }
 
-  findAll() {
-    return this.userRepository.find();
+  async findAll(query: PaginateQuery): Promise<Paginated<User>> {
+    return paginate(query, this.userRepository, {
+      defaultLimit: paginationConstants.ITEM_PER_PAGE,
+      maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
+      sortableColumns: ["name"],
+      searchableColumns: ["name", "username"],
+      filterableColumns: {
+        userStatus: [FilterOperator.EQ],
+      },
+    });
   }
 
   async findOne(id: number): Promise<User> {

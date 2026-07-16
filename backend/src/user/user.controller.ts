@@ -12,6 +12,9 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtGuard } from "../guards/jwt.guard";
+import { Paginate } from "nestjs-paginate";
+import type { PaginateQuery, Paginated } from "nestjs-paginate";
+import { User } from "../libs/entity/user.entity";
 
 @UseGuards(JwtGuard)
 @Controller("user")
@@ -24,8 +27,10 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<User>> {
+    return this.userService.findAll(query);
   }
 
   @Get(":id")
