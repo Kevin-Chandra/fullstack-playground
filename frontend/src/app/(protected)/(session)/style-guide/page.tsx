@@ -1,5 +1,6 @@
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
+import { ReactNode } from "react";
 import {
   MdAdd,
   MdAnchor,
@@ -17,11 +18,27 @@ import {
 export default function StyleGuidePage() {
   return (
     <div className="mx-auto my-5">
-      <h1>Style Guide</h1>
-      <h2>Buttons</h2>
-      <Buttons />
-      <h2>Inputs</h2>
-      <Inputs />
+      <div className="flex mb-8 flex-col gap-2">
+        <h1>Style Guide</h1>
+        <p>
+          Every token and component in the Everafter system, rendered live.
+          Values are defined in tokens.json; full specs live in the Design
+          Tokens sheet.
+        </p>
+      </div>
+      <Section title={"01 · Button"} content={<Buttons />} />
+      <Section title={"02 · Input"} content={<Inputs />} />
+    </div>
+  );
+}
+
+function Section({ title, content }: { title: string; content: ReactNode }) {
+  return (
+    <div className="my-8">
+      <h2 className="uppercase font-mono text-muted mb-4">{title}</h2>
+      <div className="bg-raised border border-edge rounded-xl p-8">
+        {content}
+      </div>
     </div>
   );
 }
@@ -89,6 +106,16 @@ function Inputs() {
         hint="Test the hint"
         inputSize="md"
       />
+      <DefaultInput
+        label="Disabled input"
+        autoComplete="username"
+        placeholder="Search"
+        leftIcon={<MdEdit />}
+        rightIcon={<MdHideImage />}
+        fullWidth
+        inputSize="md"
+        disabled
+      />
     </div>
   );
 }
@@ -99,29 +126,6 @@ function Buttons() {
 
   return (
     <div className={verticalClass}>
-      <div className={horizontalClass}>
-        <DefaultButton
-          variant="primary"
-          size="sm"
-          label="Primary small"
-          textAlignment="start"
-          // fullWidth
-        />
-        <DefaultButton
-          variant="primary"
-          size="md"
-          label="Primary medium"
-          textAlignment="center"
-          // fullWidth
-        />
-        <DefaultButton
-          variant="primary"
-          size="lg"
-          label="Primary large"
-          textAlignment="end"
-          // fullWidth
-        />
-      </div>
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
@@ -197,6 +201,7 @@ function Buttons() {
           disabled
         />
       </div>
+      <hr />
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
@@ -321,6 +326,7 @@ function Buttons() {
           textAlignment="start"
         />
       </div>
+      <hr />
 
       {/* Icon Only Button  */}
       <div className={horizontalClass}>
