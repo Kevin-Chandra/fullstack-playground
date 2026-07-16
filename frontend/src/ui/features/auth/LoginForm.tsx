@@ -5,7 +5,6 @@ import type { ChangeEvent, SubmitEvent } from "react";
 import { LoginPayload } from "@/src/lib/types/Auth";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
-import FieldLabel from "@/src/ui/components/input/FieldLabel";
 import ErrorAlert from "@/src/ui/components/feedback/ErrorAlert";
 
 type LoginFormProps = {
@@ -42,7 +41,6 @@ export default function LoginForm({
         <div className="mt-9 flex flex-col gap-6">
           <div className="flex flex-col gap-2.5">
             <DefaultInput
-              tone="brand"
               id="login-username"
               name="username"
               label="Username"
@@ -61,7 +59,6 @@ export default function LoginForm({
 
           <div className="flex flex-col gap-2.5">
             <DefaultInput
-              tone="brand"
               id="login-password"
               name="password"
               label="Password"
