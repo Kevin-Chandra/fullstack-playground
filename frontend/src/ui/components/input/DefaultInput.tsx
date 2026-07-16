@@ -1,9 +1,8 @@
 import { forwardRef, useId } from "react";
 import type { InputHTMLAttributes, ReactNode } from "react";
-import FieldLabel from "./FieldLabel";
 
 type Size = "sm" | "md" | "lg";
-type Tone = "default" | "brand";
+type Tone = "default";
 
 export type DefaultInputProps = {
   label?: ReactNode;
@@ -17,29 +16,27 @@ export type DefaultInputProps = {
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "size">;
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 text-sm",
-  md: "h-11 text-[15px]",
-  lg: "h-12 text-[15px]",
+  sm: "h-10",
+  md: "h-11.5",
+  lg: "h-12.5",
 };
 
-const tones: Record<
-  Tone,
-  { wrapper: string; state: string; input: string; icon: string }
-> = {
+type ToneStyles = {
+  wrapper: string;
+  border: string;
+  input: string;
+  leadingIcon: string;
+  trailingIcon: string;
+};
+
+const tones: Record<Tone, ToneStyles> = {
   default: {
-    wrapper: "bg-white dark:bg-white/[0.03]",
-    state:
-      "border-slate-200 focus-within:border-accent focus-within:ring-3 focus-within:ring-focus dark:border-white/10 dark:focus-within:border-accent",
-    input:
-      "text-slate-900 placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500",
-    icon: "text-slate-400",
-  },
-  brand: {
     wrapper: "bg-field",
-    state:
-      "border-edge-strong focus-within:border-accent/60 focus-within:ring-3 focus-within:ring-focus",
-    input: "text-ink placeholder:text-muted/60",
-    icon: "text-muted",
+    border: "border-edge-strong focus-within:border-accent",
+    input:
+      "text-ink-body placeholder:text-muted/60 not-placeholder-shown:text-ink",
+    leadingIcon: "text-muted/70",
+    trailingIcon: "text-muted hover:text-accent",
   },
 };
 
@@ -69,33 +66,41 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
     const describedBy =
       [errorId, hintId].filter(Boolean).join(" ") || undefined;
 
-    const wrapperBase = `flex items-center gap-2.5 rounded-md border px-3.5 transition-[color,border-color,box-shadow] duration-150 ${tones[tone].wrapper}`;
-    const wrapperState = error
-      ? "border-red-400 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-500/12 dark:border-red-500/60"
-      : tones[tone].state;
-    const wrapperDisabled = disabled ? "opacity-60 cursor-not-allowed" : "";
+    const labelColor = error
+      ? "text-error"
+      : "text-muted group-focus-within:text-accent";
+
+    const wrapper = [
+      "flex items-center gap-2.5 rounded-md border px-4",
+      "transition-[color,border-color,box-shadow] duration-150",
+      tones[tone].wrapper,
+      error
+        ? "border-error/50 focus-within:border-error focus-within:ring-3 focus-within:ring-error/12"
+        : `${tones[tone].border} focus-within:ring-3 focus-within:ring-focus`,
+      disabled ? "cursor-not-allowed opacity-60" : "",
+      sizes[inputSize],
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     return (
-      <div className={`flex flex-col gap-1.5 ${fullWidth ? "w-full" : ""}`}>
+      <div className={`group flex flex-col gap-2 ${fullWidth ? "w-full" : ""}`}>
         {label && (
-          <FieldLabel>
-            {label}
+          <div className={`flex items-baseline`}>
+            <label
+              className={`font-mono text-label transition-colors ${labelColor}`}
+            >
+              {label}
+            </label>
             {required && <sup className="ml-0.5 text-accent">*</sup>}
-          </FieldLabel>
+          </div>
         )}
 
-        <div
-          className={[
-            wrapperBase,
-            wrapperState,
-            wrapperDisabled,
-            sizes[inputSize],
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        >
+        <div className={wrapper}>
           {leftIcon && (
-            <span className={`flex shrink-0 ${tones[tone].icon}`}>
+            <span
+              className={`flex shrink-0 [&_svg]:size-4 ${tones[tone].leadingIcon}`}
+            >
               {leftIcon}
             </span>
           )}
@@ -106,28 +111,24 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
             required={required}
             aria-invalid={error ? true : undefined}
             aria-describedby={describedBy}
-            className={`w-full flex-1 bg-transparent outline-none disabled:cursor-not-allowed ${tones[tone].input} ${className}`}
+            className={`w-full flex-1 bg-transparent text-input outline-none disabled:cursor-not-allowed ${tones[tone].input} ${className}`}
             {...rest}
           />
           {rightIcon && (
-            <span className={`flex shrink-0 ${tones[tone].icon}`}>
+            <span
+              className={`flex shrink-0 transition-colors [&_svg]:size-4 ${tones[tone].trailingIcon}`}
+            >
               {rightIcon}
             </span>
           )}
         </div>
 
         {error ? (
-          <p
-            id={errorId}
-            className="text-[12px] text-red-600 dark:text-red-400"
-          >
+          <p id={errorId} className="text-caption text-error">
             {error}
           </p>
         ) : hint ? (
-          <p
-            id={hintId}
-            className="text-[12px] text-slate-500 dark:text-slate-400"
-          >
+          <p id={hintId} className="text-caption text-muted">
             {hint}
           </p>
         ) : null}

@@ -1,13 +1,16 @@
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import {
   MdAdd,
   MdAnchor,
   MdCopyAll,
+  MdCurrencyExchange,
   MdDelete,
   MdEdit,
-  MdPercent,
+  MdHideImage,
   MdPerson,
   MdSave,
+  MdSearch,
   MdStar,
 } from "react-icons/md";
 
@@ -15,7 +18,77 @@ export default function StyleGuidePage() {
   return (
     <div className="mx-auto my-5">
       <h1>Style Guide</h1>
+      <h2>Buttons</h2>
       <Buttons />
+      <h2>Inputs</h2>
+      <Inputs />
+    </div>
+  );
+}
+
+function Inputs() {
+  const verticalClass = "flex flex-col gap-5";
+
+  return (
+    <div className={verticalClass}>
+      <DefaultInput
+        id="login-username"
+        name="username"
+        label="Username"
+        autoComplete="username"
+        placeholder="yourusername"
+        required
+        fullWidth
+        inputSize="sm"
+      />
+      <DefaultInput
+        id="login-username"
+        name="username"
+        label="Username"
+        autoComplete="username"
+        placeholder="yourusername"
+        required
+        fullWidth
+        inputSize="md"
+      />
+      <DefaultInput
+        id="login-username"
+        name="username"
+        label="USERNAME"
+        autoComplete="username"
+        placeholder="yourusername"
+        required
+        fullWidth
+        inputSize="lg"
+        error="Error text!!!"
+      />
+      <DefaultInput
+        id="login-username"
+        name="username"
+        autoComplete="username"
+        placeholder="Search"
+        leftIcon={<MdSearch />}
+        fullWidth
+        inputSize="md"
+      />
+      <DefaultInput
+        autoComplete="username"
+        placeholder="Search"
+        rightIcon={<MdCurrencyExchange />}
+        fullWidth
+        hint="Test the hint"
+        inputSize="md"
+      />
+      <DefaultInput
+        label="Test"
+        autoComplete="username"
+        placeholder="Search"
+        leftIcon={<MdEdit />}
+        rightIcon={<MdHideImage />}
+        fullWidth
+        hint="Test the hint"
+        inputSize="md"
+      />
     </div>
   );
 }

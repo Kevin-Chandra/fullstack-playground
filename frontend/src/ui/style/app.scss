@@ -1,2 +1,29 @@
 // App-wide SCSS. Tailwind directives live in globals.css — Sass can't
 // resolve `@import "tailwindcss"` as a Sass module.
+
+// Heading defaults: bare h1–h6 pick up the display-font type scale + ink
+// colour. Sass runs before Tailwind so `@apply` isn't available here; we read
+// the design tokens (emitted to :root by @theme in globals.css) as CSS
+// variables instead. Wrapped in @layer base so any Tailwind utility on a
+// heading still wins — an unlayered rule would otherwise beat the utilities.
+$heading-steps: (
+  "h1": "h1",
+  "h2": "h2",
+  "h3": "h3",
+  "h4": "h4",
+  "h5": "h5",
+  "h6": "h5", // no h6 token; reuse the h5 step
+);
+
+@layer base {
+  @each $tag, $step in $heading-steps {
+    #{$tag} {
+      font-family: var(--font-space-grotesk), sans-serif;
+      font-size: var(--text-#{$step});
+      line-height: var(--text-#{$step}--line-height);
+      font-weight: var(--text-#{$step}--font-weight);
+      letter-spacing: var(--text-#{$step}--letter-spacing, normal);
+      color: var(--ds-ink);
+    }
+  }
+}

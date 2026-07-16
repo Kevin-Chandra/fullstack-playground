@@ -119,7 +119,7 @@
   --text-body-lg: 1.0625rem;
   --text-body-lg--line-height: 1.55;
   --text-body-lg--font-weight: 300;
-  --text-body: 0.9375rem;
+  --text-body: 1rem;
   --text-body--line-height: 1.5;
   --text-body--font-weight: 300;
   --text-body-sm: 0.875rem;
@@ -135,6 +135,10 @@
   --text-code: 0.8125rem;
   --text-code--line-height: 1.5;
   --text-code--font-weight: 400;
+  /* form-control text (text-input): 15px / 300 */
+  --text-input: 0.9375rem;
+  --text-input--line-height: 1.4;
+  --text-input--font-weight: 300;
 
   /* spacing — p-xs, gap-xl, … (the default numeric scale stays available) */
   --spacing-xs: 0.25rem;
