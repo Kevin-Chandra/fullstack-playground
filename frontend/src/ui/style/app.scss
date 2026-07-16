@@ -1,18 +1,61 @@
-// App-wide SCSS. Tailwind directives live in globals.css — Sass can't
-// resolve `@import "tailwindcss"` as a Sass module.
+:root {
+  /* light */
+  --ds-canvas: #fffdfa;
+  --ds-raised: #fbf6f0;
+  --ds-field: #f6efe7;
+  --ds-brand: #f3e4d5;
+  --ds-edge: rgba(61, 50, 41, 0.1);
+  --ds-edge-strong: rgba(61, 50, 41, 0.16);
+  --ds-ink: #2b211a;
+  --ds-ink-body: #3d3229;
+  --ds-muted: #8a7a6c;
+  --ds-accent: #b97e58;
+  --ds-accent-strong: #a86c47;
+  --ds-accent-soft: #d9a284;
+  --ds-accent-ink: #2b1a10; /* text on accent fills; stays dark in both schemes */
+  --ds-accent-glow: rgba(185, 126, 88, 0.25);
+  --ds-accent-glow-strong: rgba(185, 126, 88, 0.35);
+  --ds-focus: rgba(185, 126, 88, 0.18);
+  --ds-error: #c25b5b;
+}
 
-// Heading defaults: bare h1–h6 pick up the display-font type scale + ink
-// colour. Sass runs before Tailwind so `@apply` isn't available here; we read
-// the design tokens (emitted to :root by @theme in globals.css) as CSS
-// variables instead. Wrapped in @layer base so any Tailwind utility on a
-// heading still wins — an unlayered rule would otherwise beat the utilities.
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ds-canvas: #14100c;
+    --ds-raised: #1d1712;
+    --ds-field: #120d09;
+    --ds-brand: #2a1c14;
+    --ds-edge: rgba(255, 255, 255, 0.08);
+    --ds-edge-strong: rgba(255, 255, 255, 0.1);
+    --ds-ink: #f7f2ec;
+    --ds-ink-body: #f2ece5;
+    --ds-muted: #a3968a;
+    --ds-accent: #e2b190;
+    --ds-accent-strong: #d9a284;
+    --ds-accent-soft: #f3d8c4;
+    --ds-accent-glow: rgba(226, 177, 144, 0.3);
+    --ds-accent-glow-strong: rgba(226, 177, 144, 0.42);
+    --ds-focus: rgba(232, 185, 150, 0.15);
+    --ds-error: #f0a3a3;
+  }
+}
+
+body {
+  background: var(--ds-canvas);
+  color: var(--ds-ink-body);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
 $heading-steps: (
   "h1": "h1",
   "h2": "h2",
   "h3": "h3",
   "h4": "h4",
   "h5": "h5",
-  "h6": "h5", // no h6 token; reuse the h5 step
+  "h6": "h5" // no h6 token; reuse the h5 step
 );
 
 @layer base {
@@ -26,4 +69,12 @@ $heading-steps: (
       color: var(--ds-ink);
     }
   }
+
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  @import "components/divider";
 }
