@@ -1,6 +1,6 @@
 import { Routes } from "../constants/routes";
 
-const PROTECTED_PREFIXES: string[] = [Routes.DASHBOARD];
+const PROTECTED_PREFIXES: string[] = [Routes.DASHBOARD, Routes.STYLE_GUIDE];
 const AUTH_ROUTES: string[] = [Routes.LOGIN];
 
 const matchesPrefix = (pathname: string, prefixes: string[]): boolean =>

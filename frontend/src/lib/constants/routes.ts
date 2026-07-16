@@ -7,6 +7,7 @@ export const Routes = {
   DASHBOARD_USERS: "/dashboard/users",
   DASHBOARD_GUESTS: "/dashboard/guests",
   DASHBOARD_WISHES: "/dashboard/wishes",
+  STYLE_GUIDE: "/style-guide",
 
   // Route Handler
   CLEAR_SESSION: "/api/auth/clear-session",

@@ -14,7 +14,7 @@ export default function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border border-black/6 bg-white p-8 text-center shadow-sm dark:border-white/8 dark:bg-zinc-950">
+    <div className="flex flex-col items-center gap-4 rounded-2xl border border-black/6 bg-white p-8 text-center shadow-sm dark:border-white/8 dark:bg-zinc-950">
       <h2 className="text-xl font-semibold text-black dark:text-zinc-50">
         {title}
       </h2>

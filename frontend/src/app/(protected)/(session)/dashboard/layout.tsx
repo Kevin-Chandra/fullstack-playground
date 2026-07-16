@@ -1,7 +1,7 @@
 import { requireUser } from "@/src/lib/guards/requireUser";
 import Navbar from "@/src/ui/components/layout/Navbar";
 
-export default async function ProtectedLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
