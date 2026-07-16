@@ -10,6 +10,7 @@ import { User } from "../libs/entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, DataSource } from "typeorm";
 import { PasswordUtil } from "../libs/utils/password.util";
+import { UserStatus } from "../libs/entity/enums/user-status.enum";
 
 @Injectable()
 export class UserService {
@@ -34,9 +35,11 @@ export class UserService {
     }
 
     const passwordHash = await PasswordUtil.hash(createUserDto.password);
+    const { password: _password, ...userData } = createUserDto;
     const user: Partial<User> = {
-      username: createUserDto.username,
+      ...userData,
       passwordHash: passwordHash,
+      userStatus: UserStatus.ACTIVE,
     };
 
     const userEntity = this.userRepository.create(user);
@@ -60,8 +63,37 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (updateUserDto.username && updateUserDto.username !== user.username) {
+      const existingUser = await this.userRepository.findOneBy({
+        username: updateUserDto.username,
+      });
+
+      if (existingUser) {
+        throw new ConflictException("Username already taken");
+      }
+    }
+
+    const { password: _password, ...userData } = updateUserDto;
+    const changes: Partial<User> = {
+      ...userData,
+    };
+
+    if (updateUserDto.password) {
+      changes.passwordHash = await PasswordUtil.hash(updateUserDto.password);
+    }
+
+    if (Object.keys(changes).length > 0) {
+      await this.userRepository.update({ id: id }, changes);
+    }
+
+    return this.findOne(id);
   }
 
   async remove(id: number) {

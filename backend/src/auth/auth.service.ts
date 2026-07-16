@@ -7,6 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../libs/entity/user.entity";
 import ms, { type StringValue as MsStringValue } from "ms";
+import { UserStatus } from "../libs/entity/enums/user-status.enum";
 
 @Injectable()
 export class AuthService {
@@ -36,9 +37,12 @@ export class AuthService {
       loginDto.password,
       user.passwordHash,
     );
-
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");
+    }
+
+    if (user.userStatus !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException("User is blocked");
     }
 
     const payload = { id: user.id, username: user.username };
@@ -53,15 +57,17 @@ export class AuthService {
       throw new UnauthorizedException("Invalid user");
     }
 
+    if (user.userStatus !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException("User is blocked");
+    }
+
     const payload = { id: user.id, username: user.username };
     const tokens = await this.getTokens(payload);
 
     return tokens;
   }
 
-  async getProfile(
-    userId: string,
-  ): Promise<{ id: number; username: string }> {
+  async getProfile(userId: string): Promise<{ id: number; username: string }> {
     const user = await this.userRepository.findOneBy({ id: +userId });
     if (!user) {
       throw new UnauthorizedException("Invalid user");
