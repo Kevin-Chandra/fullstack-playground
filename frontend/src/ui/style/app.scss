@@ -1,3 +1,5 @@
+@use "components/divider";
+
 :root {
   /* light */
   --ds-canvas: #fffdfa;
@@ -73,8 +75,4 @@ $heading-steps: (
   body {
     font-family: var(--font-sans);
   }
-}
-
-@layer components {
-  @import "components/divider";
 }
