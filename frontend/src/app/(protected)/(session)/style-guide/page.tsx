@@ -22,7 +22,7 @@ import {
 
 export default function StyleGuidePage() {
   return (
-    <div className="mx-auto my-5">
+    <div className="mx-auto my-5 w-full max-w-6xl px-5">
       <div className="flex mb-8 flex-col gap-2">
         <h1>Style Guide</h1>
         <p>
@@ -520,25 +520,29 @@ function InputSelects() {
           optionDisabled={optionDisabled}
         />
       </div>
-      <InputSelect
-        label="Input Select With Icon"
-        icon={<MdPerson />}
-        fullWidth
-        options={options}
-        optionLabel={optionLabel}
-        optionValue={optionValue}
-        optionDisabled={optionDisabled}
-      />
-      <InputSelect
-        label="Input Select With Icon Disabled"
-        icon={<MdGroup />}
-        fullWidth
-        disabled
-        options={options}
-        optionLabel={optionLabel}
-        optionValue={optionValue}
-        optionDisabled={optionDisabled}
-      />
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Input Select With Icon"
+          icon={<MdPerson />}
+          fullWidth
+          options={options}
+          placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Input Select With Icon Disabled"
+          icon={<MdGroup />}
+          fullWidth
+          disabled
+          placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+      </div>
     </div>
   );
 }

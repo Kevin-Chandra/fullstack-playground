@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
-type UseSelectParams<T> = {
+type UseInputSelectParams<T> = {
   options: T[];
   optionLabel: (option: T) => string;
   optionValue: (option: T) => string;
@@ -17,7 +17,7 @@ type UseSelectParams<T> = {
  * value, keyboard navigation (skipping disabled options) and outside-click.
  * The component that consumes this stays presentational.
  */
-export function useSelect<T>({
+export function useInputSelect<T>({
   options,
   optionValue,
   optionDisabled,
@@ -25,7 +25,7 @@ export function useSelect<T>({
   defaultValue,
   onChange,
   disabled = false,
-}: UseSelectParams<T>) {
+}: UseInputSelectParams<T>) {
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -43,7 +43,7 @@ export function useSelect<T>({
 
   const lastSelectable = (options: T[]) => {
     for (let i = options.length - 1; i >= 0; i--) {
-      if (optionDisabled(options[i])) return i;
+      if (!optionDisabled(options[i])) return i;
     }
     return -1;
   };
@@ -126,6 +126,12 @@ export function useSelect<T>({
     },
     [activeIndex, close, commit, disabled, move, open, openMenu, options],
   );
+
+  useEffect(() => {
+    setActiveIndex((current) =>
+      current >= options.length ? firstSelectable(options) : current,
+    );
+  }, [options]);
 
   useEffect(() => {
     if (!open) return;

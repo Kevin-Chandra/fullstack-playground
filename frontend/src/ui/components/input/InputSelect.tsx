@@ -3,7 +3,7 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { useSelect } from "@/src/lib/hooks/useSelect";
+import { useInputSelect } from "@/src/lib/hooks/components/useInputSelect";
 import InputSelectOption from "@/src/ui/components/input/InputSelectOption";
 
 export type InputSelectProps<T> = {
@@ -63,7 +63,7 @@ export default function InputSelect<T>({
     toggle,
     commit,
     onTriggerKeyDown,
-  } = useSelect<T>({
+  } = useInputSelect<T>({
     options,
     optionLabel,
     optionValue,
@@ -92,7 +92,7 @@ export default function InputSelect<T>({
   return (
     <div
       ref={rootRef}
-      className={`group flex flex-col gap-2 ${fullWidth ? "w-full" : ""}`}
+      className={`group flex min-w-0 flex-col gap-2 ${fullWidth ? "w-full" : ""}`}
     >
       {label && (
         <div className="flex items-baseline">
@@ -128,15 +128,15 @@ export default function InputSelect<T>({
           }
           className={trigger}
         >
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-2.5">
             {icon && (
-              <span className={`flex shrink-0 [&_svg]:size-4 text-muted/70`}>
+              <span className="flex shrink-0 [&_svg]:size-4 text-muted/70">
                 {icon}
               </span>
             )}
             <span
-              className={`truncate text-input ${
-                selectedOption ? "text-ink-body" : "text-muted/60"
+              className={`min-w-0 truncate text-input ${
+                selectedOption !== undefined ? "text-ink-body" : "text-muted/60"
               }`}
             >
               {selectedOption !== undefined
