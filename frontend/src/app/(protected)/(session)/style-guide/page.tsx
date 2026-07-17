@@ -1,13 +1,18 @@
+"use client";
+
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
+import InputSelect from "@/src/ui/components/input/InputSelect";
 import { ReactNode } from "react";
 import {
   MdAdd,
   MdAnchor,
+  MdBatterySaver,
   MdCopyAll,
   MdCurrencyExchange,
   MdDelete,
   MdEdit,
+  MdGroup,
   MdHideImage,
   MdPerson,
   MdSave,
@@ -28,6 +33,7 @@ export default function StyleGuidePage() {
       </div>
       <Section title={"01 · Button"} content={<Buttons />} />
       <Section title={"02 · Input"} content={<Inputs />} />
+      <Section title={"03 · Input Select"} content={<InputSelects />} />
     </div>
   );
 }
@@ -440,6 +446,99 @@ function Buttons() {
           textAlignment="start"
         />
       </div>
+    </div>
+  );
+}
+
+function InputSelects() {
+  const verticalClass = "flex flex-col gap-8";
+  const horizontalClass = "flex gap-6";
+
+  type ExampleOptions = {
+    name: string;
+    value: string;
+  };
+
+  const options: ExampleOptions[] = [
+    { name: "Option 1", value: "1" },
+    { name: "Option 2", value: "2" },
+    { name: "Option 3", value: "3" },
+    { name: "Option 4", value: "4" },
+    { name: "Option 5", value: "5" },
+  ];
+
+  const optionLabel = (o: ExampleOptions) => {
+    return o.name;
+  };
+
+  const optionValue = (o: ExampleOptions) => {
+    return o.value;
+  };
+
+  const optionDisabled = (o: ExampleOptions) => {
+    return o.value === "5";
+  };
+
+  return (
+    <div className={verticalClass}>
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Status"
+          fullWidth
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Disabled"
+          fullWidth
+          disabled
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+      </div>
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Input Select With Error"
+          fullWidth
+          error="Error"
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Input Select With Hint"
+          hint="Try to click me"
+          fullWidth
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+      </div>
+      <InputSelect
+        label="Input Select With Icon"
+        icon={<MdPerson />}
+        fullWidth
+        options={options}
+        optionLabel={optionLabel}
+        optionValue={optionValue}
+        optionDisabled={optionDisabled}
+      />
+      <InputSelect
+        label="Input Select With Icon Disabled"
+        icon={<MdGroup />}
+        fullWidth
+        disabled
+        options={options}
+        optionLabel={optionLabel}
+        optionValue={optionValue}
+        optionDisabled={optionDisabled}
+      />
     </div>
   );
 }
