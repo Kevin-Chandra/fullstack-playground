@@ -28,9 +28,9 @@ const base = [
 const variants: Record<Variant, string> = {
   // accent CTA — gradient fill + glow; accent-ink stays legible in both schemes
   primary: [
-    "bg-linear-145 from-accent-soft to-accent-strong text-accent-ink shadow-glow",
+    "bg-accent-gradient text-accent-ink shadow-glow",
     "hover:shadow-glow-strong hover:brightness-105 active:brightness-95",
-    "disabled:from-muted disabled:to-muted disabled:text-accent-ink/50 disabled:shadow-none",
+    "disabled:bg-none disabled:bg-muted disabled:text-accent-ink/50 disabled:shadow-none",
   ].join(" "),
   secondary: [
     "border border-edge-strong text-ink-body",

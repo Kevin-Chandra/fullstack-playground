@@ -1,13 +1,24 @@
+"use client";
+
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
+import CheckboxGroup from "@/src/ui/components/input/CheckboxGroup";
+import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
-import { ReactNode } from "react";
+import DefaultRadioButton from "@/src/ui/components/input/DefaultRadioButton";
+import RadioGroup from "@/src/ui/components/input/RadioGroup";
+import DefaultSwitch from "@/src/ui/components/input/DefaultSwitch";
+import InputSelect from "@/src/ui/components/input/InputSelect";
+import { ReactNode, useState } from "react";
 import {
   MdAdd,
   MdAnchor,
   MdCopyAll,
   MdCurrencyExchange,
   MdDelete,
+  MdDeleteForever,
   MdEdit,
+  MdGroup,
   MdHideImage,
   MdPerson,
   MdSave,
@@ -17,7 +28,7 @@ import {
 
 export default function StyleGuidePage() {
   return (
-    <div className="mx-auto my-5">
+    <div className="mx-auto my-5 w-full max-w-6xl px-5">
       <div className="flex mb-8 flex-col gap-2">
         <h1>Style Guide</h1>
         <p>
@@ -28,6 +39,11 @@ export default function StyleGuidePage() {
       </div>
       <Section title={"01 · Button"} content={<Buttons />} />
       <Section title={"02 · Input"} content={<Inputs />} />
+      <Section title={"03 · Input Select"} content={<InputSelects />} />
+      <Section title={"04 · Checkbox"} content={<Checkboxes />} />
+      <Section title={"05 · Radio Button"} content={<RadioButtons />} />
+      <Section title={"06 · Switch"} content={<Switches />} />
+      <Section title={"07 · Dialog"} content={<Dialogs />} />
     </div>
   );
 }
@@ -438,6 +454,334 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+        />
+      </div>
+    </div>
+  );
+}
+
+const choiceStackClass = "flex flex-col gap-5";
+const choiceRowClass = "flex flex-wrap gap-6 items-center";
+
+function Checkboxes() {
+  const [subscribed, setSubscribed] = useState(false);
+  const [toppings, setToppings] = useState<string[]>(["cheese"]);
+
+  return (
+    <div className={choiceStackClass}>
+      <div className={choiceRowClass}>
+        <DefaultCheckbox label="Unchecked" />
+        <DefaultCheckbox label="Checked" defaultChecked />
+        <DefaultCheckbox label="Indeterminate" indeterminate />
+      </div>
+      <div className={choiceRowClass}>
+        <DefaultCheckbox label="Disabled" disabled />
+        <DefaultCheckbox label="Disabled checked" defaultChecked disabled />
+        <DefaultCheckbox
+          label="Disabled indeterminate"
+          indeterminate
+          disabled
+        />
+      </div>
+      <div className={choiceRowClass}>
+        <DefaultCheckbox aria-label="Checkbox without label" />
+        <DefaultCheckbox
+          aria-label="Checked checkbox without label"
+          defaultChecked
+        />
+      </div>
+      {/* controlled single: onValueChange hands back the boolean directly */}
+      <div className={choiceRowClass}>
+        <DefaultCheckbox
+          label="Subscribe to newsletter"
+          checked={subscribed}
+          onValueChange={setSubscribed}
+        />
+        <span className="text-caption text-muted">
+          {subscribed ? "Subscribed" : "Not subscribed"}
+        </span>
+      </div>
+      {/* controlled multi-select group: onValueChange hands back a string[] */}
+      <div className="flex flex-col gap-3">
+        <CheckboxGroup
+          label="Toppings"
+          labelPosition="right"
+          value={toppings}
+          onValueChange={setToppings}
+          orientation="vertical"
+        >
+          <DefaultCheckbox value="cheese" label="Cheese" />
+          <DefaultCheckbox value="mushroom" label="Mushroom" />
+          <DefaultCheckbox value="pepperoni" label="Pepperoni" />
+          <DefaultCheckbox value="pineapple" label="Pineapple" disabled />
+        </CheckboxGroup>
+        <span className="text-caption text-muted">
+          Selected: {toppings.join(", ") || "none"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function RadioButtons() {
+  const [plan, setPlan] = useState("pro");
+
+  return (
+    <div className={choiceStackClass}>
+      {/* Controlled group: onValueChange hands back the selected value string */}
+      <div className="flex flex-col gap-3">
+        <RadioGroup
+          label="Plan"
+          value={plan}
+          onValueChange={setPlan}
+          orientation="horizontal"
+        >
+          <DefaultRadioButton value="starter" label="Starter" />
+          <DefaultRadioButton value="pro" label="Pro" />
+          <DefaultRadioButton value="enterprise" label="Enterprise" disabled />
+        </RadioGroup>
+        <span className="text-caption text-muted">Selected: {plan}</span>
+      </div>
+
+      {/* Uncontrolled group seeded by defaultValue */}
+      <RadioGroup
+        label="Billing period"
+        defaultValue="monthly"
+        orientation="vertical"
+      >
+        <DefaultRadioButton value="monthly" label="Monthly" />
+        <DefaultRadioButton value="yearly" label="Yearly" />
+      </RadioGroup>
+
+      {/* Whole group disabled from the parent */}
+      <RadioGroup
+        label="Disabled group"
+        defaultValue="b"
+        orientation="horizontal"
+        disabled
+      >
+        <DefaultRadioButton value="a" label="Option A" />
+        <DefaultRadioButton value="b" label="Option B" />
+      </RadioGroup>
+    </div>
+  );
+}
+
+function Switches() {
+  return (
+    <div className={choiceStackClass}>
+      <div className={choiceRowClass}>
+        <DefaultSwitch label="Off" />
+        <DefaultSwitch label="On" defaultChecked />
+      </div>
+      <div className={choiceRowClass}>
+        <DefaultSwitch label="Disabled off" disabled />
+        <DefaultSwitch label="Disabled on" defaultChecked disabled />
+      </div>
+      <div className={choiceRowClass}>
+        <DefaultSwitch aria-label="Switch without label" />
+        <DefaultSwitch aria-label="Switch on without label" defaultChecked />
+      </div>
+    </div>
+  );
+}
+
+type DialogDemo = "icon" | "default" | "destructive" | "form";
+
+function Dialogs() {
+  const horizontalClass = "flex flex-wrap gap-4 items-center";
+  const [openDialog, setOpenDialog] = useState<DialogDemo | null>(null);
+
+  const close = () => setOpenDialog(null);
+
+  return (
+    <>
+      <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Default dialog with icon"
+          onClick={() => setOpenDialog("icon")}
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Default dialog"
+          onClick={() => setOpenDialog("default")}
+        />
+        <DefaultButton
+          variant="danger"
+          size="md"
+          label="Destructive dialog"
+          onClick={() => setOpenDialog("destructive")}
+        />
+        <DefaultButton
+          variant="primary"
+          size="md"
+          label="Form dialog"
+          onClick={() => setOpenDialog("form")}
+        />
+      </div>
+
+      <DefaultDialog
+        open={openDialog === "icon"}
+        onClose={close}
+        icon={<MdGroup />}
+        title="Discard draft? Discard draft? Discard draft? Discard draft?"
+        primaryButtonLabel="Discard"
+        secondaryButtonLabel="Cancel"
+        onPrimaryClick={close}
+      >
+        Your unsaved changes will be lost. This only affects the current draft;
+        published content stays untouched.
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "default"}
+        onClose={close}
+        title="Discard draft? Discard draft? Discard draft? Discard draft?"
+        primaryButtonLabel="Discard"
+        secondaryButtonLabel="Cancel"
+        onPrimaryClick={close}
+        dismissable={false}
+      >
+        Your unsaved changes will be lost. This only affects the current draft;
+        published content stays untouched.
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "destructive"}
+        onClose={close}
+        destructive
+        icon={<MdDeleteForever />}
+        title="Delete account"
+        primaryButtonLabel="Delete"
+        secondaryButtonLabel="Cancel"
+        onPrimaryClick={close}
+      >
+        This permanently removes the account and every workspace it owns. This
+        action cannot be undone.
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "form"}
+        onClose={close}
+        title="Invite teammate"
+        primaryButtonLabel="Send invite"
+        onPrimaryClick={close}
+      >
+        <DefaultInput
+          label="Name"
+          name="invite-name"
+          placeholder="Ada Lovelace"
+          fullWidth
+          inputSize="md"
+        />
+        <DefaultInput
+          label="Email"
+          name="invite-email"
+          type="email"
+          placeholder="ada@everafter.dev"
+          leftIcon={<MdPerson />}
+          fullWidth
+          inputSize="md"
+        />
+      </DefaultDialog>
+    </>
+  );
+}
+
+function InputSelects() {
+  const verticalClass = "flex flex-col gap-8";
+  const horizontalClass = "flex gap-6";
+
+  type ExampleOptions = {
+    name: string;
+    value: string;
+  };
+
+  const options: ExampleOptions[] = [
+    { name: "Option 1", value: "1" },
+    { name: "Option 2", value: "2" },
+    { name: "Option 3", value: "3" },
+    { name: "Option 4", value: "4" },
+    { name: "Option 5", value: "5" },
+  ];
+
+  const optionLabel = (o: ExampleOptions) => {
+    return o.name;
+  };
+
+  const optionValue = (o: ExampleOptions) => {
+    return o.value;
+  };
+
+  const optionDisabled = (o: ExampleOptions) => {
+    return o.value === "5";
+  };
+
+  return (
+    <div className={verticalClass}>
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Status"
+          fullWidth
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Disabled"
+          fullWidth
+          disabled
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+      </div>
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Input Select With Error"
+          fullWidth
+          error="Error"
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Input Select With Hint"
+          hint="Try to click me"
+          fullWidth
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+      </div>
+      <div className={horizontalClass}>
+        <InputSelect
+          label="Input Select With Icon"
+          icon={<MdPerson />}
+          fullWidth
+          options={options}
+          placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
+        />
+        <InputSelect
+          label="Input Select With Icon Disabled"
+          icon={<MdGroup />}
+          fullWidth
+          disabled
+          placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
+          options={options}
+          optionLabel={optionLabel}
+          optionValue={optionValue}
+          optionDisabled={optionDisabled}
         />
       </div>
     </div>

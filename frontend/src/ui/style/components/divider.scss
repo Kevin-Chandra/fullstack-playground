@@ -1,5 +1,7 @@
-hr {
-  height: 1px;
-  border: none;
-  background-color: var(--ds-edge);
+@layer components {
+  hr {
+    height: 1px;
+    border: none;
+    background-color: var(--ds-edge);
+  }
 }
