@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
+import { useControllableState } from "@/src/lib/hooks/components/useControllableState";
 
 type UseInputSelectParams<T> = {
   options: T[];
@@ -27,12 +28,15 @@ export function useInputSelect<T>({
   disabled = false,
 }: UseInputSelectParams<T>) {
   const [open, setOpen] = useState(false);
-  const [internalValue, setInternalValue] = useState(defaultValue);
   const [activeIndex, setActiveIndex] = useState(-1);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const isControlled = value !== undefined;
-  const selectedValue = isControlled ? value : internalValue;
+  // controlled-or-uncontrolled string value; the option-shaped onChange below
+  // is fired separately since the external callback hands back the full option
+  const [selectedValue, setSelectedValue] = useControllableState<string>({
+    value,
+    defaultValue,
+  });
   const selectedOption = useMemo(
     () => options.find((option) => optionValue(option) === selectedValue),
     [options, selectedValue],
@@ -66,11 +70,11 @@ export function useInputSelect<T>({
 
   const commit = useCallback(
     (next: T) => {
-      if (!isControlled) setInternalValue(optionValue(next));
+      setSelectedValue(optionValue(next));
       onChange?.(next);
       close();
     },
-    [close, isControlled, onChange],
+    [close, onChange, setSelectedValue],
   );
 
   const move = useCallback(
