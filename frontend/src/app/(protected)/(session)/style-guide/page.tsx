@@ -25,6 +25,9 @@ import {
   MdSearch,
   MdStar,
 } from "react-icons/md";
+import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
+import { MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 
 export default function StyleGuidePage() {
   return (
@@ -44,6 +47,8 @@ export default function StyleGuidePage() {
       <Section title={"05 · Radio Button"} content={<RadioButtons />} />
       <Section title={"06 · Switch"} content={<Switches />} />
       <Section title={"07 · Dialog"} content={<Dialogs />} />
+      <Section title={"08 · Pagination"} content={<PaginationBars />} />
+      <Section title={"09 · Badge"} content={<Badges />} />
     </div>
   );
 }
@@ -784,6 +789,34 @@ function InputSelects() {
           optionDisabled={optionDisabled}
         />
       </div>
+    </div>
+  );
+}
+
+function PaginationBars() {
+  const [currentPage, setCurrentPage] = useState(10);
+  return (
+    <PaginationBar
+      currentPage={currentPage}
+      totalPages={20}
+      totalItems={300}
+      itemsPerPage={15}
+      maxPageNumber={MAX_PAGE_BUTTONS}
+      onPageChange={setCurrentPage}
+    />
+  );
+}
+
+function Badges() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <DefaultBadge
+        variant="active"
+        label="Long text Long text Long text Long text Long text Long"
+      />
+      <DefaultBadge variant="warning" label="Pending" />
+      <DefaultBadge variant="neutral" label="Draft" />
+      <DefaultBadge variant="danger" label="Archived" />
     </div>
   );
 }
