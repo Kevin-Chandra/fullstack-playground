@@ -6,8 +6,8 @@
   --ds-raised: #fbf6f0;
   --ds-field: #f6efe7;
   --ds-brand: #f3e4d5;
-  --ds-edge: rgba(61, 50, 41, 0.1);
-  --ds-edge-strong: rgba(61, 50, 41, 0.16);
+  --ds-edge: #3d32291a;
+  --ds-edge-strong: #3d322929;
   --ds-ink: #2b211a;
   --ds-ink-body: #3d3229;
   --ds-muted: #8a7a6c;
@@ -15,10 +15,20 @@
   --ds-accent-strong: #a86c47;
   --ds-accent-soft: #d9a284;
   --ds-accent-ink: #2b1a10; /* text on accent fills; stays dark in both schemes */
-  --ds-accent-glow: rgba(185, 126, 88, 0.25);
-  --ds-accent-glow-strong: rgba(185, 126, 88, 0.35);
-  --ds-focus: rgba(185, 126, 88, 0.18);
+  --ds-accent-glow: #b97e5840;
+  --ds-accent-glow-strong: #b97e5859;
+  --ds-focus: #b97e582e;
   --ds-error: #c25b5b;
+
+  /* status badge — solid text color + soft bg tint */
+  --ds-badge-active: #5f7a4e;
+  --ds-badge-active-bg: #5f7a4e24;
+  --ds-badge-warning: #a86a3d;
+  --ds-badge-warning-bg: #a86a3d24;
+  --ds-badge-neutral: #8a7a6c;
+  --ds-badge-neutral-bg: #3d32290f;
+  --ds-badge-danger: #c25b5b;
+  --ds-badge-danger-bg: #c25b5b1f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,18 +37,27 @@
     --ds-raised: #1d1712;
     --ds-field: #120d09;
     --ds-brand: #2a1c14;
-    --ds-edge: rgba(255, 255, 255, 0.08);
-    --ds-edge-strong: rgba(255, 255, 255, 0.1);
+    --ds-edge: #ffffff14;
+    --ds-edge-strong: #ffffff1a;
     --ds-ink: #f7f2ec;
     --ds-ink-body: #f2ece5;
     --ds-muted: #a3968a;
     --ds-accent: #e2b190;
     --ds-accent-strong: #d9a284;
     --ds-accent-soft: #f3d8c4;
-    --ds-accent-glow: rgba(226, 177, 144, 0.3);
-    --ds-accent-glow-strong: rgba(226, 177, 144, 0.42);
-    --ds-focus: rgba(232, 185, 150, 0.15);
+    --ds-accent-glow: #e2b1904d;
+    --ds-accent-glow-strong: #e2b1906b;
+    --ds-focus: #e8b99626;
     --ds-error: #f0a3a3;
+
+    --ds-badge-active: #a9bd9b;
+    --ds-badge-active-bg: #a9bd9b24;
+    --ds-badge-warning: #e2b190;
+    --ds-badge-warning-bg: #e2b19024;
+    --ds-badge-neutral: #a3968a;
+    --ds-badge-neutral-bg: #ffffff12;
+    --ds-badge-danger: #f0a3a3;
+    --ds-badge-danger-bg: #f0a3a31f;
   }
 }
 
