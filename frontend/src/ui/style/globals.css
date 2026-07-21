@@ -40,6 +40,16 @@
   --color-focus: var(--ds-focus);
   --color-error: var(--ds-error);
 
+  /* status badge — scheme-aware tint palette (color + soft bg tint) */
+  --color-badge-active: var(--ds-badge-active);
+  --color-badge-active-bg: var(--ds-badge-active-bg);
+  --color-badge-warning: var(--ds-badge-warning);
+  --color-badge-warning-bg: var(--ds-badge-warning-bg);
+  --color-badge-neutral: var(--ds-badge-neutral);
+  --color-badge-neutral-bg: var(--ds-badge-neutral-bg);
+  --color-badge-danger: var(--ds-badge-danger);
+  --color-badge-danger-bg: var(--ds-badge-danger-bg);
+
   --font-display: var(--font-space-grotesk);
   --font-sans: var(--font-hanken);
   --font-mono: var(--font-jetbrains);
@@ -98,6 +108,10 @@
   --text-input: 0.9375rem;
   --text-input--line-height: 1.4;
   --text-input--font-weight: 300;
+  /* Badge text */
+  --text-badge: 0.75rem;
+  --text-badge--line-height: 1;
+  --text-badge--font-weight: 400;
 
   /* spacing — p-xs, gap-xl, … (the default numeric scale stays available) */
   --spacing-xs: 0.25rem;
