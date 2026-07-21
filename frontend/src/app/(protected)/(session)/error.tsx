@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import ErrorState from "@/src/ui/components/feedback/ErrorState";
+import FullScreenError from "@/src/ui/components/error/FullScreenError";
 
 /**
  * In-chrome error boundary: catches errors from pages inside the protected
@@ -23,7 +23,7 @@ export default function SessionError({
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-16">
-      <ErrorState onRetry={reset} />
+      <FullScreenError title="SessionError" />
     </div>
   );
 }
