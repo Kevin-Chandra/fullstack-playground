@@ -8,7 +8,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import type { Response } from "express";
+import type { CookieOptions, Response } from "express";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { LoginUserId } from "../decorators/user-details-decorator";
@@ -20,6 +20,7 @@ import ms, { type StringValue } from "ms";
 export class AuthController {
   private readonly accessTokenMaxAge: number;
   private readonly refreshTokenMaxAge: number;
+  private readonly cookieSecure: boolean;
 
   constructor(
     private readonly authService: AuthService,
@@ -37,6 +38,26 @@ export class AuthController {
         "7d",
       ) as StringValue,
     );
+    this.cookieSecure =
+      this.configService.get<string>("COOKIE_SECURE") === "true";
+  }
+
+  private sessionCookieOptions(maxAge: number): CookieOptions {
+    return {
+      signed: true,
+      httpOnly: true,
+      secure: this.cookieSecure,
+      sameSite: "strict",
+      maxAge,
+    };
+  }
+
+  private clearCookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      secure: this.cookieSecure,
+      sameSite: "strict",
+    };
   }
 
   @Post("login")
@@ -47,20 +68,16 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.login(loginDto);
 
-    res.cookie("access_token", accessToken, {
-      signed: true,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: this.accessTokenMaxAge,
-    });
-    res.cookie("refresh_token", refreshToken, {
-      signed: true,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: this.refreshTokenMaxAge,
-    });
+    res.cookie(
+      "access_token",
+      accessToken,
+      this.sessionCookieOptions(this.accessTokenMaxAge),
+    );
+    res.cookie(
+      "refresh_token",
+      refreshToken,
+      this.sessionCookieOptions(this.refreshTokenMaxAge),
+    );
 
     res.status(HttpStatus.OK).send();
   }
@@ -74,20 +91,16 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.getRefreshToken(userId);
 
-    res.cookie("access_token", accessToken, {
-      signed: true,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: this.accessTokenMaxAge,
-    });
-    res.cookie("refresh_token", refreshToken, {
-      signed: true,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: this.refreshTokenMaxAge,
-    });
+    res.cookie(
+      "access_token",
+      accessToken,
+      this.sessionCookieOptions(this.accessTokenMaxAge),
+    );
+    res.cookie(
+      "refresh_token",
+      refreshToken,
+      this.sessionCookieOptions(this.refreshTokenMaxAge),
+    );
 
     res.status(HttpStatus.OK).send();
   }
@@ -100,8 +113,8 @@ export class AuthController {
 
   @Get("logout")
   async logOut(@Res() res: Response) {
-    res.clearCookie("access_token", { httpOnly: true, sameSite: "strict" });
-    res.clearCookie("refresh_token", { httpOnly: true, sameSite: "strict" });
+    res.clearCookie("access_token", this.clearCookieOptions());
+    res.clearCookie("refresh_token", this.clearCookieOptions());
 
     res.status(HttpStatus.OK).send();
   }
