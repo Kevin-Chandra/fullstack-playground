@@ -5,7 +5,7 @@ import type { ChangeEvent, SubmitEvent } from "react";
 import { LoginPayload } from "@/src/lib/types/Auth";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
-import ErrorAlert from "@/src/ui/components/feedback/ErrorAlert";
+import ErrorBanner from "@/src/ui/components/error/ErrorBanner";
 
 type LoginFormProps = {
   onSubmit: (payload: LoginPayload) => void;
@@ -76,7 +76,7 @@ export default function LoginForm({
             />
           </div>
 
-          {error && <ErrorAlert message={error} />}
+          {error && <ErrorBanner message={error} />}
 
           <DefaultButton
             type="submit"

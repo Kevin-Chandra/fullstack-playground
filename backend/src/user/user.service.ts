@@ -18,6 +18,7 @@ import {
   PaginateQuery,
 } from "nestjs-paginate";
 import { paginationConstants } from "../libs/constants/pagination.constants";
+import { PaginationUtil } from "../libs/utils/pagination.util";
 
 @Injectable()
 export class UserService {
@@ -57,7 +58,7 @@ export class UserService {
   }
 
   async findAll(query: PaginateQuery): Promise<Paginated<User>> {
-    return paginate(query, this.userRepository, {
+    const result = await paginate(query, this.userRepository, {
       defaultLimit: paginationConstants.ITEM_PER_PAGE,
       maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
       sortableColumns: ["name"],
@@ -66,6 +67,10 @@ export class UserService {
         userStatus: [FilterOperator.EQ],
       },
     });
+
+    PaginationUtil.assertPageInRange(query, result);
+
+    return result;
   }
 
   async findOne(id: number): Promise<User> {

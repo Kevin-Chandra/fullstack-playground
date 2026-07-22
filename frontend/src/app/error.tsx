@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import ErrorState from "@/src/ui/components/feedback/ErrorState";
+import FullScreenError from "../ui/components/error/FullScreenError";
 
 /**
  * Root error boundary for the public branch (landing page, login).
@@ -19,7 +19,7 @@ export default function RootError({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-black">
-      <ErrorState onRetry={reset} />
+      <FullScreenError title="ERROR" />
     </div>
   );
 }

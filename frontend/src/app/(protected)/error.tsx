@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import ErrorState from "@/src/ui/components/feedback/ErrorState";
+import ErrorState from "@/src/ui/components/error/ErrorState";
+import FullScreenError from "@/src/ui/components/error/FullScreenError";
 
 /**
  * Protected-branch error boundary: catches errors thrown above the portal
@@ -21,12 +22,9 @@ export default function ProtectedError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-black">
-      <ErrorState
-        title="Portal unavailable"
-        description="We couldn't verify your session. Please try again in a moment."
-        onRetry={reset}
-      />
-    </div>
+    <FullScreenError
+      title="Portal unavailable"
+      description="We couldn't verify your session. Please try again in a moment."
+    />
   );
 }

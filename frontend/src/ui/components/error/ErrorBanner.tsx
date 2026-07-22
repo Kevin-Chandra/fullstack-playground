@@ -1,6 +1,6 @@
 "use client";
 
-type ErrorAlertProps = {
+type ErrorBannerProps = {
   message: string;
   onRetry?: () => void;
   retryLabel?: string;
@@ -13,12 +13,12 @@ type ErrorAlertProps = {
  * resolves by editing input (e.g. bad credentials). For a full-panel error
  * with a prominent CTA, use ErrorState instead.
  */
-export default function ErrorAlert({
+export default function ErrorBanner({
   message,
   onRetry,
   retryLabel = "Try again",
   className = "",
-}: ErrorAlertProps) {
+}: ErrorBannerProps) {
   return (
     <div
       role="alert"

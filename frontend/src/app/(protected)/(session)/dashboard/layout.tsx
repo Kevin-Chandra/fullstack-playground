@@ -9,9 +9,11 @@ export default async function DashboardLayout({
   const user = await requireUser();
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex h-screen bg-canvas">
       <Navbar brandTitle="Everafter" userName={user.username} />
-      <main className="flex-1 overflow-x-hidden px-8 py-8">{children}</main>
+      <main className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-8 py-8">
+        {children}
+      </main>
     </div>
   );
 }
