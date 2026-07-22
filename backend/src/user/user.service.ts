@@ -4,21 +4,21 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { User } from "../libs/entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, DataSource } from "typeorm";
-import { PasswordUtil } from "../libs/utils/password.util";
-import { UserStatus } from "../libs/entity/enums/user-status.enum";
 import {
   FilterOperator,
   paginate,
   Paginated,
   PaginateQuery,
 } from "nestjs-paginate";
+import { DataSource, Repository } from "typeorm";
 import { paginationConstants } from "../libs/constants/pagination.constants";
+import { UserStatus } from "../libs/entity/enums/user-status.enum";
+import { User } from "../libs/entity/user.entity";
 import { PaginationUtil } from "../libs/utils/pagination.util";
+import { PasswordUtil } from "../libs/utils/password.util";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -73,11 +73,21 @@ export class UserService {
     return result;
   }
 
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id: id });
+  async findOne(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        userStatus: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
     return user;
