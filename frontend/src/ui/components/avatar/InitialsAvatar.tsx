@@ -1,8 +1,9 @@
 type Variant = "primary" | "secondary";
+type AvatarSize = "sm" | "md" | "lg";
 
-type InitialsBadgeProps = {
+type InitialsAvatarProps = {
   initials: string;
-  size?: number;
+  size?: AvatarSize;
   variant?: Variant;
   className?: string;
 };
@@ -15,17 +16,22 @@ const variants: Record<Variant, string> = {
   secondary: "bg-accent-gradient text-accent-ink",
 };
 
-export default function InitialsBadge({
+const sizes: Record<AvatarSize, string> = {
+  sm: "w-[40px] h-[40px] text-xs",
+  md: "w-[56px] h-[56px] text-base",
+  lg: "w-[72px] h-[72px] text-2xl",
+};
+
+export default function InitialsAvatar({
   initials,
-  size = 40,
+  size = "md",
   variant = "primary",
   className = "",
-}: InitialsBadgeProps) {
+}: InitialsAvatarProps) {
   return (
     <span
       aria-hidden
-      style={{ width: size, height: size }}
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
     >
       {initials}
     </span>

@@ -1,14 +1,18 @@
 "use client";
 
+import { MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
+import InitialsAvatar from "@/src/ui/components/avatar/InitialsAvatar";
+import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import CheckboxGroup from "@/src/ui/components/input/CheckboxGroup";
 import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import DefaultRadioButton from "@/src/ui/components/input/DefaultRadioButton";
-import RadioGroup from "@/src/ui/components/input/RadioGroup";
 import DefaultSwitch from "@/src/ui/components/input/DefaultSwitch";
 import InputSelect from "@/src/ui/components/input/InputSelect";
+import RadioGroup from "@/src/ui/components/input/RadioGroup";
+import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
 import { ReactNode, useState } from "react";
 import {
   MdAdd,
@@ -25,9 +29,6 @@ import {
   MdSearch,
   MdStar,
 } from "react-icons/md";
-import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
-import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
-import { MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 
 export default function StyleGuidePage() {
   return (
@@ -809,14 +810,26 @@ function PaginationBars() {
 
 function Badges() {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <DefaultBadge
-        variant="active"
-        label="Long text Long text Long text Long text Long text Long"
-      />
-      <DefaultBadge variant="warning" label="Pending" />
-      <DefaultBadge variant="neutral" label="Draft" />
-      <DefaultBadge variant="danger" label="Archived" />
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-wrap items-center gap-3">
+        <InitialsAvatar initials="AB" size="sm" variant="primary" />
+        <InitialsAvatar initials="AB" size="md" variant="primary" />
+        <InitialsAvatar initials="AB" size="lg" variant="primary" />
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <InitialsAvatar initials="AB" size="sm" variant="secondary" />
+        <InitialsAvatar initials="AB" size="md" variant="secondary" />
+        <InitialsAvatar initials="AB" size="lg" variant="secondary" />
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <DefaultBadge
+          variant="active"
+          label="Long text Long text Long text Long text Long text Long"
+        />
+        <DefaultBadge variant="warning" label="Pending" />
+        <DefaultBadge variant="neutral" label="Draft" />
+        <DefaultBadge variant="danger" label="Archived" />
+      </div>
     </div>
   );
 }

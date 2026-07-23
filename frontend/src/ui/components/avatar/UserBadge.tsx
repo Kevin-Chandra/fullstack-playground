@@ -1,4 +1,4 @@
-import InitialsBadge from "@/src/ui/components/avatar/InitialsBadge";
+import InitialsAvatar from "@/src/ui/components/avatar/InitialsAvatar";
 import LogoutIconButton from "@/src/ui/features/auth/LogoutIconButton";
 
 type UserBadgeProps = {
@@ -36,7 +36,7 @@ export default function UserBadge({
     <div className={wrap}>
       <div className={row}>
         <span className={iconSlot}>
-          <InitialsBadge initials={initials} size={40} />
+          <InitialsAvatar initials={initials} size="sm" />
         </span>
         <span
           className={`${name.base} ${collapsed ? name.closed : name.open}`}

@@ -161,7 +161,10 @@
   --breakpoint-card: 48rem;
   --breakpoint-hero: 64rem;
 
-  --animate-auth-in: auth-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* emphasized easing — shared by entrance animations + panel reveal */
+  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-auth-in: auth-rise 0.6s var(--ease-emphasized) both;
   --animate-dialog-in: dialog-rise 0.4s ease-out both;
 
   @keyframes auth-rise {
@@ -210,6 +213,24 @@
     var(--ds-accent-glow),
     transparent 70%
   );
+}
+
+/* Users master–detail — list + details column tracks ease open/closed
+   so the list slides over instead of snapping when the panel opens. */
+@utility user-workspace {
+  transition:
+    grid-template-columns 350ms var(--ease-emphasized),
+    column-gap 350ms var(--ease-emphasized);
+}
+
+@utility user-workspace-open {
+  grid-template-columns: 2fr 3fr;
+  column-gap: var(--spacing-xl);
+}
+
+@utility user-workspace-closed {
+  grid-template-columns: 1fr 0fr;
+  column-gap: 0;
 }
 
 body:has(dialog:modal) {
