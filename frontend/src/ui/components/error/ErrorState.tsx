@@ -4,7 +4,7 @@ import { customErrorActionLabel } from "@/src/lib/constants/error";
 import { ErrorAction, ErrorEntity } from "@/src/lib/types/ErrorEntity";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import { ReactNode } from "react";
-import { MdOutlineWarning } from "react-icons/md";
+import { MdErrorOutline } from "react-icons/md";
 
 type ErrorStateProps = {
   error: ErrorEntity;
@@ -14,7 +14,7 @@ type ErrorStateProps = {
 
 export default function ErrorState({
   error,
-  icon = <MdOutlineWarning className="color-danger" size={40} />,
+  icon = <MdErrorOutline className="color-danger" size={40} />,
   onErrorActionClick,
 }: ErrorStateProps) {
   function getErrorActionLabel(action?: ErrorAction): string {
@@ -35,10 +35,9 @@ export default function ErrorState({
       )}
       <DefaultButton
         variant="secondary"
+        label={getErrorActionLabel(error.defaultAction)}
         onClick={() => onErrorActionClick(error.defaultAction)}
-      >
-        {getErrorActionLabel(error.defaultAction)}
-      </DefaultButton>
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { UserStatus } from "../types/User";
+import { UserStatus } from "../types/UserStatus";
 
 const labels: Record<UserStatus, string> = {
   [UserStatus.ACTIVE]: "Active",

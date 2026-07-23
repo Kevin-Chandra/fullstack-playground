@@ -1,13 +1,12 @@
-export enum UserStatus {
-  ACTIVE = "active",
-  INACTIVE = "inactive",
-}
+import { UserStatus } from "./UserStatus";
 
 export interface User {
   id: string;
   username: string;
   name: string;
   userStatus: UserStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateUserPayload {

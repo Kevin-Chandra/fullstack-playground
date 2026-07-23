@@ -17,6 +17,11 @@ export const getUsers = async (
   return response.data;
 };
 
+export const getUserDetails = async (id: string): Promise<User> => {
+  const response = await axiosInstance.get<User>(UsersPath.byId(id));
+  return response.data;
+};
+
 export const createUser = async (payload: CreateUserPayload): Promise<User> => {
   const response = await axiosInstance.post<User>(UsersPath.BASE, payload);
   return response.data;
