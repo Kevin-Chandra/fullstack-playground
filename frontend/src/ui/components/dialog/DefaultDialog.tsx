@@ -1,10 +1,10 @@
 "use client";
 
-import { useId } from "react";
-import type { ReactNode } from "react";
-import { MdClose } from "react-icons/md";
 import { useDialog } from "@/src/lib/hooks/components/useDialog";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import type { ReactNode } from "react";
+import { useId } from "react";
+import { MdClose } from "react-icons/md";
 
 export type DefaultDialogProps = {
   open: boolean;
@@ -18,6 +18,7 @@ export type DefaultDialogProps = {
   secondaryButtonLabel?: string;
   onPrimaryClick: () => void;
   onSecondaryClick?: () => void;
+  loading?: boolean;
   children?: ReactNode;
   showCloseButton?: boolean;
 };
@@ -51,6 +52,7 @@ export default function DefaultDialog({
   secondaryButtonLabel,
   onPrimaryClick,
   onSecondaryClick,
+  loading = false,
   children,
   showCloseButton = true,
 }: DefaultDialogProps) {
@@ -77,6 +79,7 @@ export default function DefaultDialog({
             icon={<MdClose />}
             aria-label="Close dialog"
             onClick={onClose}
+            disabled={loading}
             className="absolute top-5 right-5"
           />
         )}
@@ -103,6 +106,7 @@ export default function DefaultDialog({
                 size="md"
                 label={secondaryButtonLabel}
                 onClick={onSecondaryClick ?? onClose}
+                disabled={loading}
                 className="w-full @xs:w-auto"
               />
             )}
@@ -111,6 +115,7 @@ export default function DefaultDialog({
               size="md"
               label={primaryButtonLabel}
               onClick={onPrimaryClick}
+              loading={loading}
               className="w-full @xs:w-auto"
             />
           </div>
