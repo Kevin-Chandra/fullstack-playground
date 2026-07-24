@@ -6,14 +6,17 @@ import {
 } from "@/src/lib/constants/pagination";
 import { SEARCH_DEBOUNCE_MS } from "@/src/lib/constants/search";
 import { useDebouncedValue } from "@/src/lib/hooks/useDebouncedValue";
+import { useUserDelete } from "@/src/lib/hooks/user/useUserDelete";
 import { useUserList } from "@/src/lib/hooks/user/useUserList";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
+import { User } from "@/src/lib/types/User";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import ErrorState from "@/src/ui/components/error/ErrorState";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import SidePanel from "@/src/ui/components/layout/SidePanel";
 import ListCard from "@/src/ui/components/list/ListCard";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import UserDeletionConfirmationContent from "@/src/ui/features/users/UserDeletionConfirmationContent";
 import UserDetailsContent from "@/src/ui/features/users/UserDetailsContent";
 import UserListEmpty from "@/src/ui/features/users/UserListEmpty";
 import UserListRow from "@/src/ui/features/users/UserListRow";
@@ -38,15 +41,35 @@ export default function UsersPage() {
   const [page, setPage] = useState(BASE_PAGINATION_PAGE);
   const [searchInput, setSearchInput] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string>();
+  const [deleteUser, setDeleteUser] = useState<User>();
+
   const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS);
   const search = debouncedSearch.trim() || undefined;
 
   const { users, meta, loading, error, refetch } = useUserList(page, search);
+  const { remove, loading: deleting } = useUserDelete();
 
   const [prevSearch, setPrevSearch] = useState(search);
   if (search !== prevSearch) {
     setPrevSearch(search);
     setPage(BASE_PAGINATION_PAGE);
+  }
+
+  async function handleDeleteUser() {
+    const deleteUserId = deleteUser?.id;
+    if (!deleteUserId) return;
+
+    const success = await remove(deleteUserId);
+    if (!success) return;
+
+    setSelectedUserId(undefined);
+    setDeleteUser(undefined);
+    refetch();
+  }
+
+  function handleCloseDeleteConfirmation() {
+    if (deleting) return;
+    setDeleteUser(undefined);
   }
 
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
@@ -144,11 +167,21 @@ export default function UsersPage() {
           <div className={detailColumn}>
             <SidePanel
               content={
-                <UserDetailsContent
-                  key={selectedUserId}
-                  userId={selectedUserId}
-                  onClose={() => setSelectedUserId(undefined)}
-                />
+                deleteUser ? (
+                  <UserDeletionConfirmationContent
+                    user={deleteUser}
+                    loading={deleting}
+                    onDelete={handleDeleteUser}
+                    onCancel={handleCloseDeleteConfirmation}
+                  />
+                ) : (
+                  <UserDetailsContent
+                    key={selectedUserId}
+                    userId={selectedUserId}
+                    onClose={() => setSelectedUserId(undefined)}
+                    onDelete={(user) => setDeleteUser(user)}
+                  />
+                )
               }
             />
           </div>

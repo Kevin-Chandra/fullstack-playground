@@ -1,6 +1,7 @@
 "use client";
 
 import { useUserDetails } from "@/src/lib/hooks/user/useUserDetails";
+import { User } from "@/src/lib/types/User";
 import {
   formatFullDate,
   formatMonthYear,
@@ -21,11 +22,13 @@ const centered = "flex flex-1 items-center justify-center";
 
 type UserDetailsContentProps = {
   userId: string;
+  onDelete: (user: User) => void;
   onClose: () => void;
 };
 
 export default function UserDetailsContent({
   userId,
+  onDelete,
   onClose,
 }: UserDetailsContentProps) {
   const { user, loading, error, refetch } = useUserDetails(userId);
@@ -39,6 +42,12 @@ export default function UserDetailsContent({
     );
 
   if (!user) return null;
+
+  function handleOnDelete() {
+    if (!user) return;
+
+    onDelete(user);
+  }
 
   return (
     <div className={content}>
@@ -66,6 +75,8 @@ export default function UserDetailsContent({
           variant="ghost"
           size="md"
           label="Remove from workspace"
+          onClick={handleOnDelete}
+          disabled={user === undefined}
         />
       </div>
     </div>
