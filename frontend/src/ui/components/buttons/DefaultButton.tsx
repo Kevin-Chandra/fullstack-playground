@@ -6,7 +6,6 @@ type IconPosition = "left" | "right";
 type TextAlignment = "start" | "center" | "end";
 
 export type DefaultButtonProps = {
-  children?: ReactNode;
   variant?: Variant;
   size?: Size;
   fullWidth?: boolean;
@@ -82,7 +81,6 @@ const alignments: Record<TextAlignment, string> = {
 };
 
 export default function DefaultButton({
-  children,
   variant = "primary",
   size = "md",
   fullWidth = false,
@@ -118,7 +116,6 @@ export default function DefaultButton({
       <>
         {iconPosition === "left" ? icon : null}
         <span>{label}</span>
-        {children}
         {iconPosition === "right" ? icon : null}
       </>
     );
