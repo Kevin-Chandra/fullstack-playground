@@ -1,6 +1,37 @@
 @use "components/divider";
 
 :root {
+  /* neutral ramp — scheme-independent warm-grey scale (50 lightest → 950
+     darkest). Source of truth for the warm neutrals; the hues and dark-scheme
+     surfaces below draw from it, so each hex is defined once. */
+  --neutral-50: #faf6f1;
+  --neutral-100: #f2ece5;
+  --neutral-200: #e4dbd0;
+  --neutral-300: #cdc1b3;
+  --neutral-400: #b0a294;
+  --neutral-500: #a3968a;
+  --neutral-600: #83766b;
+  --neutral-700: #5c5148;
+  --neutral-800: #3a312a;
+  --neutral-850: #241c15;
+  --neutral-900: #1d1712;
+  --neutral-950: #14100c;
+
+  /* brand hues — scheme-independent source values. The dark scheme and the
+     always-dark toast both draw from these, so each hex is defined once. */
+  --hue-sage: #a9bd9b;
+  --hue-peach: #e2b190;
+  --hue-rose: #f0a3a3;
+
+  /* hue tints — soft wash (~14%, icon-well fill) + edge (~26–28%, hairline
+     border). Scheme-independent so the always-dark toast uses them directly. */
+  --hue-sage-soft: #a9bd9b24;
+  --hue-sage-edge: #a9bd9b47;
+  --hue-peach-soft: #e2b19024;
+  --hue-peach-edge: #e2b19042;
+  --hue-rose-soft: #f0a3a324;
+  --hue-rose-edge: #f0a3a347;
+
   /* light */
   --ds-canvas: #fffdfa;
   --ds-raised: #fbf6f0;
@@ -40,23 +71,23 @@
     --ds-edge: #ffffff14;
     --ds-edge-strong: #ffffff1a;
     --ds-ink: #f7f2ec;
-    --ds-ink-body: #f2ece5;
-    --ds-muted: #a3968a;
-    --ds-accent: #e2b190;
+    --ds-ink-body: var(--neutral-100);
+    --ds-muted: var(--neutral-500);
+    --ds-accent: var(--hue-peach);
     --ds-accent-strong: #d9a284;
     --ds-accent-soft: #f3d8c4;
     --ds-accent-glow: #e2b1904d;
     --ds-accent-glow-strong: #e2b1906b;
     --ds-focus: #e8b99626;
-    --ds-error: #f0a3a3;
+    --ds-error: var(--hue-rose);
 
-    --ds-badge-active: #a9bd9b;
+    --ds-badge-active: var(--hue-sage);
     --ds-badge-active-bg: #a9bd9b24;
-    --ds-badge-warning: #e2b190;
+    --ds-badge-warning: var(--hue-peach);
     --ds-badge-warning-bg: #e2b19024;
-    --ds-badge-neutral: #a3968a;
+    --ds-badge-neutral: var(--neutral-500);
     --ds-badge-neutral-bg: #ffffff12;
-    --ds-badge-danger: #f0a3a3;
+    --ds-badge-danger: var(--hue-rose);
     --ds-badge-danger-bg: #f0a3a31f;
   }
 }

@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "text";
-type Size = "sm" | "md" | "lg";
+type Size = "xs" | "sm" | "md" | "lg";
 type IconPosition = "left" | "right";
 type TextAlignment = "start" | "center" | "end";
 
@@ -55,18 +55,21 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
+  xs: "rounded-btn-sm text-xs [&_svg]:size-3.5",
   sm: "rounded-btn-sm text-xs [&_svg]:size-4",
   md: "rounded-btn-md text-body-sm [&_svg]:size-4.5",
   lg: "rounded-btn-lg text-body [&_svg]:size-5",
 };
 
 const paddingSize: Record<Size, string> = {
+  xs: "px-2.5 py-1.5",
   sm: "px-3 py-2",
   md: "px-4 py-3",
   lg: "px-5 py-4",
 };
 
 const iconPadding: Record<Size, string> = {
+  xs: "p-1.5",
   sm: "p-2",
   md: "p-3",
   lg: "p-4",

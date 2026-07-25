@@ -113,6 +113,24 @@
   --text-badge--line-height: 1;
   --text-badge--font-weight: 400;
 
+  /* toast — scheme-static dark surface (stays dark in both light/dark
+     schemes by design) + per-variant icon tints and hairline borders */
+  --color-toast-surface: #231b14; /* toast-specific; not in the palette */
+  --color-toast-message: var(--neutral-100);
+  --color-toast-muted: var(--neutral-500); /* subline + close affordance */
+  --color-toast-success: var(--hue-sage);
+  --color-toast-success-bg: var(--hue-sage-soft);
+  --color-toast-success-border: var(--hue-sage-edge);
+  --color-toast-info: var(--hue-peach);
+  --color-toast-info-bg: var(--hue-peach-soft);
+  --color-toast-info-border: var(--hue-peach-edge);
+  --color-toast-error: var(--hue-rose);
+  --color-toast-error-bg: var(--hue-rose-soft);
+  --color-toast-error-border: var(--hue-rose-edge);
+  --color-toast-loading: var(--neutral-500);
+  --color-toast-loading-bg: rgba(255, 255, 255, 0.07); /* white wash, not a hue */
+  --color-toast-loading-border: rgba(255, 255, 255, 0.1);
+
   /* spacing — p-xs, gap-xl, … (the default numeric scale stays available) */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -231,6 +249,44 @@
 @utility user-workspace-closed {
   grid-template-columns: 1fr 0fr;
   column-gap: 0;
+}
+
+/* ============================================================
+   react-toastify — themed onto the toast design tokens.
+
+   The styled entry injects its base stylesheet at runtime (after this file),
+   so every rule is scoped under the `.Toastify` container to win on
+   specificity regardless of source order. Surface, radius, shadow, padding
+   and the width clamp live here; the icon well, message and subline are
+   Tailwind-styled inside ToastCard. */
+.Toastify .Toastify__toast {
+  width: auto; /* grow to fit copy… */
+  min-width: 21.25rem; /* …between a 340px floor… */
+  max-width: min(26.25rem, calc(100vw - 2rem)); /* …and a 420px cap */
+  min-height: auto;
+  margin-bottom: 10px; /* stackGap */
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  background: var(--color-toast-surface);
+  color: var(--color-toast-message);
+  border: 1px solid var(--color-toast-loading-border);
+  font-family: var(--font-sans);
+}
+
+.Toastify .Toastify__toast--success {
+  border-color: var(--color-toast-success-border);
+}
+.Toastify .Toastify__toast--info {
+  border-color: var(--color-toast-info-border);
+}
+.Toastify .Toastify__toast--error {
+  border-color: var(--color-toast-error-border);
+}
+
+/* bottom-center offset from the viewport edge */
+.Toastify .Toastify__toast-container--bottom-center {
+  bottom: 32px;
 }
 
 body:has(dialog:modal) {

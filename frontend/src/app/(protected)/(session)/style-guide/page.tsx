@@ -13,6 +13,7 @@ import DefaultSwitch from "@/src/ui/components/input/DefaultSwitch";
 import InputSelect from "@/src/ui/components/input/InputSelect";
 import RadioGroup from "@/src/ui/components/input/RadioGroup";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import { toast } from "@/src/ui/components/toast/toast";
 import { ReactNode, useState } from "react";
 import {
   MdAdd,
@@ -50,6 +51,7 @@ export default function StyleGuidePage() {
       <Section title={"07 · Dialog"} content={<Dialogs />} />
       <Section title={"08 · Pagination"} content={<PaginationBars />} />
       <Section title={"09 · Badge"} content={<Badges />} />
+      <Section title={"10 · Toast"} content={<Toasts />} />
     </div>
   );
 }
@@ -228,6 +230,13 @@ function Buttons() {
         <DefaultButton
           variant="primary"
           icon={<MdAdd />}
+          size="xs"
+          label="Icon primary small"
+          textAlignment="start"
+        />
+        <DefaultButton
+          variant="primary"
+          icon={<MdAdd />}
           size="sm"
           label="Icon primary small"
           textAlignment="start"
@@ -248,6 +257,13 @@ function Buttons() {
         />
       </div>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          icon={<MdEdit />}
+          size="xs"
+          label="Icon primary small"
+          textAlignment="start"
+        />
         <DefaultButton
           variant="secondary"
           icon={<MdEdit />}
@@ -281,6 +297,14 @@ function Buttons() {
         />
         <DefaultButton
           variant="ghost"
+          icon={<MdCopyAll />}
+          iconPosition="right"
+          size="xs"
+          label="Icon primary small"
+          textAlignment="start"
+        />
+        <DefaultButton
+          variant="ghost"
           icon={<MdAdd />}
           iconPosition="right"
           size="md"
@@ -297,6 +321,14 @@ function Buttons() {
         />
       </div>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="text"
+          icon={<MdEdit />}
+          iconPosition="left"
+          size="xs"
+          label="Edit small"
+          textAlignment="start"
+        />
         <DefaultButton
           variant="text"
           icon={<MdEdit />}
@@ -323,6 +355,14 @@ function Buttons() {
         />
       </div>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="danger"
+          icon={<MdDelete />}
+          iconPosition="left"
+          size="xs"
+          label="Delete small"
+          textAlignment="start"
+        />
         <DefaultButton
           variant="danger"
           icon={<MdDelete />}
@@ -356,6 +396,13 @@ function Buttons() {
           variant="primary"
           icon={<MdDelete />}
           iconPosition="left"
+          size="xs"
+          textAlignment="start"
+        />
+        <DefaultButton
+          variant="primary"
+          icon={<MdDelete />}
+          iconPosition="left"
           size="sm"
           textAlignment="start"
         />
@@ -375,6 +422,13 @@ function Buttons() {
         />
       </div>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          icon={<MdDelete />}
+          iconPosition="left"
+          size="xs"
+          textAlignment="start"
+        />
         <DefaultButton
           variant="secondary"
           icon={<MdDelete />}
@@ -402,6 +456,13 @@ function Buttons() {
           variant="danger"
           icon={<MdDelete />}
           iconPosition="left"
+          size="xs"
+          textAlignment="start"
+        />
+        <DefaultButton
+          variant="danger"
+          icon={<MdDelete />}
+          iconPosition="left"
           size="sm"
           textAlignment="start"
         />
@@ -424,6 +485,12 @@ function Buttons() {
         <DefaultButton
           variant="ghost"
           icon={<MdDelete />}
+          size="xs"
+          textAlignment="start"
+        />
+        <DefaultButton
+          variant="ghost"
+          icon={<MdDelete />}
           size="sm"
           textAlignment="start"
         />
@@ -442,6 +509,12 @@ function Buttons() {
         />
       </div>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="text"
+          icon={<MdDelete />}
+          size="xs"
+          textAlignment="start"
+        />
         <DefaultButton
           variant="text"
           icon={<MdDelete />}
@@ -829,6 +902,149 @@ function Badges() {
         <DefaultBadge variant="warning" label="Pending" />
         <DefaultBadge variant="neutral" label="Draft" />
         <DefaultBadge variant="danger" label="Archived" />
+      </div>
+    </div>
+  );
+}
+
+function Toasts() {
+  const horizontalClass = "flex flex-wrap gap-4 items-center";
+
+  const runLoadingDemo = () => {
+    const id = toast.loading("Saving changes…", {
+      subline: "This may take a moment.",
+    });
+    setTimeout(
+      () =>
+        toast.update(id, {
+          variant: "success",
+          message: "Changes saved",
+          subline: "Everything is up to date.",
+        }),
+      2000,
+    );
+  };
+
+  const runLoadingErrorDemo = () => {
+    const id = toast.loading("Saving changes…", {
+      subline: "This may take a moment.",
+    });
+    setTimeout(
+      () =>
+        toast.update(id, {
+          variant: "error",
+          message: "Something went wrong",
+          subline: "Unable to connect to internet",
+        }),
+      3000,
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-8">
+      {/* message only */}
+      <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Success"
+          onClick={() => toast.success("Invitation sent")}
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Info"
+          onClick={() => toast.info("A new version is available")}
+        />
+        <DefaultButton
+          variant="danger"
+          size="md"
+          label="Error"
+          onClick={() => toast.error("Couldn’t save your changes")}
+        />
+        <DefaultButton
+          variant="ghost"
+          size="md"
+          label="Loading (persist)"
+          onClick={() => toast.loading("Uploading files…")}
+        />
+      </div>
+
+      {/* message + subline */}
+      <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Success + subline"
+          onClick={() =>
+            toast.success("Teammate invited", {
+              subline: "ada@everafter.dev will receive an email shortly.",
+            })
+          }
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Subline long text"
+          onClick={() =>
+            toast.success("Teammate invited", {
+              subline:
+                "ada@everafter.dev will receive an email shortly. We'll resume automatically when you're back online. ada@everafter.dev will receive an email shortly.",
+            })
+          }
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Info + subline"
+          onClick={() =>
+            toast.info("Sync paused", {
+              subline: "We'll resume automatically when you're back online.",
+            })
+          }
+        />
+        <DefaultButton
+          variant="danger"
+          size="md"
+          label="Error + subline"
+          onClick={() =>
+            toast.error("Upload failed", {
+              subline: "The file exceeds the 25 MB limit.",
+            })
+          }
+        />
+        <DefaultButton
+          variant="ghost"
+          size="md"
+          label="Loading + subline"
+          onClick={() =>
+            toast.loading("Processing…", {
+              subline: "Crunching the numbers.",
+            })
+          }
+        />
+      </div>
+
+      {/* interactions */}
+      <div className={horizontalClass}>
+        <DefaultButton
+          variant="primary"
+          size="md"
+          label="Loading → success"
+          onClick={runLoadingDemo}
+        />
+        <DefaultButton
+          variant="danger"
+          size="md"
+          label="Loading → error"
+          onClick={runLoadingErrorDemo}
+        />
+        <DefaultButton
+          variant="ghost"
+          size="md"
+          label="Dismiss all"
+          onClick={() => toast.dismiss()}
+        />
       </div>
     </div>
   );
