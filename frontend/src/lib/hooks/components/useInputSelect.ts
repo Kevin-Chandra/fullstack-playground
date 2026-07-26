@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
 import { useControllableState } from "@/src/lib/hooks/components/useControllableState";
+import type { KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type UseInputSelectParams<T> = {
   options: T[];
   optionLabel: (option: T) => string;
   optionValue: (option: T) => string;
-  optionDisabled: (option: T) => boolean;
+  optionDisabled?: (option: T) => boolean;
   value?: string;
   defaultValue?: string;
   onChange?: (value: T) => void;
@@ -21,7 +21,7 @@ type UseInputSelectParams<T> = {
 export function useInputSelect<T>({
   options,
   optionValue,
-  optionDisabled,
+  optionDisabled = () => false,
   value,
   defaultValue,
   onChange,

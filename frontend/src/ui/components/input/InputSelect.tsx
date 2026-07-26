@@ -1,10 +1,10 @@
 "use client";
 
-import { useId } from "react";
-import type { ReactNode } from "react";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { useInputSelect } from "@/src/lib/hooks/components/useInputSelect";
 import InputSelectOption from "@/src/ui/components/input/InputSelectOption";
+import type { ReactNode } from "react";
+import { useId } from "react";
+import { MdKeyboardArrowDown } from "react-icons/md";
 
 export type InputSelectProps<T> = {
   label?: ReactNode;
@@ -14,7 +14,7 @@ export type InputSelectProps<T> = {
   options: T[];
   optionLabel: (option: T) => string;
   optionValue: (option: T) => string;
-  optionDisabled: (option: T) => boolean;
+  optionDisabled?: (option: T) => boolean;
   value?: string;
   defaultValue?: string;
   onChange?: (value: T) => void;
@@ -160,7 +160,9 @@ export default function InputSelect<T>({
             className="absolute top-full left-0 z-20 mt-0.5 w-full rounded-md border border-edge-strong bg-raised p-1.5 shadow-card"
           >
             {options.map((option, index) => {
-              const isOptionDisabled = optionDisabled(option);
+              const isOptionDisabled = optionDisabled
+                ? optionDisabled(option)
+                : false;
               return (
                 <InputSelectOption
                   key={optionValue(option)}

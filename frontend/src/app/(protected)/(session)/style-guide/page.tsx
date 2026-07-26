@@ -849,7 +849,6 @@ function InputSelects() {
           placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
           optionLabel={optionLabel}
           optionValue={optionValue}
-          optionDisabled={optionDisabled}
         />
         <InputSelect
           label="Input Select With Icon Disabled"
