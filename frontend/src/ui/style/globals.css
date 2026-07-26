@@ -1,3 +1,8 @@
+/* Explicit cascade-layer order — declared identically in app.scss so precedence
+   is fixed by layer name regardless of which stylesheet the bundler loads first.
+   app-base sits above Tailwind's reset but below utilities, so utilities still win.
+   Runtime-injected/toastify rules stay unlayered on purpose (they must beat these). */
+@layer theme, base, app-base, components, utilities;
 @import "tailwindcss";
 
 /* ============================================================

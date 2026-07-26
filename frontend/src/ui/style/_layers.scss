@@ -1,0 +1,11 @@
+/* Cascade-layer order — the single source of truth, kept identical to the
+   @layer statement in globals.css so precedence is fixed by layer name
+   regardless of which stylesheet the bundler injects first.
+
+   This partial is @used before any CSS-emitting partial (e.g. components/divider)
+   so the statement is emitted first: a @use'd module's CSS is hoisted to the top
+   of the output, and the FIRST occurrence of a layer name is what fixes its order.
+
+   app-base sits above Tailwind's reset but below utilities, so utilities still win.
+   Runtime-injected/toastify rules stay unlayered on purpose (they must beat these). */
+@layer theme, base, app-base, components, utilities;

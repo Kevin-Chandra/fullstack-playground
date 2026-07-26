@@ -1,3 +1,4 @@
+@use "layers"; // must precede any CSS-emitting @use so the layer order is emitted first
 @use "components/divider";
 
 :root {
@@ -110,7 +111,7 @@ $heading-steps: (
   "h6": "h5" // no h6 token; reuse the h5 step
 );
 
-@layer base {
+@layer app-base {
   @each $tag, $step in $heading-steps {
     #{$tag} {
       font-family: var(--font-space-grotesk), sans-serif;
