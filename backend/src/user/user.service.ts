@@ -47,7 +47,7 @@ export class UserService {
     const user: Partial<User> = {
       ...userData,
       passwordHash: passwordHash,
-      userStatus: UserStatus.ACTIVE,
+      userStatus: createUserDto.userStatus ?? UserStatus.ACTIVE,
     };
 
     const userEntity = this.userRepository.create(user);
