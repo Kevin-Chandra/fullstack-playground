@@ -13,6 +13,7 @@ export interface CreateUserPayload {
   username: string;
   password: string;
   name: string;
+  userStatus: string;
 }
 
 export type GetUserParams = Partial<{
