@@ -18,7 +18,7 @@ const username = "block truncate text-caption text-muted";
 type UserListRowProps = {
   user: User;
   selected?: boolean;
-  onSelect?: (user: User) => void;
+  onSelect: () => void;
 };
 
 export default function UserListRow({
@@ -31,7 +31,7 @@ export default function UserListRow({
       <button
         type="button"
         aria-pressed={selected}
-        onClick={() => onSelect?.(user)}
+        onClick={onSelect}
         className={`${row} ${selected ? rowState.selected : rowState.default}`}
       >
         <InitialsAvatar

@@ -10,10 +10,13 @@ import { USER_FORM_DEFAULT_VALUES } from "@/src/lib/data/emptyObject";
 import { useDebouncedValue } from "@/src/lib/hooks/useDebouncedValue";
 import { useUserCreate } from "@/src/lib/hooks/user/useUserCreate";
 import { useUserDelete } from "@/src/lib/hooks/user/useUserDelete";
+import { useUserDetails } from "@/src/lib/hooks/user/useUserDetails";
 import { useUserList } from "@/src/lib/hooks/user/useUserList";
+import { useUserPanel } from "@/src/lib/hooks/user/useUserPanel";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
 import { CreateUserPayload, User } from "@/src/lib/types/User";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import ErrorState from "@/src/ui/components/error/ErrorState";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import SidePanel from "@/src/ui/components/layout/SidePanel";
@@ -26,9 +29,9 @@ import UserDetailsContent from "@/src/ui/features/users/UserDetailsContent";
 import UserListEmpty from "@/src/ui/features/users/UserListEmpty";
 import UserListRow from "@/src/ui/features/users/UserListRow";
 import UserListSkeleton from "@/src/ui/features/users/UserListSkeleton";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import { MdAdd, MdSearch } from "react-icons/md";
+import { MdAdd, MdOutlineWarningAmber, MdSearch } from "react-icons/md";
 
 const workspace =
   "flex min-h-0 flex-1 flex-col gap-y-xl lg:grid lg:grid-rows-1 lg:user-workspace";
@@ -42,35 +45,56 @@ const listColumnState = {
   closed: "flex",
 };
 const detailColumn = "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden";
+const centered = "flex flex-1 items-center justify-center";
 
 export default function UsersPage() {
   const [page, setPage] = useState(BASE_PAGINATION_PAGE);
   const [searchInput, setSearchInput] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState<string>();
-  const [deleteUser, setDeleteUser] = useState<User>();
-  const [creating, setCreating] = useState(false);
-
-  const panelOpen = Boolean(selectedUserId) || creating;
 
   const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS);
   const search = debouncedSearch.trim() || undefined;
 
-  const { users, meta, loading, error, refetch } = useUserList(page, search);
+  const {
+    users,
+    meta,
+    loading,
+    error: errorFetchUserList,
+    refetch,
+  } = useUserList(page, search);
+  const { create, loading: createUserLoading } = useUserCreate();
   const { remove, loading: deleting } = useUserDelete();
 
-  // Add user
-  const { create, loading: createUserLoading } = useUserCreate();
-  const { ...formMethods } = useForm<CreateUserPayload>({
+  const formMethods = useForm<CreateUserPayload>({
     defaultValues: USER_FORM_DEFAULT_VALUES,
     mode: FORM_DEFAULT_VALIDATION_MODE,
   });
+  // read during render so react-hook-form subscribes this page to dirty changes
+  const { isDirty: createFormDirty } = formMethods.formState;
 
-  useEffect(() => {
-    const subscription = formMethods.watch((value) => {
-      console.log("Form changed:", value);
-    });
-    return () => subscription.unsubscribe();
-  }, [formMethods]);
+  // Single source of truth for which panel is open and for which user.
+  // Guards keep an unsaved add-user draft (or an in-flight mutation) from
+  // being dropped by any transition.
+  const {
+    panel,
+    selectedUserId,
+    navigate,
+    isConfirmingNavigation,
+    confirmPendingNavigation,
+    cancelPendingNavigation,
+  } = useUserPanel({
+    isAddFormDirty: createFormDirty,
+    isCreatingUser: createUserLoading,
+    isDeletingUser: deleting,
+    onDiscardAddForm: () => formMethods.reset(),
+  });
+  const panelOpen = panel.mode !== "closed";
+
+  const {
+    user: selectedUser,
+    loading: loadingUserDetails,
+    error: errorFetchUserDetails,
+    refetch: refetchUserDetails,
+  } = useUserDetails(selectedUserId);
 
   const [prevSearch, setPrevSearch] = useState(search);
   if (search !== prevSearch) {
@@ -78,28 +102,20 @@ export default function UsersPage() {
     setPage(BASE_PAGINATION_PAGE);
   }
 
-  async function handleDeleteUser() {
-    const deleteUserId = deleteUser?.id;
-    if (!deleteUserId) return;
-
-    const success = await remove(deleteUserId);
-    if (!success) return;
-
-    setSelectedUserId(undefined);
-    setDeleteUser(undefined);
-    refetch();
-  }
-
-  function handleCloseDeleteConfirmation() {
-    if (deleting) return;
-    setDeleteUser(undefined);
+  function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
+    setSearchInput(event.target.value);
   }
 
   function handleOpenCreate() {
-    setSelectedUserId(undefined);
-    setDeleteUser(undefined);
-    setCreating(true);
-    formMethods.reset();
+    navigate({ mode: "add" });
+  }
+
+  function handleUserSelected(userId: string) {
+    navigate({ mode: "view", userId });
+  }
+
+  function handleClosePanel() {
+    navigate({ mode: "closed" });
   }
 
   async function handleCreateUser(payload: CreateUserPayload) {
@@ -114,37 +130,106 @@ export default function UsersPage() {
 
     const newUser = result.data;
     toast.success(`${newUser.name} was added to the workspace`);
-    formMethods.reset();
     refetch();
-    setCreating(false);
-    setSelectedUserId(newUser.id);
+    // the draft was submitted, so it no longer needs the dirty-form guard
+    navigate({ mode: "view", userId: newUser.id }, { force: true });
   }
 
-  function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
-    setSearchInput(event.target.value);
+  async function handleDeleteUser(user: User) {
+    const result = await remove(user.id);
+
+    if (!result.success) {
+      toast.error("Error removing user", {
+        subline: result.error.error,
+      });
+      return;
+    }
+
+    toast.success(`${user.name} was removed from the workspace`);
+    refetch();
+    navigate({ mode: "closed" }, { force: true });
   }
 
-  function handleUserSelected(user: User) {
-    setSelectedUserId(user.id);
+  // Single handler for every ErrorState action.
+  function handleErrorAction(
+    action: ErrorAction | undefined,
+    retry: () => void,
+  ) {
+    switch (action) {
+      case ErrorAction.RETURN_TO_MAIN:
+        setPage(BASE_PAGINATION_PAGE);
+        navigate({ mode: "closed" });
+        break;
+
+      // ErrorState labels an undefined action as "Try again"
+      case ErrorAction.TRY_AGAIN:
+      default:
+        retry();
+        break;
+    }
+  }
+
+  function renderSidePanel() {
+    switch (panel.mode) {
+      case "add":
+        return (
+          <UserCreateContent
+            isLoading={createUserLoading}
+            formMethods={formMethods}
+            onSubmit={handleCreateUser}
+            onClose={handleClosePanel}
+          />
+        );
+      case "view":
+        if (errorFetchUserDetails) {
+          return (
+            <div className={centered}>
+              <ErrorState
+                error={errorFetchUserDetails}
+                onErrorActionClick={(action) =>
+                  handleErrorAction(action, refetchUserDetails)
+                }
+              />
+            </div>
+          );
+        }
+
+        return (
+          <UserDetailsContent
+            isLoading={loadingUserDetails}
+            user={selectedUser}
+            onClose={handleClosePanel}
+            onDelete={() => navigate({ mode: "delete", userId: panel.userId })}
+          />
+        );
+      case "delete":
+        if (!selectedUser) {
+          return null;
+        }
+
+        return (
+          <UserDeletionConfirmationContent
+            user={selectedUser}
+            loading={deleting}
+            onDelete={() => handleDeleteUser(selectedUser)}
+            onCancel={() => navigate({ mode: "view", userId: panel.userId })}
+          />
+        );
+      case "edit":
+        return <>Feature work in progress</>;
+      case "closed":
+        return null;
+    }
   }
 
   function renderContent() {
     if (loading) return <UserListSkeleton />;
-    if (error)
+    if (errorFetchUserList)
       return (
-        <div className="flex flex-1 items-center justify-center">
+        <div className={centered}>
           <ErrorState
-            error={error}
-            onErrorActionClick={(action?: ErrorAction) => {
-              switch (action) {
-                case ErrorAction.RETURN_TO_MAIN:
-                  setPage(BASE_PAGINATION_PAGE);
-                  break;
-                default:
-                  refetch();
-                  break;
-              }
-            }}
+            error={errorFetchUserList}
+            onErrorActionClick={(action) => handleErrorAction(action, refetch)}
           />
         </div>
       );
@@ -157,7 +242,7 @@ export default function UsersPage() {
             key={user.id}
             user={user}
             selected={user.id === selectedUserId}
-            onSelect={handleUserSelected}
+            onSelect={() => handleUserSelected(user.id)}
           />
         ))}
       </ul>
@@ -188,21 +273,13 @@ export default function UsersPage() {
           />
         </div>
       </div>
-      <div
-        className={`${workspace} ${
-          panelOpen ? workspaceState.open : workspaceState.closed
-        }`}
-      >
-        <div
-          className={`${listColumn} ${
-            panelOpen ? listColumnState.open : listColumnState.closed
-          }`}
-        >
+      <div className={`${workspace} ${panelOpen ? workspaceState.open : workspaceState.closed}`}>
+        <div className={`${listColumn} ${panelOpen ? listColumnState.open : listColumnState.closed}`}>
           <ListCard
             content={renderContent()}
             footer={
               !loading &&
-              !error &&
+              !errorFetchUserList &&
               meta && (
                 <PaginationBar
                   currentPage={meta.currentPage}
@@ -218,35 +295,23 @@ export default function UsersPage() {
         </div>
         {panelOpen && (
           <div className={detailColumn}>
-            <SidePanel
-              content={
-                creating ? (
-                  <UserCreateContent
-                    isLoading={createUserLoading}
-                    formMethods={formMethods}
-                    onSubmit={handleCreateUser}
-                    onClose={() => setCreating(false)}
-                  />
-                ) : deleteUser ? (
-                  <UserDeletionConfirmationContent
-                    user={deleteUser}
-                    loading={deleting}
-                    onDelete={handleDeleteUser}
-                    onCancel={handleCloseDeleteConfirmation}
-                  />
-                ) : selectedUserId ? (
-                  <UserDetailsContent
-                    key={selectedUserId}
-                    userId={selectedUserId}
-                    onClose={() => setSelectedUserId(undefined)}
-                    onDelete={(user) => setDeleteUser(user)}
-                  />
-                ) : null
-              }
-            />
+            <SidePanel content={renderSidePanel()} />
           </div>
         )}
       </div>
+      <DefaultDialog
+        open={isConfirmingNavigation}
+        onClose={cancelPendingNavigation}
+        icon={<MdOutlineWarningAmber />}
+        title="Discard changes?"
+        primaryButtonLabel="Discard"
+        secondaryButtonLabel="Keep editing"
+        onPrimaryClick={confirmPendingNavigation}
+        onSecondaryClick={cancelPendingNavigation}
+      >
+        The details you filled in have not been saved yet. Closing now will
+        discard them.
+      </DefaultDialog>
     </>
   );
 }

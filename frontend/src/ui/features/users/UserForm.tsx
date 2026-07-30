@@ -33,17 +33,11 @@ export default function UserForm({
     register,
     control,
     handleSubmit,
-    formState: { isDirty, errors },
-    watch,
-    trigger,
+    formState: { errors },
   } = formMethods;
 
-  async function handleFormSubmit(payload: CreateUserPayload) {
-    onSubmit(payload);
-  }
-
   return (
-    <form className={form} onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+    <form className={form} onSubmit={handleSubmit(onSubmit)} noValidate>
       <div className={scrollArea}>
         <DefaultInput
           fullWidth

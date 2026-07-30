@@ -1,6 +1,5 @@
 "use client";
 
-import { useUserDetails } from "@/src/lib/hooks/user/useUserDetails";
 import { User } from "@/src/lib/types/User";
 import {
   formatFullDate,
@@ -9,7 +8,6 @@ import {
 import { getUserStatusLabel } from "@/src/lib/utils/userStatusLabel";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import InfoField from "@/src/ui/components/card/InfoField";
-import ErrorState from "@/src/ui/components/error/ErrorState";
 import UserDetailsHeader from "./UserDetailsHeader";
 import UserDetailsSkeleton from "./UserDetailsSkeleton";
 
@@ -18,36 +16,22 @@ const divider = "border-t border-edge";
 const scrollArea = "flex min-h-0 flex-1 flex-col overflow-y-auto";
 const grid = "grid grid-cols-2 gap-lg";
 const footer = "flex justify-end border-t border-edge pt-xl";
-const centered = "flex flex-1 items-center justify-center";
 
 type UserDetailsContentProps = {
-  userId: string;
-  onDelete: (user: User) => void;
+  isLoading: boolean;
+  user?: User;
+  onDelete: () => void;
   onClose: () => void;
 };
 
 export default function UserDetailsContent({
-  userId,
+  isLoading,
+  user,
   onDelete,
   onClose,
 }: UserDetailsContentProps) {
-  const { user, loading, error, refetch } = useUserDetails(userId);
 
-  if (loading) return <UserDetailsSkeleton />;
-  if (error)
-    return (
-      <div className={centered}>
-        <ErrorState error={error} onErrorActionClick={() => refetch()} />
-      </div>
-    );
-
-  if (!user) return null;
-
-  function handleOnDelete() {
-    if (!user) return;
-
-    onDelete(user);
-  }
+  if (isLoading || !user) return <UserDetailsSkeleton />;
 
   return (
     <div className={content}>
@@ -75,8 +59,8 @@ export default function UserDetailsContent({
           variant="ghost"
           size="md"
           label="Remove from workspace"
-          onClick={handleOnDelete}
-          disabled={user === undefined}
+          onClick={onDelete}
+          disabled={isLoading}
         />
       </div>
     </div>
