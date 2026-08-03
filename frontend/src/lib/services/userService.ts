@@ -1,12 +1,12 @@
-import { axiosInstance } from "../network/axiosInstance";
 import { Users as UsersPath } from "../constants/apiPaths";
+import { axiosInstance } from "../network/axiosInstance";
+import { Paginated } from "../types/Paginated";
 import {
   CreateUserPayload,
   GetUserParams,
   UpdateUserPayload,
   User,
 } from "../types/User";
-import { Paginated } from "../types/Paginated";
 
 export const getUsers = async (
   query: Partial<GetUserParams>,
@@ -30,8 +30,9 @@ export const createUser = async (payload: CreateUserPayload): Promise<User> => {
 export const updateUser = async (
   id: string,
   payload: UpdateUserPayload,
-): Promise<void> => {
-  await axiosInstance.patch(UsersPath.byId(id), payload);
+): Promise<User> => {
+  const response = await axiosInstance.patch<User>(UsersPath.byId(id), payload);
+  return response.data;
 };
 
 export const deleteUser = async (id: string): Promise<void> => {

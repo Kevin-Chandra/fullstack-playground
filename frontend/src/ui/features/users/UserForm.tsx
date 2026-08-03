@@ -14,7 +14,10 @@ const form = "flex min-h-0 flex-1 flex-col gap-2xl";
 const scrollArea = "flex min-h-0 flex-1 flex-col gap-xl overflow-y-auto";
 const footer = "flex justify-end gap-sm border-t border-edge pt-xl";
 
+export type UserFormMode = "create" | "edit";
+
 type UserFormProps = {
+  mode?: UserFormMode;
   formMethods: UseFormReturn<CreateUserPayload>;
   onSubmit: (userDetails: CreateUserPayload) => void;
   onCancel: () => void;
@@ -22,6 +25,7 @@ type UserFormProps = {
 };
 
 export default function UserForm({
+  mode = "create",
   formMethods,
   onSubmit,
   onCancel,
@@ -79,34 +83,36 @@ export default function UserForm({
           })}
         />
 
-        <DefaultInput
-          fullWidth
-          required
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          placeholder="At least 8 characters"
-          error={errors.password?.message}
-          rightIcon={
-            <button
-              type="button"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-            </button>
-          }
-          {...register("password", {
-            required: USER_FORM_MESSAGES.password.required,
-            minLength: {
-              value: USER_FORM_LIMITS.password.min,
-              message: USER_FORM_MESSAGES.password.min,
-            },
-            maxLength: {
-              value: USER_FORM_LIMITS.password.max,
-              message: USER_FORM_MESSAGES.password.max,
-            },
-          })}
-        />
+        {mode === "create" && (
+          <DefaultInput
+            fullWidth
+            required
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="At least 8 characters"
+            error={errors.password?.message}
+            rightIcon={
+              <button
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+              </button>
+            }
+            {...register("password", {
+              required: USER_FORM_MESSAGES.password.required,
+              minLength: {
+                value: USER_FORM_LIMITS.password.min,
+                message: USER_FORM_MESSAGES.password.min,
+              },
+              maxLength: {
+                value: USER_FORM_LIMITS.password.max,
+                message: USER_FORM_MESSAGES.password.max,
+              },
+            })}
+          />
+        )}
 
         <Controller
           control={control}
@@ -136,7 +142,7 @@ export default function UserForm({
         <DefaultButton
           type="submit"
           variant="primary"
-          label="Add User"
+          label={mode === "edit" ? "Save changes" : "Add User"}
           loading={isLoading}
           disabled={isLoading}
         />

@@ -13,8 +13,9 @@ import { useUserDelete } from "@/src/lib/hooks/user/useUserDelete";
 import { useUserDetails } from "@/src/lib/hooks/user/useUserDetails";
 import { useUserList } from "@/src/lib/hooks/user/useUserList";
 import { useUserPanel } from "@/src/lib/hooks/user/useUserPanel";
+import { useUserUpdate } from "@/src/lib/hooks/user/useUserUpdate";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
-import { CreateUserPayload, User } from "@/src/lib/types/User";
+import { CreateUserPayload, UpdateUserPayload, User } from "@/src/lib/types/User";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import ErrorState from "@/src/ui/components/error/ErrorState";
@@ -23,7 +24,7 @@ import SidePanel from "@/src/ui/components/layout/SidePanel";
 import ListCard from "@/src/ui/components/list/ListCard";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
 import { toast } from "@/src/ui/components/toast/toast";
-import UserCreateContent from "@/src/ui/features/users/UserCreateContent";
+import UserFormContent from "@/src/ui/features/users/UserFormContent";
 import UserDeletionConfirmationContent from "@/src/ui/features/users/UserDeletionConfirmationContent";
 import UserDetailsContent from "@/src/ui/features/users/UserDetailsContent";
 import UserListEmpty from "@/src/ui/features/users/UserListEmpty";
@@ -62,14 +63,15 @@ export default function UsersPage() {
     refetch,
   } = useUserList(page, search);
   const { create, loading: createUserLoading } = useUserCreate();
+  const { update, loading: updateUserLoading } = useUserUpdate();
   const { remove, loading: deleting } = useUserDelete();
 
   const formMethods = useForm<CreateUserPayload>({
     defaultValues: USER_FORM_DEFAULT_VALUES,
     mode: FORM_DEFAULT_VALIDATION_MODE,
   });
-  // read during render so react-hook-form subscribes this page to dirty changes
-  const { isDirty: createFormDirty } = formMethods.formState;
+
+  const { isDirty: formDirty } = formMethods.formState;
 
   // Single source of truth for which panel is open and for which user.
   // Guards keep an unsaved add-user draft (or an in-flight mutation) from
@@ -82,10 +84,11 @@ export default function UsersPage() {
     confirmPendingNavigation,
     cancelPendingNavigation,
   } = useUserPanel({
-    isAddFormDirty: createFormDirty,
+    isFormDirty: formDirty,
     isCreatingUser: createUserLoading,
+    isEditingUser: updateUserLoading,
     isDeletingUser: deleting,
-    onDiscardAddForm: () => formMethods.reset(),
+    onDiscardForm: () => formMethods.reset(USER_FORM_DEFAULT_VALUES),
   });
   const panelOpen = panel.mode !== "closed";
 
@@ -110,6 +113,15 @@ export default function UsersPage() {
     navigate({ mode: "add" });
   }
 
+  function handleOpenEdit(user: User) {
+    formMethods.reset({
+      name: user.name,
+      username: user.username,
+      userStatus: user.userStatus,
+    });
+    navigate({ mode: "edit", user });
+  }
+
   function handleUserSelected(userId: string) {
     navigate({ mode: "view", userId });
   }
@@ -131,8 +143,26 @@ export default function UsersPage() {
     const newUser = result.data;
     toast.success(`${newUser.name} was added to the workspace`);
     refetch();
-    // the draft was submitted, so it no longer needs the dirty-form guard
+
     navigate({ mode: "view", userId: newUser.id }, { force: true });
+  }
+
+  async function handleUpdateUser(userId: string, payload: UpdateUserPayload) {
+    const result = await update(userId, payload);
+
+    if (!result.success) {
+      toast.error("Error updating user", {
+        subline: result.error.error,
+      });
+      return;
+    }
+
+    const updatedUser = result.data;
+    toast.success(`${updatedUser.name} was updated`);
+    refetch();
+    refetchUserDetails();
+
+    navigate({ mode: "view", userId: updatedUser.id }, { force: true });
   }
 
   async function handleDeleteUser(user: User) {
@@ -173,7 +203,7 @@ export default function UsersPage() {
     switch (panel.mode) {
       case "add":
         return (
-          <UserCreateContent
+          <UserFormContent
             isLoading={createUserLoading}
             formMethods={formMethods}
             onSubmit={handleCreateUser}
@@ -200,6 +230,19 @@ export default function UsersPage() {
             user={selectedUser}
             onClose={handleClosePanel}
             onDelete={() => navigate({ mode: "delete", userId: panel.userId })}
+            onEdit={() => {
+              if (selectedUser) handleOpenEdit(selectedUser);
+            }}
+          />
+        );
+      case "edit":
+        return (
+          <UserFormContent
+            mode="edit"
+            isLoading={updateUserLoading}
+            formMethods={formMethods}
+            onSubmit={(payload) => handleUpdateUser(panel.user.id, payload)}
+            onClose={() => navigate({ mode: "view", userId: panel.user.id })}
           />
         );
       case "delete":
@@ -215,8 +258,6 @@ export default function UsersPage() {
             onCancel={() => navigate({ mode: "view", userId: panel.userId })}
           />
         );
-      case "edit":
-        return <>Feature work in progress</>;
       case "closed":
         return null;
     }

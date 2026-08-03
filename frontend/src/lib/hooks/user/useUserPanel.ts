@@ -1,43 +1,63 @@
 "use client";
 
+import { User } from "../../types/User";
 import { usePanelNavigation } from "../usePanelNavigation";
 
 export type UserPanelState =
   | { mode: "closed" }
   | { mode: "add" }
   | { mode: "view"; userId: string }
-  | { mode: "edit"; userId: string }
+  | { mode: "edit"; user: User }
   | { mode: "delete"; userId: string };
 
 type UserPanelOptions = {
-  isAddFormDirty: boolean;
+  isFormDirty: boolean;
   isCreatingUser: boolean;
+  isEditingUser: boolean;
   isDeletingUser: boolean;
-  onDiscardAddForm: () => void;
+  onDiscardForm: () => void;
 };
 
 export function useUserPanel({
-  isAddFormDirty,
+  isFormDirty,
   isCreatingUser,
+  isEditingUser,
   isDeletingUser,
-  onDiscardAddForm,
+  onDiscardForm,
 }: UserPanelOptions) {
   const navigation = usePanelNavigation<UserPanelState>({
     initialPanel: { mode: "closed" },
     guards: {
       add: () => {
         if (isCreatingUser) return "block";
-        return isAddFormDirty ? "confirm" : "allow";
+        return isFormDirty ? "confirm" : "allow";
+      },
+      edit: () => {
+        if (isEditingUser) return "block";
+        return isFormDirty ? "confirm" : "allow"
       },
       delete: () => (isDeletingUser ? "block" : "allow"),
     },
     onLeave: {
-      add: onDiscardAddForm,
+      add: onDiscardForm,
+      edit: onDiscardForm,
     },
   });
 
   const { panel } = navigation;
-  const selectedUserId = "userId" in panel ? panel.userId : undefined;
+  const selectedUserId = getSelectedUserId(panel);
 
   return { ...navigation, selectedUserId };
+}
+
+function getSelectedUserId(panel: UserPanelState): string | undefined {
+  switch (panel.mode) {
+    case "view":
+    case "delete":
+      return panel.userId;
+    case "edit":
+      return panel.user.id;
+    default:
+      return undefined;
+  }
 }

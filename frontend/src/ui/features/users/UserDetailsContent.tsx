@@ -22,6 +22,7 @@ type UserDetailsContentProps = {
   user?: User;
   onDelete: () => void;
   onClose: () => void;
+  onEdit: () => void;
 };
 
 export default function UserDetailsContent({
@@ -29,13 +30,14 @@ export default function UserDetailsContent({
   user,
   onDelete,
   onClose,
+  onEdit,
 }: UserDetailsContentProps) {
 
   if (isLoading || !user) return <UserDetailsSkeleton />;
 
   return (
     <div className={content}>
-      <UserDetailsHeader user={user} onClose={onClose} />
+      <UserDetailsHeader user={user} onClose={onClose} onEdit={onEdit} />
       <div className={divider} />
       <div className={scrollArea}>
         <div className={grid}>
