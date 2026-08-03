@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Guest } from "./guest.entity";
 
@@ -13,9 +15,29 @@ export class Rsvp {
   id: number;
 
   @Column({ type: "int" })
-  paxNumber: number;
+  pax: number;
 
-  @OneToOne(() => Guest, (guest) => guest.rsvp, { onDelete: "CASCADE" })
+  @Column({ type: "text", nullable: true })
+  notes: string;
+
+  @OneToOne(() => Guest, (guest) => guest.rsvp, {
+    onDelete: "CASCADE",
+    nullable: false,
+  })
   @JoinColumn({ name: "guestId" })
   guest: Guest;
+
+  @CreateDateColumn({
+    type: "timestamptz",
+    default: () => "CURRENT_TIMESTAMP",
+    select: false,
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: "timestamptz",
+    default: () => "CURRENT_TIMESTAMP",
+    select: false,
+  })
+  updatedAt: Date;
 }

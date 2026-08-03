@@ -8,6 +8,7 @@ import { WishModule } from "./wish/wish.module";
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { GuestModule } from './guest/guest.module';
+import { RsvpModule } from './rsvp/rsvp.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GuestModule } from './guest/guest.module';
     UserModule,
     AuthModule,
     GuestModule,
+    RsvpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
