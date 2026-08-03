@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -11,7 +12,8 @@ import {
   Paginated,
   PaginateQuery,
 } from "nestjs-paginate";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Not, Repository } from "typeorm";
+import { errorCodeConstants } from "../libs/constants/error-code.constants";
 import { paginationConstants } from "../libs/constants/pagination.constants";
 import { UserStatus } from "../libs/entity/enums/user-status.enum";
 import { User } from "../libs/entity/user.entity";
@@ -39,7 +41,9 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new ConflictException("Username already taken");
+      throw new ConflictException("Username already taken", {
+        description: errorCodeConstants.USERNAME_CONFLICT,
+      });
     }
 
     const passwordHash = await PasswordUtil.hash(createUserDto.password);
@@ -57,8 +61,12 @@ export class UserService {
     return redactedUser;
   }
 
-  async findAll(query: PaginateQuery): Promise<Paginated<User>> {
+  async findAll(
+    userId: number,
+    query: PaginateQuery,
+  ): Promise<Paginated<User>> {
     const result = await paginate(query, this.userRepository, {
+      where: { id: Not(userId) },
       defaultLimit: paginationConstants.ITEM_PER_PAGE,
       maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
       sortableColumns: ["name"],
@@ -93,11 +101,21 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    currentUserid: number,
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     const user = await this.userRepository.findOneBy({ id: id });
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (currentUserid == id) {
+      throw new BadRequestException("Unable to update current user", {
+        description: errorCodeConstants.UPDATE_OWN_ACCOUNT_RESTRICTED,
+      });
     }
 
     if (updateUserDto.username && updateUserDto.username !== user.username) {
@@ -106,7 +124,9 @@ export class UserService {
       });
 
       if (existingUser) {
-        throw new ConflictException("Username already taken");
+        throw new ConflictException("Username already taken", {
+          description: errorCodeConstants.USERNAME_CONFLICT,
+        });
       }
     }
 
@@ -126,11 +146,17 @@ export class UserService {
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(currentUserid: number, id: number) {
     const user = await this.userRepository.findOneBy({ id: id });
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    if (user.id == currentUserid) {
+      throw new BadRequestException("Unable to delete current user", {
+        description: errorCodeConstants.DELETION_OWN_ACCOUNT_RESTRICTED,
+      });
     }
 
     const result = await this.userRepository.delete({ id: id });

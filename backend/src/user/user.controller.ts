@@ -1,20 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from "@nestjs/common";
-import { UserService } from "./user.service";
+import type { PaginateQuery, Paginated } from "nestjs-paginate";
+import { Paginate } from "nestjs-paginate";
+import { LoginUserId } from "../decorators/user-details-decorator";
+import { JwtGuard } from "../guards/jwt.guard";
+import { User } from "../libs/entity/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { JwtGuard } from "../guards/jwt.guard";
-import { Paginate } from "nestjs-paginate";
-import type { PaginateQuery, Paginated } from "nestjs-paginate";
-import { User } from "../libs/entity/user.entity";
+import { UserService } from "./user.service";
 
 @UseGuards(JwtGuard)
 @Controller("user")
@@ -28,9 +29,10 @@ export class UserController {
 
   @Get()
   findAll(
+    @LoginUserId() userId: string,
     @Paginate() query: PaginateQuery,
   ): Promise<Paginated<User>> {
-    return this.userService.findAll(query);
+    return this.userService.findAll(+userId, query);
   }
 
   @Get(":id")
@@ -39,12 +41,16 @@ export class UserController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @LoginUserId() userId: string,
+    @Param("id") id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(+userId, +id, updateUserDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.userService.remove(+id);
+  remove(@LoginUserId() userId: string, @Param("id") id: string) {
+    return this.userService.remove(+userId, +id);
   }
 }
