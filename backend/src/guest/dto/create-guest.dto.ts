@@ -26,6 +26,10 @@ export class CreateGuestDto {
   @IsEmail()
   email?: string;
 
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
   @IsEnum(InvitationType)
   invitationType: InvitationType;
 }

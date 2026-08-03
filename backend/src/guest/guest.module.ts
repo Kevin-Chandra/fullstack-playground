@@ -8,5 +8,6 @@ import { Guest } from "../libs/entity/guest.entity";
   imports: [TypeOrmModule.forFeature([Guest])],
   controllers: [GuestController],
   providers: [GuestService],
+  exports: [GuestService],
 })
 export class GuestModule {}

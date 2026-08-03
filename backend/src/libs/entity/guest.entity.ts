@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { InvitationType } from "./enums/invitation-type.enum";
+import { Rsvp } from "./rsvp.entity";
 
 @Entity({ name: "guests" })
 export class Guest {
@@ -13,19 +14,16 @@ export class Guest {
   guestUuid: string;
 
   @Column({ type: "int" })
-  estimatedPax: number;
+  pax: number;
 
-  @Column({ type: "int", default: 0 })
-  confirmedPax: number;
-
-  @Column()
-  attending: boolean;
-
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   phoneNumber: string;
 
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   email: string;
+
+  @Column({ type: "text", nullable: true })
+  notes: string | null;
 
   @Column({
     type: "enum",
@@ -33,4 +31,7 @@ export class Guest {
     default: InvitationType.ONLINE,
   })
   invitationType: InvitationType;
+
+  @OneToOne(() => Rsvp, (rsvp) => rsvp.guest, { cascade: true })
+  rsvp?: Rsvp | null;
 }

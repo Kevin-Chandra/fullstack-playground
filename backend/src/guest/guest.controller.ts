@@ -9,11 +9,13 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { GuestService } from "./guest.service";
+import type { PaginateQuery } from "nestjs-paginate";
+import { Paginate } from "nestjs-paginate";
+import { Public } from "../decorators/public.decorator";
+import { JwtGuard } from "../guards/jwt.guard";
 import { CreateGuestDto } from "./dto/create-guest.dto";
 import { UpdateGuestDto } from "./dto/update-guest.dto";
-import { JwtGuard } from "../guards/jwt.guard";
-import { Public } from "../decorators/public.decorator";
+import { GuestService } from "./guest.service";
 
 @UseGuards(JwtGuard)
 @Controller("guest")
@@ -37,8 +39,8 @@ export class GuestController {
   }
 
   @Get()
-  getGuests() {
-    return this.guestService.getGuests();
+  getGuests(@Paginate() query: PaginateQuery) {
+    return this.guestService.getGuests(query);
   }
 
   @Patch(":id")

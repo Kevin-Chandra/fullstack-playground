@@ -1,10 +1,18 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { CreateGuestDto } from "./dto/create-guest.dto";
-import { Guest } from "../libs/entity/guest.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, DataSource } from "typeorm";
-import { UpdateGuestDto } from "./dto/update-guest.dto";
+import {
+  FilterOperator,
+  paginate,
+  Paginated,
+  PaginateQuery,
+} from "nestjs-paginate";
 import { generate } from "short-uuid";
+import { DataSource, Repository } from "typeorm";
+import { paginationConstants } from "../libs/constants/pagination.constants";
+import { Guest } from "../libs/entity/guest.entity";
+import { PaginationUtil } from "../libs/utils/pagination.util";
+import { CreateGuestDto } from "./dto/create-guest.dto";
+import { UpdateGuestDto } from "./dto/update-guest.dto";
 
 @Injectable()
 export class GuestService {
@@ -19,21 +27,13 @@ export class GuestService {
     this.logger = new Logger("Guest Service");
   }
 
-  async create(createGuestDto: CreateGuestDto) {
-    const uuid = generate();
+  async create(createGuestDto: CreateGuestDto): Promise<Guest> {
+    const guest = this.guestRepository.create({
+      ...createGuestDto,
+      guestUuid: generate(),
+    });
 
-    const guest = {
-      guestUuid: uuid,
-      attending: false,
-      name: createGuestDto.name,
-      estimatedPax: createGuestDto.pax,
-      phoneNumber: createGuestDto.phoneNumber,
-      email: createGuestDto.email,
-      invitationType: createGuestDto.invitationType,
-    };
-
-    const guestEntity = this.guestRepository.create(guest);
-    return await this.guestRepository.save(guestEntity);
+    return await this.guestRepository.save(guest);
   }
 
   async getGuestById(id: number): Promise<Guest> {
@@ -60,21 +60,30 @@ export class GuestService {
     return guest;
   }
 
-  getGuests() {
-    return this.guestRepository.find();
+  async getGuests(query: PaginateQuery): Promise<Paginated<Guest>> {
+    const result = await paginate(query, this.guestRepository, {
+      select: ["id", "name", "pax"],
+      defaultLimit: paginationConstants.ITEM_PER_PAGE,
+      maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
+      sortableColumns: ["name"],
+      searchableColumns: ["name"],
+      filterableColumns: {
+        userStatus: [FilterOperator.EQ],
+      },
+    });
+
+    PaginationUtil.assertPageInRange(query, result);
+    return result;
   }
 
   async update(id: number, updateGuestDto: UpdateGuestDto): Promise<Guest> {
     const guest = await this.getGuestById(id);
-
-    const { pax, ...rest } = updateGuestDto;
-
-    Object.assign(guest, rest);
-    if (pax !== undefined) {
-      guest.estimatedPax = pax;
+    if (!guest) {
+      throw new NotFoundException("Guest not found");
     }
 
-    return await this.guestRepository.save(guest);
+    await this.guestRepository.update({ id: id }, updateGuestDto);
+    return this.getGuestById(id);
   }
 
   remove(id: number) {
