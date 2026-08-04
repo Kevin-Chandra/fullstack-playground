@@ -42,6 +42,7 @@ export class GuestService {
   async getGuestById(id: number): Promise<Guest> {
     const guest = await this.guestRepository.findOne({
       where: { id: id },
+      relations: { rsvp: true },
     });
 
     if (!guest) {
@@ -54,6 +55,7 @@ export class GuestService {
   async getGuestByUuid(uuid: string): Promise<Guest> {
     const guest = await this.guestRepository.findOne({
       where: { guestUuid: uuid },
+      relations: { rsvp: true },
     });
 
     if (!guest) {
@@ -73,8 +75,8 @@ export class GuestService {
       searchableColumns: ["name"],
       filterableColumns: {
         // GuestStatus is derived, so it is filtered through the rsvp relation:
-        // confirmed -> $eq:true, declined -> $eq:false, pending -> $null
-        "rsvp.attending": [FilterOperator.EQ, FilterOperator.NULL],
+        // confirmed -> $eq:true, declined -> $eq:false
+        "rsvp.attending": [FilterOperator.EQ],
       },
     });
 
