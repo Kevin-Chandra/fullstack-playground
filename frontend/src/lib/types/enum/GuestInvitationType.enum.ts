@@ -1,4 +1,4 @@
 export enum GuestInvitationType {
-    ONLINE = "online",
-    OFFLINE = "offline",
+  ONLINE = "online",
+  OFFLINE = "offline",
 }

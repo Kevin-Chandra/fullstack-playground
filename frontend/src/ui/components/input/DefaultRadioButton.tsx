@@ -35,13 +35,13 @@ const DefaultRadioButton = forwardRef<HTMLInputElement, DefaultRadioButtonProps>
     // radio keeps whatever native props the caller passed via `rest`
     const groupProps = group
       ? {
-          name: group.name,
-          checked: value != null && group.value === String(value),
-          onChange: (event: ChangeEvent<HTMLInputElement>) => {
-            if (value != null) group.select(String(value));
-            rest.onChange?.(event);
-          },
-        }
+        name: group.name,
+        checked: value != null && group.value === String(value),
+        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+          if (value != null) group.select(String(value));
+          rest.onChange?.(event);
+        },
+      }
       : null;
 
     const isDisabled = disabled ?? group?.disabled;

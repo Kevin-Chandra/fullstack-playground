@@ -1,5 +1,5 @@
 export enum GuestStatus {
-    PENDING = "pending",
-    CONFIRMED = "confirmed",
-    DECLINED = "declined",
+  PENDING = "pending",
+  CONFIRMED = "confirmed",
+  DECLINED = "declined",
 }
