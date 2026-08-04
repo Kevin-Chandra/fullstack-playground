@@ -21,6 +21,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@tailwindcss/postcss": "^4",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.7.2",
