@@ -9,9 +9,12 @@ import {
 import { generate } from "short-uuid";
 import { DataSource, Repository } from "typeorm";
 import { paginationConstants } from "../libs/constants/pagination.constants";
+import { GuestStatus } from "../libs/entity/enums/guest-status.enum";
 import { Guest } from "../libs/entity/guest.entity";
+import { Rsvp } from "../libs/entity/rsvp.entity";
 import { PaginationUtil } from "../libs/utils/pagination.util";
 import { CreateGuestDto } from "./dto/create-guest.dto";
+import { GuestWithStatus } from "./dto/guest-with-status.dto";
 import { UpdateGuestDto } from "./dto/update-guest.dto";
 
 @Injectable()
@@ -60,20 +63,27 @@ export class GuestService {
     return guest;
   }
 
-  async getGuests(query: PaginateQuery): Promise<Paginated<Guest>> {
+  async getGuests(query: PaginateQuery): Promise<Paginated<GuestWithStatus>> {
     const result = await paginate(query, this.guestRepository, {
-      select: ["id", "name", "pax"],
+      select: ["id", "name", "pax", "rsvp.id", "rsvp.attending"],
+      relations: { rsvp: true },
       defaultLimit: paginationConstants.ITEM_PER_PAGE,
       maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
       sortableColumns: ["name"],
       searchableColumns: ["name"],
       filterableColumns: {
-        userStatus: [FilterOperator.EQ],
+        // GuestStatus is derived, so it is filtered through the rsvp relation:
+        // confirmed -> $eq:true, declined -> $eq:false, pending -> $null
+        "rsvp.attending": [FilterOperator.EQ, FilterOperator.NULL],
       },
     });
 
     PaginationUtil.assertPageInRange(query, result);
-    return result;
+
+    return {
+      ...result,
+      data: result.data.map((guest) => this.withGuestStatus(guest)),
+    };
   }
 
   async update(id: number, updateGuestDto: UpdateGuestDto): Promise<Guest> {
@@ -88,5 +98,18 @@ export class GuestService {
 
   remove(id: number) {
     return this.guestRepository.delete(id);
+  }
+
+  private toGuestStatus(rsvp?: Rsvp | null): GuestStatus {
+    if (!rsvp) {
+      return GuestStatus.PENDING;
+    }
+
+    return rsvp.attending ? GuestStatus.CONFIRMED : GuestStatus.DECLINED;
+  }
+
+  private withGuestStatus(guest: Guest): GuestWithStatus {
+    const { rsvp, ...rest } = guest;
+    return { ...rest, guestStatus: this.toGuestStatus(rsvp) };
   }
 }
