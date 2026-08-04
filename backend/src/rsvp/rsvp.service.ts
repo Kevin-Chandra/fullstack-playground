@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -39,8 +40,13 @@ export class RsvpService {
       throw new ConflictException("Guest has already responded");
     }
 
+    if (createRsvpDto.attending && createRsvpDto.pax < 1) {
+      throw new BadRequestException("Min attending pax must be 1");
+    }
+
     const rsvp = this.rsvpRepository.create({
-      pax: createRsvpDto.pax,
+      attending: createRsvpDto.attending,
+      pax: createRsvpDto.attending ? createRsvpDto.pax : 0,
       notes: createRsvpDto.notes,
       guest,
     });

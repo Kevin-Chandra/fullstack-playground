@@ -17,6 +17,9 @@ export class Rsvp {
   @Column({ type: "int" })
   pax: number;
 
+  @Column({ type: "boolean" })
+  attending: boolean;
+
   @Column({ type: "text", nullable: true })
   notes: string;
 

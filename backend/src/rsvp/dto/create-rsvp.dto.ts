@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 
 export class CreateRsvpDto {
   @IsString()
@@ -6,8 +13,11 @@ export class CreateRsvpDto {
   guestUuid: string;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   pax: number;
+
+  @IsBoolean()
+  attending: boolean;
 
   @IsOptional()
   @IsString()
