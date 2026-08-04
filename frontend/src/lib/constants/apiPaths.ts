@@ -9,3 +9,8 @@ export const Users = {
   BASE: "/user",
   byId: (id: string): string => `${Users.BASE}/${id}`,
 } as const;
+
+export const Guest = {
+  BASE: "/guest",
+  byId: (id: string): string => `${Guest.BASE}/${id}`,
+} as const 

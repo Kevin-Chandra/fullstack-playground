@@ -1,3 +1,4 @@
+import { BasePaginationParam } from "./BasePaginationParam";
 import { UserStatus } from "./UserStatus";
 
 export interface User {
@@ -16,11 +17,9 @@ export interface CreateUserPayload {
   userStatus: string;
 }
 
-export type GetUserParams = Partial<{
-  limit: number;
-  page: number;
-  search: string;
-  "filter.userStatus": string;
-}>;
+export type GetUserParams = Partial<
+  BasePaginationParam & {
+    "filter.userStatus": string;
+  }>;
 
 export type UpdateUserPayload = Partial<CreateUserPayload>;
