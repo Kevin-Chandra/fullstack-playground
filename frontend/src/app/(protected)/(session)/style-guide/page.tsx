@@ -18,6 +18,7 @@ import { ReactNode, useState } from "react";
 import {
   MdAdd,
   MdAnchor,
+  MdArchive,
   MdCopyAll,
   MdCurrencyExchange,
   MdDelete,
@@ -901,6 +902,12 @@ function Badges() {
         <DefaultBadge variant="warning" label="Pending" />
         <DefaultBadge variant="neutral" label="Draft" />
         <DefaultBadge variant="danger" label="Archived" />
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <DefaultBadge icon={MdGroup} variant="active" label="5 pax" />
+        <DefaultBadge icon={MdGroup} variant="warning" label="Pending" />
+        <DefaultBadge icon={MdArchive} variant="neutral" label="Draft" iconPosition="end" />
+        <DefaultBadge icon={MdDelete} variant="danger" label="Archived" iconPosition="end" />
       </div>
     </div>
   );
