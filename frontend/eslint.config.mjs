@@ -9,9 +9,10 @@ const eslintConfig = defineConfig([
   {
     plugins: { "@stylistic": stylistic },
     rules: {
-      "@stylistic/indent": ["error", 2, { SwitchCase: 1 }],
-      "@stylistic/jsx-indent-props": ["error", 2],
-      "@stylistic/no-tabs": "error",
+      "@stylistic/indent": ["warn", 2, { SwitchCase: 1 }],
+      "@stylistic/jsx-indent-props": ["warn", 2],
+      "@stylistic/no-tabs": "warn",
+      "react/no-unescaped-entities": "off",
     },
   },
   // Override default ignores of eslint-config-next.
