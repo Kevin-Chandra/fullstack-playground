@@ -26,10 +26,10 @@ export const updateGuest = async (
   id: string,
   payload: UpdateGuestPayload,
 ): Promise<Guest> => {
-  const response = await axiosInstance.patch<Guest>(GuestPath.byId(id), payload);
+  const response = await axiosInstance.patch<Guest>(GuestPath.byBaseId(id), payload);
   return response.data;
 };
 
 export const deleteGuest = async (id: string): Promise<void> => {
-  await axiosInstance.delete(GuestPath.byId(id));
+  await axiosInstance.delete(GuestPath.byBaseId(id));
 };

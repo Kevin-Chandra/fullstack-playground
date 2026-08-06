@@ -4,12 +4,14 @@ import { FORM_DEFAULT_VALIDATION_MODE } from "@/src/lib/constants/form";
 import { BASE_PAGINATION_PAGE, MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 import { SEARCH_DEBOUNCE_MS } from "@/src/lib/constants/search";
 import { GUEST_FORM_DEFAULT_VALUES } from "@/src/lib/data/emptyObject";
+import { useGuestDelete } from "@/src/lib/hooks/guest/useGuestDelete";
 import { useGuestDetails } from "@/src/lib/hooks/guest/useGuestDetails";
 import { useGuestList } from "@/src/lib/hooks/guest/useGuestList";
 import { useGuestPanel } from "@/src/lib/hooks/guest/useGuestPanel";
 import { useDebouncedValue } from "@/src/lib/hooks/useDebouncedValue";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
-import { CreateGuestPayload } from "@/src/lib/types/Guest";
+import { CreateGuestPayload, Guest } from "@/src/lib/types/Guest";
+import DeletePanelBase from "@/src/ui/components/base/DeletePanelBase";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import ErrorState from "@/src/ui/components/error/ErrorState";
@@ -17,13 +19,14 @@ import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import SidePanel from "@/src/ui/components/layout/SidePanel";
 import ListCard from "@/src/ui/components/list/ListCard";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import { toast } from "@/src/ui/components/toast/toast";
 import GuestDetailsContainer from "@/src/ui/features/guests/GuestDetailsContainer";
 import GuestListEmpty from "@/src/ui/features/guests/GuestListEmpty";
 import GuestListRow from "@/src/ui/features/guests/GuestListRow";
 import GuestListSkeleton from "@/src/ui/features/guests/GuestListSkeleton";
 import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import { MdAdd, MdOutlineWarningAmber, MdSearch } from "react-icons/md";
+import { MdAdd, MdOutlineDelete, MdOutlineWarningAmber, MdSearch } from "react-icons/md";
 
 const workspace =
   "flex min-h-0 flex-1 flex-col gap-y-xl lg:grid lg:grid-rows-1 lg:user-workspace";
@@ -54,6 +57,18 @@ export default function GuestsPage() {
 
   const { isDirty: formDirty } = formMethods.formState;
 
+
+  const {
+    loading: isDeleteGuestLoading,
+    remove: deleteGuest
+  } = useGuestDelete()
+
+  const {
+    loading: loadingGuestList,
+    result: fetchGuestResult,
+    fetch: fetchGuestList
+  } = useGuestList(page, search);
+
   //#region Panels
 
   const {
@@ -67,7 +82,7 @@ export default function GuestsPage() {
     isFormDirty: formDirty,
     isCreatingGuest: false, //createGuestLoading,
     isEditingGuest: false,// editGuestLoading,
-    isDeletingGuest: false,//isDeletingGuest,
+    isDeletingGuest: isDeleteGuestLoading,
     onDiscardForm: () => formMethods.reset(GUEST_FORM_DEFAULT_VALUES),
   });
   const panelOpen = panel.mode !== "closed";
@@ -75,18 +90,29 @@ export default function GuestsPage() {
   //#endregion
 
   const {
-    loading: loadingGuestList,
-    result: fetchGuestResult,
-    fetch: fetchGuestList
-  } = useGuestList(page, search);
-
-  const {
     result: guestFetchResult,
     loading: isLoadingGuestDetails,
     refetch: fetchGuestDetails
   } = useGuestDetails(selectedGuestId)
 
+  const currentGuest = guestFetchResult?.success ? guestFetchResult.data : null
+
   //#region Handlers
+
+  async function handleDeleteGuest(guest: Guest) {
+    const result = await deleteGuest(guest.id);
+
+    if (!result.success) {
+      toast.error("Error removing user", {
+        subline: result.error.error,
+      });
+      return;
+    }
+
+    toast.success(`${guest.name} was removed from the workspace`);
+    fetchGuestList();
+    navigate({ mode: "closed" }, { force: true });
+  }
 
   function handleErrorAction(
     action: ErrorAction | undefined,
@@ -190,11 +216,26 @@ export default function GuestsPage() {
             isLoading={isLoadingGuestDetails}
             guestFetchResult={guestFetchResult}
             onClose={handleClosePanel}
-            onDelete={() => {}}
+            onDelete={() => navigate({ mode: "delete", guestId: panel.guestId })}
             onEdit={() => {}}
             onErrorAction={() => {}}
           />
         )
+      case "delete":
+        if (!currentGuest) {
+          return;
+        }
+
+        return <DeletePanelBase
+          icon={MdOutlineDelete}
+          title={`Remove ${currentGuest.name}?`}
+          description="This removes them and their party from your guest list and RSVP counts. You can add them again anytime."
+          deleteButtonLabel="Remove Guest"
+          loading={isDeleteGuestLoading}
+          onDelete={() => handleDeleteGuest(currentGuest)}
+          onCancel={() => navigate({ mode: "view", guestId: panel.guestId })}
+        />
+
       case "closed":
         return null;
     }
