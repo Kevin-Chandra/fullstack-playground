@@ -3,6 +3,7 @@ import { Guest } from "@/src/lib/types/Guest";
 import { Result } from "@/src/lib/types/result";
 import ErrorState from "../../components/error/ErrorState";
 import GuestDetailsContent from "./GuestDetailsContent";
+import GuestDetailsSkeleton from "./GuestDetailsSkeleton";
 
 const centered = "flex flex-1 items-center justify-center";
 
@@ -25,8 +26,7 @@ export default function GuestDetailsContainer({
 }: GuestDetailsContainerProps) {
 
   if (isLoading) {
-    //return loading skeleton
-    return;
+    return <GuestDetailsSkeleton />;
   }
 
   if (!guestFetchResult) {
