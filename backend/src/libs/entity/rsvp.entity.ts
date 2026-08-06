@@ -33,7 +33,6 @@ export class Rsvp {
   @CreateDateColumn({
     type: "timestamptz",
     default: () => "CURRENT_TIMESTAMP",
-    select: false,
   })
   createdAt: Date;
 

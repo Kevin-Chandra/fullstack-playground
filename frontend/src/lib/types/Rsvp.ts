@@ -3,4 +3,5 @@ export interface Rsvp {
   notes: string;
   pax: number;
   attending: boolean;
+  createdAt: string;
 }
