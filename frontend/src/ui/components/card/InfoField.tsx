@@ -1,20 +1,37 @@
 import { ReactNode } from "react";
 
-const field =
-  "flex flex-col gap-md rounded-lg border border-edge bg-canvas px-xl py-lg";
-const fieldLabel = "text-label uppercase text-muted";
+const container = "flex min-w-0 flex-1 gap-sm rounded-lg border border-edge bg-canvas p-xl"
+const field = "flex min-w-0 flex-col flex-1 gap-sm justify-center";
+const fieldLabel = "font-mono text-label uppercase text-muted text-wrap";
 const fieldValue = "truncate text-body text-ink";
+const fieldValueMuted = "truncate text-body text-muted italic";
+
+type ValueVariant = "default" | "muted"
+
+const fieldValueVariants: Record<ValueVariant, string> = {
+  default: fieldValue,
+  muted: fieldValueMuted,
+};
 
 type InfoFieldProps = {
   label: string;
-  value: ReactNode;
+  variant?: ValueVariant;
+  value: string;
+  children?: ReactNode;
 };
 
-export default function InfoField({ label, value }: InfoFieldProps) {
+export default function InfoField({ label,
+  value,
+  variant = "default",
+  children = null
+}: InfoFieldProps) {
   return (
-    <div className={field}>
-      <span className={fieldLabel}>{label}</span>
-      <span className={fieldValue}>{value}</span>
+    <div className={container}>
+      <div className={field}>
+        <span className={fieldLabel}>{label}</span>
+        <span className={fieldValueVariants[variant]}>{value}</span>
+      </div>
+      {children}
     </div>
   );
 }

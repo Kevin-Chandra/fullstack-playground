@@ -16,16 +16,16 @@ export interface Guest {
   email: string;
   phoneNumber: string;
   notes: string;
-  guestUuid: number;
+  guestUuid: string;
   pax: number;
   invitationType: GuestInvitationType;
   rsvp?: Rsvp
 }
 
 export type GetGuestParams = Partial<
-    BasePaginationParam & {
-      "filter.rsvp.attending": string
-    }>;
+  BasePaginationParam & {
+    "filter.rsvp.attending": string
+  }>;
 
 export interface CreateGuestPayload {
   name: string;

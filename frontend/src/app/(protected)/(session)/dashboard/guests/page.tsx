@@ -4,6 +4,7 @@ import { FORM_DEFAULT_VALIDATION_MODE } from "@/src/lib/constants/form";
 import { BASE_PAGINATION_PAGE, MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 import { SEARCH_DEBOUNCE_MS } from "@/src/lib/constants/search";
 import { GUEST_FORM_DEFAULT_VALUES } from "@/src/lib/data/emptyObject";
+import { useGuestDetails } from "@/src/lib/hooks/guest/useGuestDetails";
 import { useGuestList } from "@/src/lib/hooks/guest/useGuestList";
 import { useGuestPanel } from "@/src/lib/hooks/guest/useGuestPanel";
 import { useDebouncedValue } from "@/src/lib/hooks/useDebouncedValue";
@@ -16,6 +17,7 @@ import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import SidePanel from "@/src/ui/components/layout/SidePanel";
 import ListCard from "@/src/ui/components/list/ListCard";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import GuestDetailsContainer from "@/src/ui/features/guests/GuestDetailsContainer";
 import GuestListEmpty from "@/src/ui/features/guests/GuestListEmpty";
 import GuestListRow from "@/src/ui/features/guests/GuestListRow";
 import GuestListSkeleton from "@/src/ui/features/guests/GuestListSkeleton";
@@ -45,12 +47,6 @@ export default function GuestsPage() {
   const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS);
   const search = debouncedSearch.trim() || undefined;
 
-  const {
-    loading: loadingGuestList,
-    result: fetchGuestResult,
-    fetch: fetchGuestList
-  } = useGuestList(page, search);
-
   const formMethods = useForm<CreateGuestPayload>({
     defaultValues: GUEST_FORM_DEFAULT_VALUES,
     mode: FORM_DEFAULT_VALIDATION_MODE,
@@ -78,6 +74,18 @@ export default function GuestsPage() {
 
   //#endregion
 
+  const {
+    loading: loadingGuestList,
+    result: fetchGuestResult,
+    fetch: fetchGuestList
+  } = useGuestList(page, search);
+
+  const {
+    result: guestFetchResult,
+    loading: isLoadingGuestDetails,
+    refetch: fetchGuestDetails
+  } = useGuestDetails(selectedGuestId)
+
   //#region Handlers
 
   function handleErrorAction(
@@ -104,6 +112,10 @@ export default function GuestsPage() {
 
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
     setSearchInput(event.target.value);
+  }
+
+  function handleClosePanel() {
+    navigate({ mode: "closed" });
   }
 
   //#endregion
@@ -145,7 +157,7 @@ export default function GuestsPage() {
           <GuestListRow
             key={guest.id}
             guest={guest}
-            // selected={user.id === selectedUserId}
+            selected={guest.id === selectedGuestId}
             onSelect={() => handleGuestSelected(guest.id)}
           />
         ))}
@@ -173,7 +185,16 @@ export default function GuestsPage() {
   function renderSidePanel() {
     switch (panel.mode) {
       case "view":
-        return null
+        return (
+          <GuestDetailsContainer
+            isLoading={isLoadingGuestDetails}
+            guestFetchResult={guestFetchResult}
+            onClose={handleClosePanel}
+            onDelete={() => {}}
+            onEdit={() => {}}
+            onErrorAction={() => {}}
+          />
+        )
       case "closed":
         return null;
     }
@@ -199,7 +220,7 @@ export default function GuestsPage() {
           <DefaultButton
             icon={<MdAdd />}
             className="flex-none"
-            label="Add user"
+            label="Add guest"
 
           />
         </div>
@@ -210,7 +231,6 @@ export default function GuestsPage() {
             content={renderListContent()}
             footer={renderListFooter()}
           />
-          {/* {renderLeftPanel()} */}
         </div>
         {panelOpen && (
           <div className={detailColumn}>
