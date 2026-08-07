@@ -55,7 +55,7 @@ export default function GuestDetailsContent({
           <InfoField label="Notes" value={guest.notes} placeholderText="No notes yet" />
           <InfoField label="Guest UUID" value={guest.guestUuid}>
             <DefaultButton
-              icon={<MdCopyAll />}
+              icon={MdCopyAll}
               label="Copy"
               variant="secondary"
               onClick={() => void handleOnCopyUuid()}

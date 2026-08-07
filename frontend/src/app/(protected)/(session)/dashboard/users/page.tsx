@@ -308,7 +308,7 @@ export default function UsersPage() {
             onChange={handleSearchChange}
           />
           <DefaultButton
-            icon={<MdAdd />}
+            icon={MdAdd}
             className="flex-none"
             label="Add user"
             onClick={handleOpenCreate}

@@ -76,7 +76,7 @@ export default function DefaultDialog({
           <DefaultButton
             variant="ghost"
             size="sm"
-            icon={<MdClose />}
+            icon={MdClose}
             aria-label="Close dialog"
             onClick={onClose}
             disabled={loading}

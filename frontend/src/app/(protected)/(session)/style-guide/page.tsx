@@ -264,28 +264,28 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
-          icon={<MdAdd />}
+          icon={MdAdd}
           size="xs"
           label="Icon primary small"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdAdd />}
+          icon={MdAdd}
           size="sm"
           label="Icon primary small"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdAdd />}
+          icon={MdAdd}
           size="md"
           label="Icon primary medium"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdPerson />}
+          icon={MdPerson}
           size="lg"
           label="Icon primary large"
           textAlignment="start"
@@ -294,28 +294,28 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="secondary"
-          icon={<MdEdit />}
+          icon={MdEdit}
           size="xs"
           label="Icon primary small"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdEdit />}
+          icon={MdEdit}
           size="sm"
           label="Icon primary small"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdAdd />}
+          icon={MdAdd}
           size="md"
           label="Icon primary medium"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdPerson />}
+          icon={MdPerson}
           size="lg"
           label="Icon primary large"
           textAlignment="start"
@@ -324,7 +324,7 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="ghost"
-          icon={<MdCopyAll />}
+          icon={MdCopyAll}
           iconPosition="right"
           size="sm"
           label="Icon primary small"
@@ -332,7 +332,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdCopyAll />}
+          icon={MdCopyAll}
           iconPosition="right"
           size="xs"
           label="Icon primary small"
@@ -340,7 +340,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdAdd />}
+          icon={MdAdd}
           iconPosition="right"
           size="md"
           label="Icon primary medium"
@@ -348,7 +348,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdPerson />}
+          icon={MdPerson}
           iconPosition="right"
           size="lg"
           label="Icon primary large"
@@ -358,7 +358,7 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="text"
-          icon={<MdEdit />}
+          icon={MdEdit}
           iconPosition="left"
           size="xs"
           label="Edit small"
@@ -366,7 +366,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="text"
-          icon={<MdEdit />}
+          icon={MdEdit}
           iconPosition="left"
           size="sm"
           label="Edit small"
@@ -374,7 +374,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="text"
-          icon={<MdSave />}
+          icon={MdSave}
           iconPosition="right"
           size="md"
           label="Icon primary medium"
@@ -382,7 +382,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="text"
-          icon={<MdPerson />}
+          icon={MdPerson}
           iconPosition="right"
           size="lg"
           label="Icon primary large"
@@ -392,7 +392,7 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="danger"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="xs"
           label="Delete small"
@@ -400,7 +400,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="danger"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="sm"
           label="Delete small"
@@ -408,7 +408,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="danger"
-          icon={<MdStar />}
+          icon={MdStar}
           iconPosition="right"
           size="md"
           label="Icon primary medium"
@@ -416,7 +416,7 @@ function Buttons() {
         />
         <DefaultButton
           variant="danger"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           label="Icon primary large"
@@ -429,28 +429,28 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="xs"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="sm"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdStar />}
+          icon={MdStar}
           iconPosition="right"
           size="md"
           textAlignment="start"
         />
         <DefaultButton
           variant="primary"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           textAlignment="start"
@@ -459,28 +459,28 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="secondary"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="xs"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="sm"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdStar />}
+          icon={MdStar}
           iconPosition="right"
           size="md"
           textAlignment="start"
         />
         <DefaultButton
           variant="secondary"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           textAlignment="start"
@@ -489,28 +489,28 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="danger"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="xs"
           textAlignment="start"
         />
         <DefaultButton
           variant="danger"
-          icon={<MdDelete />}
+          icon={MdDelete}
           iconPosition="left"
           size="sm"
           textAlignment="start"
         />
         <DefaultButton
           variant="danger"
-          icon={<MdStar />}
+          icon={MdStar}
           iconPosition="right"
           size="md"
           textAlignment="start"
         />
         <DefaultButton
           variant="danger"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           textAlignment="start"
@@ -519,25 +519,25 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="ghost"
-          icon={<MdDelete />}
+          icon={MdDelete}
           size="xs"
           textAlignment="start"
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdDelete />}
+          icon={MdDelete}
           size="sm"
           textAlignment="start"
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdStar />}
+          icon={MdStar}
           size="md"
           textAlignment="start"
         />
         <DefaultButton
           variant="ghost"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           textAlignment="start"
@@ -546,25 +546,25 @@ function Buttons() {
       <div className={horizontalClass}>
         <DefaultButton
           variant="text"
-          icon={<MdDelete />}
+          icon={MdDelete}
           size="xs"
           textAlignment="start"
         />
         <DefaultButton
           variant="text"
-          icon={<MdDelete />}
+          icon={MdDelete}
           size="sm"
           textAlignment="start"
         />
         <DefaultButton
           variant="text"
-          icon={<MdStar />}
+          icon={MdStar}
           size="md"
           textAlignment="start"
         />
         <DefaultButton
           variant="text"
-          icon={<MdAnchor />}
+          icon={MdAnchor}
           iconPosition="right"
           size="lg"
           textAlignment="start"

@@ -343,7 +343,7 @@ export default function GuestsPage() {
             onChange={handleSearchChange}
           />
           <DefaultButton
-            icon={<MdAdd />}
+            icon={MdAdd}
             className="flex-none"
             label="Add guest"
             onClick={() => { navigate({ mode: "add" }) }}

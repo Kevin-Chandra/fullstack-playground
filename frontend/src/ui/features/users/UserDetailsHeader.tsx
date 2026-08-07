@@ -50,7 +50,7 @@ export default function UserDetailsHeader({
         <DefaultButton
           variant="ghost"
           size="md"
-          icon={<MdClose />}
+          icon={MdClose}
           aria-label="Close details"
           onClick={onClose}
         />

@@ -34,7 +34,7 @@ export default function EmptyListBase({
         label={label}
         variant="primary"
         size="md"
-        icon={ActionIcon ? <ActionIcon /> : undefined}
+        icon={ActionIcon}
         onClick={onAction}
       />
     );

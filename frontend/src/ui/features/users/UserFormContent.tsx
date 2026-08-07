@@ -56,7 +56,7 @@ export default function UserFormContent({
           <DefaultButton
             variant="ghost"
             size="md"
-            icon={<MdClose />}
+            icon={MdClose}
             aria-label="Close"
             disabled={isLoading}
             onClick={onClose}

@@ -1,8 +1,8 @@
 "use client";
 
-import { MdOutlineLogout } from "react-icons/md";
 import { useLogout } from "@/src/lib/hooks/useLogout";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import { MdOutlineLogout } from "react-icons/md";
 
 export default function LogoutIconButton() {
   const { logout, loading } = useLogout();
@@ -13,7 +13,7 @@ export default function LogoutIconButton() {
       size="sm"
       loading={loading}
       onClick={logout}
-      icon={<MdOutlineLogout aria-hidden />}
+      icon={MdOutlineLogout}
       aria-label="Log out"
     />
   );

@@ -11,7 +11,7 @@ export default function ToastCloseButton({ closeToast }: CloseButtonProps) {
       onClick={closeToast}
       size="xs"
       variant="ghost"
-      icon={<MdClose />}
+      icon={MdClose}
       className="ms-auto"
     />
   );

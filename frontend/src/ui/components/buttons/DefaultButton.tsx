@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { IconType } from "react-icons";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "text";
 type Size = "xs" | "sm" | "md" | "lg";
@@ -12,7 +13,7 @@ export type DefaultButtonProps = {
   loading?: boolean;
   label?: string;
   textAlignment?: TextAlignment;
-  icon?: ReactNode;
+  icon?: IconType;
   iconPosition?: IconPosition;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -87,15 +88,14 @@ export default function DefaultButton({
   loading = false,
   label,
   textAlignment = "center",
-  icon,
+  icon: Icon,
   iconPosition = "left",
   disabled,
   type = "button",
   className = "",
   ...rest
 }: DefaultButtonProps) {
-  const iconOnly = Boolean(icon) && !label;
-  const hasLabel = Boolean(label);
+  const iconOnly = Boolean(Icon) && !label;
 
   const composed = [
     base,
@@ -109,14 +109,22 @@ export default function DefaultButton({
     .filter(Boolean)
     .join(" ");
 
+  function getIcon(): ReactNode {
+    if (Icon) {
+      return <Icon />
+    } else {
+      return null
+    }
+  }
+
   function getButtonContent(): ReactNode {
     if (loading) return <Spinner />;
-    if (iconOnly) return icon;
+    if (iconOnly) return getIcon();
     return (
       <>
-        {iconPosition === "left" ? icon : null}
+        {iconPosition === "left" ? getIcon() : null}
         <span>{label}</span>
-        {iconPosition === "right" ? icon : null}
+        {iconPosition === "right" ? getIcon() : null}
       </>
     );
   }

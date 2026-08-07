@@ -1,7 +1,7 @@
 "use client";
 
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 type PaginationBarProps = {
   currentPage: number;
@@ -54,7 +54,7 @@ export default function PaginationBar({
         <DefaultButton
           variant="secondary"
           size="sm"
-          icon={<MdChevronLeft />}
+          icon={MdChevronLeft}
           aria-label="Previous page"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -77,7 +77,7 @@ export default function PaginationBar({
         <DefaultButton
           variant="secondary"
           size="sm"
-          icon={<MdChevronRight />}
+          icon={MdChevronRight}
           aria-label="Next page"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}

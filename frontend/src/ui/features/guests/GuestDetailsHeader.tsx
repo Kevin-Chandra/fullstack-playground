@@ -58,7 +58,7 @@ export default function GuestDetailsHeader({
         <DefaultButton
           variant="ghost"
           size="md"
-          icon={<MdClose />}
+          icon={MdClose}
           aria-label="Close details"
           onClick={onClose}
         />

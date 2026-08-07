@@ -4,7 +4,6 @@ import { NOT_FOUND_ERROR } from "@/src/lib/constants/error";
 import { Routes } from "@/src/lib/constants/routes";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import { useRouter } from "next/navigation";
-import { MdArrowBack } from "react-icons/md";
 
 /**
  * Client CTA row for the 404 page: "Back to dashboard" navigates to a known
