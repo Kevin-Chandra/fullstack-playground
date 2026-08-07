@@ -4,8 +4,10 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   Min,
+  ValidateIf,
 } from "class-validator";
 import { InvitationType } from "../../libs/entity/enums/invitation-type.enum";
 
@@ -18,11 +20,11 @@ export class CreateGuestDto {
   @Min(1)
   pax: number;
 
-  @IsOptional()
-  @IsString()
+  @ValidateIf((o: CreateGuestDto) => !!o.phoneNumber)
+  @IsPhoneNumber()
   phoneNumber?: string;
 
-  @IsOptional()
+  @ValidateIf((o: CreateGuestDto) => !!o.email)
   @IsEmail()
   email?: string;
 
