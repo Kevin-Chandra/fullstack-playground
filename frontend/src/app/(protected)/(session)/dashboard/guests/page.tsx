@@ -9,9 +9,10 @@ import { useGuestDelete } from "@/src/lib/hooks/guest/useGuestDelete";
 import { useGuestDetails } from "@/src/lib/hooks/guest/useGuestDetails";
 import { useGuestList } from "@/src/lib/hooks/guest/useGuestList";
 import { useGuestPanel } from "@/src/lib/hooks/guest/useGuestPanel";
+import { useGuestUpdate } from "@/src/lib/hooks/guest/useGuestUpdate";
 import { useDebouncedValue } from "@/src/lib/hooks/useDebouncedValue";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
-import { CreateGuestPayload, Guest } from "@/src/lib/types/Guest";
+import { CreateGuestPayload, Guest, UpdateGuestPayload } from "@/src/lib/types/Guest";
 import DeletePanelBase from "@/src/ui/components/base/DeletePanelBase";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
@@ -76,6 +77,11 @@ export default function GuestsPage() {
     create: createGuest
   } = useGuestCreate()
 
+  const {
+    loading: isUpdatingGuest,
+    update: updateGuest
+  } = useGuestUpdate()
+
   //#region Panels
 
   const {
@@ -87,8 +93,8 @@ export default function GuestsPage() {
     cancelPendingNavigation,
   } = useGuestPanel({
     isFormDirty: formDirty,
-    isCreatingGuest: false, //createGuestLoading,
-    isEditingGuest: false,// editGuestLoading,
+    isCreatingGuest: isCreatingGuest,
+    isEditingGuest: isUpdatingGuest,
     isDeletingGuest: isDeleteGuestLoading,
     onDiscardForm: () => formMethods.reset(GUEST_FORM_DEFAULT_VALUES),
   });
@@ -156,6 +162,24 @@ export default function GuestsPage() {
     navigate({ mode: "view", guestId: guest.id }, { force: true });
   }
 
+  async function handleUpdateGuest(guestId: string, payload: UpdateGuestPayload) {
+    const result = await updateGuest(guestId, payload);
+
+    if (!result.success) {
+      toast.error("Error updating guest details", {
+        subline: result.error.error,
+      });
+      return;
+    }
+
+    const guest = result.data;
+    toast.success(`${guest.name} was updated`);
+    fetchGuestList();
+    fetchGuestDetails()
+
+    navigate({ mode: "view", guestId: guest.id }, { force: true });
+  }
+
   function handleGuestSelected(guestId: string) {
     navigate({ mode: "view", guestId });
   }
@@ -166,6 +190,18 @@ export default function GuestsPage() {
 
   function handleClosePanel() {
     navigate({ mode: "closed" });
+  }
+
+  function handleOpenEdit(guest: Guest) {
+    formMethods.reset({
+      name: guest.name,
+      email: guest.email,
+      phoneNumber: guest.phoneNumber,
+      pax: guest.pax,
+      invitationType: guest.invitationType,
+      notes: guest.notes,
+    });
+    navigate({ mode: "edit", guest: guest });
   }
 
   //#endregion
@@ -244,6 +280,16 @@ export default function GuestsPage() {
             onClose={handleClosePanel}
           />
         );
+      case "edit":
+        return (
+          <GuestFormContent
+            mode="edit"
+            isLoading={isUpdatingGuest}
+            formMethods={formMethods}
+            onSubmit={(payload) => handleUpdateGuest(panel.guest.id, payload)}
+            onClose={() => navigate({ mode: "view", guestId: panel.guest.id })}
+          />
+        );
       case "view":
         return (
           <GuestDetailsContainer
@@ -251,8 +297,12 @@ export default function GuestsPage() {
             guestFetchResult={guestFetchResult}
             onClose={handleClosePanel}
             onDelete={() => navigate({ mode: "delete", guestId: panel.guestId })}
-            onEdit={() => {}}
-            onErrorAction={() => {}}
+            onEdit={() => {
+              if (currentGuest) handleOpenEdit(currentGuest);
+            }}
+            onErrorAction={(action) =>
+              handleErrorAction(action, fetchGuestDetails)
+            }
           />
         )
       case "delete":
