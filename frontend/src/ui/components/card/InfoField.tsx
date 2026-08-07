@@ -3,33 +3,29 @@ import { ReactNode } from "react";
 const container = "flex min-w-0 flex-1 gap-sm rounded-lg border border-edge bg-canvas p-xl"
 const field = "flex min-w-0 flex-col flex-1 gap-sm justify-center";
 const fieldLabel = "font-mono text-label uppercase text-muted text-wrap";
-const fieldValue = "truncate text-body text-ink";
-const fieldValueMuted = "truncate text-body text-muted italic";
-
-type ValueVariant = "default" | "muted"
-
-const fieldValueVariants: Record<ValueVariant, string> = {
-  default: fieldValue,
-  muted: fieldValueMuted,
-};
+const fieldValue = "text-wrap text-body text-ink overflow-hidden";
 
 type InfoFieldProps = {
   label: string;
-  variant?: ValueVariant;
   value: string;
+  placeholderText?: string;
   children?: ReactNode;
 };
 
 export default function InfoField({ label,
   value,
-  variant = "default",
+  placeholderText = "-",
   children = null
 }: InfoFieldProps) {
+
+  const valueText = value ? value : placeholderText;
+  const valueTextColor = value ? "text-ink" : "text-muted"
+
   return (
     <div className={container}>
       <div className={field}>
         <span className={fieldLabel}>{label}</span>
-        <span className={fieldValueVariants[variant]}>{value}</span>
+        <span className={`${fieldValue} ${valueTextColor}`}>{valueText}</span>
       </div>
       {children}
     </div>

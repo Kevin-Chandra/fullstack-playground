@@ -4,6 +4,7 @@ import { FORM_DEFAULT_VALIDATION_MODE } from "@/src/lib/constants/form";
 import { BASE_PAGINATION_PAGE, MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 import { SEARCH_DEBOUNCE_MS } from "@/src/lib/constants/search";
 import { GUEST_FORM_DEFAULT_VALUES } from "@/src/lib/data/emptyObject";
+import { useGuestCreate } from "@/src/lib/hooks/guest/useGuestCreate";
 import { useGuestDelete } from "@/src/lib/hooks/guest/useGuestDelete";
 import { useGuestDetails } from "@/src/lib/hooks/guest/useGuestDetails";
 import { useGuestList } from "@/src/lib/hooks/guest/useGuestList";
@@ -21,6 +22,7 @@ import ListCard from "@/src/ui/components/list/ListCard";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
 import { toast } from "@/src/ui/components/toast/toast";
 import GuestDetailsContainer from "@/src/ui/features/guests/GuestDetailsContainer";
+import GuestFormContent from "@/src/ui/features/guests/GuestFormContent";
 import GuestListEmpty from "@/src/ui/features/guests/GuestListEmpty";
 import GuestListRow from "@/src/ui/features/guests/GuestListRow";
 import GuestListSkeleton from "@/src/ui/features/guests/GuestListSkeleton";
@@ -68,6 +70,11 @@ export default function GuestsPage() {
     result: fetchGuestResult,
     fetch: fetchGuestList
   } = useGuestList(page, search);
+
+  const {
+    loading: isCreatingGuest,
+    create: createGuest
+  } = useGuestCreate()
 
   //#region Panels
 
@@ -130,6 +137,23 @@ export default function GuestsPage() {
         retry();
         break;
     }
+  }
+
+  async function handleCreateGuest(payload: CreateGuestPayload) {
+    const result = await createGuest(payload);
+
+    if (!result.success) {
+      toast.error("Error adding new guest", {
+        subline: result.error.error,
+      });
+      return;
+    }
+
+    const guest = result.data;
+    toast.success(`${guest.name} was added to the guest list`);
+    fetchGuestList();
+
+    navigate({ mode: "view", guestId: guest.id }, { force: true });
   }
 
   function handleGuestSelected(guestId: string) {
@@ -210,6 +234,16 @@ export default function GuestsPage() {
 
   function renderSidePanel() {
     switch (panel.mode) {
+      case "add":
+        return (
+          <GuestFormContent
+            mode="create"
+            isLoading={isCreatingGuest}
+            formMethods={formMethods}
+            onSubmit={handleCreateGuest}
+            onClose={handleClosePanel}
+          />
+        );
       case "view":
         return (
           <GuestDetailsContainer
@@ -262,7 +296,7 @@ export default function GuestsPage() {
             icon={<MdAdd />}
             className="flex-none"
             label="Add guest"
-
+            onClick={() => { navigate({ mode: "add" }) }}
           />
         </div>
       </div>

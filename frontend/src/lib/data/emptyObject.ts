@@ -15,6 +15,6 @@ export const GUEST_FORM_DEFAULT_VALUES: CreateGuestPayload = {
   email: "",
   phoneNumber: "",
   notes: "",
-  pax: 0,
+  pax: 1,
   invitationType: GuestInvitationType.ONLINE,
 };

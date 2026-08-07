@@ -3,6 +3,7 @@ import { MdCopyAll } from "react-icons/md";
 import DefaultButton from "../../components/buttons/DefaultButton";
 import InfoField from "../../components/card/InfoField";
 import { toast } from "../../components/toast/toast";
+import clipboardCopy from "../../utils/clipboard.util";
 import { getGuestInvitationTypeLabel } from "../../utils/guestUi.util";
 import GuestDetailsHeader from "./GuestDetailsHeader";
 import GuestRsvpCard from "./GuestRsvpCard";
@@ -29,16 +30,13 @@ export default function GuestDetailsContent({
 }: GuestDetailsContentProps) {
 
   async function handleOnCopyUuid() {
-    try {
-      await navigator.clipboard.writeText(guest.guestUuid);
-      toast.success("Guest UUID copied.");
-    } catch {
-      toast.error("Could not copy the guest UUID.");
+    const result = await clipboardCopy(guest.guestUuid)
+    if (result.success) {
+      toast.success("Guest UUID copied to clipboard")
+    } else {
+      toast.error("Unable to copy Guest UUID")
     }
   }
-
-  const notesVariant = guest.notes ? "default" : "muted"
-  const notesText = guest.notes?.trim() ?? "No notes yet."
 
   return (
     <div className={content}>
@@ -47,14 +45,14 @@ export default function GuestDetailsContent({
       <div className={scrollArea}>
         <div className={infoFields}>
           <div className={fieldTwoColumn}>
-            <InfoField label="Email" value={guest.email} />
-            <InfoField label="Phone Number" value={guest.phoneNumber} />
+            <InfoField label="Email" value={guest.email} placeholderText="Not provided" />
+            <InfoField label="Phone Number" value={guest.phoneNumber} placeholderText="Not provided" />
           </div>
           <div className={fieldTwoColumn}>
             <InfoField label="Party Size" value={guest.pax.toString()} />
             <InfoField label="Invitation Type" value={getGuestInvitationTypeLabel(guest.invitationType)} />
           </div>
-          <InfoField label="Notes" variant={notesVariant} value={notesText} />
+          <InfoField label="Notes" value={guest.notes} placeholderText="No notes yet" />
           <InfoField label="Guest UUID" value={guest.guestUuid}>
             <DefaultButton
               icon={<MdCopyAll />}
