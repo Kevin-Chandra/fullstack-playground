@@ -10,6 +10,7 @@ import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import DefaultRadioButton from "@/src/ui/components/input/DefaultRadioButton";
 import DefaultSwitch from "@/src/ui/components/input/DefaultSwitch";
+import DefaultTextarea from "@/src/ui/components/input/DefaultTextarea";
 import InputSelect from "@/src/ui/components/input/InputSelect";
 import RadioGroup from "@/src/ui/components/input/RadioGroup";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
@@ -141,6 +142,39 @@ function Inputs() {
         inputSize="md"
         disabled
       />
+
+      <DefaultTextarea
+        label="Text area"
+        autoComplete="username"
+        placeholder="Search"
+        fullWidth
+      />
+
+      <DefaultTextarea
+        id="login-username"
+        name="username"
+        label="USERNAME"
+        autoComplete="username"
+        placeholder="yourusername"
+        required
+        fullWidth
+        error="Error text!!!"
+      />
+
+      <DefaultTextarea
+        id="login-username"
+        name="username"
+        label="USERNAME"
+        autoComplete="username"
+        placeholder="yourusername"
+        resize="vertical"
+        rows={2}
+        required
+        fullWidth
+        hint="HINT!!!"
+      />
+
+
     </div>
   );
 }
