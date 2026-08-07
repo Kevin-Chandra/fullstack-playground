@@ -90,15 +90,9 @@ export default function UserForm({
             type={showPassword ? "text" : "password"}
             placeholder="At least 8 characters"
             error={errors.password?.message}
-            rightIcon={
-              <button
-                type="button"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                onClick={() => setShowPassword((prev) => !prev)}
-              >
-                {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-              </button>
-            }
+            rightIcon={showPassword ? MdVisibilityOff : MdVisibility}
+            rightIconLabel={showPassword ? "Hide password" : "Show password"}
+            onRightIconClick={() => setShowPassword((prev) => !prev)}
             {...register("password", {
               required: USER_FORM_MESSAGES.password.required,
               minLength: {

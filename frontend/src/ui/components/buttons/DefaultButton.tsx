@@ -17,8 +17,10 @@ export type DefaultButtonProps = {
   iconPosition?: IconPosition;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
+const contentLayout = "inline-flex items-center gap-2";
+
 const base = [
-  "inline-flex items-center gap-2 font-medium",
+  `relative ${contentLayout} font-medium`,
   "transition-[color,background-color,border-color,box-shadow,filter] duration-150",
   "focus:outline-none focus-visible:ring-3 focus-visible:ring-focus",
   "disabled:pointer-events-none",
@@ -59,6 +61,13 @@ const sizes: Record<Size, string> = {
   sm: "rounded-btn-sm text-xs [&_svg]:size-4",
   md: "rounded-btn-md text-body-sm [&_svg]:size-4.5",
   lg: "rounded-btn-lg text-body [&_svg]:size-5",
+};
+
+const spinnerSizes: Record<Size, string> = {
+  xs: "size-3",
+  sm: "size-3.5",
+  md: "size-4",
+  lg: "size-5",
 };
 
 const paddingSize: Record<Size, string> = {
@@ -118,15 +127,28 @@ export default function DefaultButton({
   }
 
   function getButtonContent(): ReactNode {
-    if (loading) return <Spinner />;
-    if (iconOnly) return getIcon();
-    return (
+    const content = iconOnly ? (
+      getIcon()
+    ) : (
       <>
         {iconPosition === "left" ? getIcon() : null}
         <span>{label}</span>
         {iconPosition === "right" ? getIcon() : null}
       </>
     );
+
+    if (loading) {
+      return (
+        <>
+          <span className={`${contentLayout} invisible`}>{content}</span>
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Spinner size={size} />
+          </span>
+        </>
+      );
+    }
+
+    return content;
   }
 
   return (
@@ -142,6 +164,8 @@ export default function DefaultButton({
   );
 }
 
-const Spinner = () => (
-  <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+const Spinner = ({ size }: { size: Size }) => (
+  <span
+    className={`animate-spin rounded-full border-2 border-current border-t-transparent ${spinnerSizes[size]}`}
+  />
 );

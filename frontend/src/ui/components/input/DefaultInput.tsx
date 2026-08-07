@@ -1,18 +1,24 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type { InputHTMLAttributes } from "react";
 import { forwardRef, useId } from "react";
+import { IconType } from "react-icons";
+import DefaultButton from "../buttons/DefaultButton";
 
 type Size = "sm" | "md" | "lg";
 type Tone = "default";
 
 export type DefaultInputProps = {
-  label?: ReactNode;
-  hint?: ReactNode;
-  error?: ReactNode;
+  label?: string;
+  hint?: string;
+  error?: string;
   inputSize?: Size;
   tone?: Tone;
   fullWidth?: boolean;
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
+  leftIcon?: IconType;
+  onLeftIconClick?: () => void;
+  leftIconLabel?: string;
+  rightIcon?: IconType;
+  onRightIconClick?: () => void;
+  rightIconLabel?: string;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "size">;
 
 const sizes: Record<Size, string> = {
@@ -35,8 +41,8 @@ const tones: Record<Tone, ToneStyles> = {
     border: "border-edge-strong focus-within:border-accent",
     input:
       "text-ink-body placeholder:text-muted/60 not-placeholder-shown:text-ink",
-    leadingIcon: "text-muted/70",
-    trailingIcon: "text-muted hover:text-accent",
+    leadingIcon: "text-muted/70 group-focus-within:text-accent",
+    trailingIcon: "text-muted/70 group-focus-within:text-accent",
   },
 };
 
@@ -49,8 +55,12 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
       inputSize = "md",
       tone = "default",
       fullWidth = false,
-      leftIcon,
-      rightIcon,
+      leftIcon: LeftIcon,
+      onLeftIconClick,
+      leftIconLabel,
+      rightIcon: RightIcon,
+      onRightIconClick,
+      rightIconLabel,
       id,
       className = "",
       disabled,
@@ -71,7 +81,7 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
       : "text-muted group-focus-within:text-accent";
 
     const wrapper = [
-      "flex items-center gap-2.5 rounded-md border px-4",
+      "flex items-center rounded-md border px-2",
       "transition-[color,border-color,box-shadow] duration-150",
       tones[tone].wrapper,
       error
@@ -97,13 +107,23 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
         )}
 
         <div className={wrapper}>
-          {leftIcon && (
-            <span
-              className={`flex shrink-0 [&_svg]:size-4 ${tones[tone].leadingIcon}`}
-            >
-              {leftIcon}
-            </span>
-          )}
+          {LeftIcon &&
+            (onLeftIconClick ? (
+              <DefaultButton
+                size="sm"
+                disabled={disabled}
+                aria-label={leftIconLabel}
+                onClick={onLeftIconClick}
+                variant="text"
+                icon={LeftIcon}
+              />
+            ) : (
+              <span
+                className={`flex shrink-0 px-2 transition-colors [&_svg]:size-4 ${tones[tone].leadingIcon}`}
+              >
+                <LeftIcon />
+              </span>
+            ))}
           <input
             ref={ref}
             id={inputId}
@@ -111,16 +131,26 @@ const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
             required={required}
             aria-invalid={error ? true : undefined}
             aria-describedby={describedBy}
-            className={`w-full flex-1 bg-transparent text-input outline-none disabled:cursor-not-allowed ${tones[tone].input} ${className}`}
+            className={`w-full flex-1 px-2 bg-transparent text-input outline-none disabled:cursor-not-allowed ${tones[tone].input} ${className}`}
             {...rest}
           />
-          {rightIcon && (
-            <span
-              className={`flex shrink-0 transition-colors [&_svg]:size-4 ${tones[tone].trailingIcon}`}
-            >
-              {rightIcon}
-            </span>
-          )}
+          {RightIcon &&
+            (onRightIconClick ? (
+              <DefaultButton
+                size="sm"
+                disabled={disabled}
+                aria-label={rightIconLabel}
+                onClick={onRightIconClick}
+                variant="text"
+                icon={RightIcon}
+              />
+            ) : (
+              <span
+                className={`flex shrink-0 px-2 transition-colors [&_svg]:size-4 ${tones[tone].trailingIcon}`}
+              >
+                <RightIcon />
+              </span>
+            ))}
         </div>
 
         {error ? (

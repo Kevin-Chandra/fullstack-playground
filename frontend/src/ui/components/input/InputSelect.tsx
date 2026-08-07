@@ -2,15 +2,15 @@
 
 import { useInputSelect } from "@/src/lib/hooks/components/useInputSelect";
 import InputSelectOption from "@/src/ui/components/input/InputSelectOption";
-import type { ReactNode } from "react";
 import { useId } from "react";
+import { IconType } from "react-icons";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 export type InputSelectProps<T> = {
-  label?: ReactNode;
-  icon?: ReactNode;
-  hint?: ReactNode;
-  error?: ReactNode;
+  label?: string;
+  icon?: IconType;
+  hint?: string;
+  error?: string;
   options: T[];
   optionLabel: (option: T) => string;
   optionValue: (option: T) => string;
@@ -28,7 +28,7 @@ export type InputSelectProps<T> = {
 
 export default function InputSelect<T>({
   label,
-  icon,
+  icon: Icon,
   hint,
   error,
   options,
@@ -98,9 +98,8 @@ export default function InputSelect<T>({
         <div className="flex items-baseline">
           <label
             id={labelId}
-            className={`font-mono text-label transition-colors ${
-              error ? "text-error" : "text-muted group-focus-within:text-accent"
-            }`}
+            className={`font-mono text-label transition-colors ${error ? "text-error" : "text-muted group-focus-within:text-accent"
+              }`}
           >
             {label}
           </label>
@@ -119,7 +118,6 @@ export default function InputSelect<T>({
           aria-expanded={open}
           aria-controls={open ? listId : undefined}
           aria-labelledby={labelId}
-          aria-invalid={error ? true : undefined}
           aria-describedby={
             [errorId, hintId].filter(Boolean).join(" ") || undefined
           }
@@ -129,15 +127,14 @@ export default function InputSelect<T>({
           className={trigger}
         >
           <div className="flex min-w-0 items-center gap-2.5">
-            {icon && (
+            {Icon && (
               <span className="flex shrink-0 [&_svg]:size-4 text-muted/70">
-                {icon}
+                <Icon />
               </span>
             )}
             <span
-              className={`min-w-0 truncate text-input ${
-                selectedOption !== undefined ? "text-ink-body" : "text-muted/60"
-              }`}
+              className={`min-w-0 truncate text-input ${selectedOption !== undefined ? "text-ink-body" : "text-muted/60"
+                }`}
             >
               {selectedOption !== undefined
                 ? optionLabel(selectedOption)
@@ -146,9 +143,8 @@ export default function InputSelect<T>({
           </div>
           <MdKeyboardArrowDown
             aria-hidden
-            className={`size-4 shrink-0 transition-[transform,color] duration-150 ${
-              open ? "rotate-180 text-accent" : "text-muted/70"
-            }`}
+            className={`size-4 shrink-0 transition-[transform,color] duration-150 ${open ? "rotate-180 text-accent" : "text-muted/70"
+              }`}
           />
         </button>
 

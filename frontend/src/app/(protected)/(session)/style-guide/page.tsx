@@ -16,6 +16,7 @@ import RadioGroup from "@/src/ui/components/input/RadioGroup";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
 import { toast } from "@/src/ui/components/toast/toast";
 import { ReactNode, useState } from "react";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import {
   MdAdd,
   MdAnchor,
@@ -30,7 +31,7 @@ import {
   MdPerson,
   MdSave,
   MdSearch,
-  MdStar,
+  MdStar
 } from "react-icons/md";
 
 export default function StyleGuidePage() {
@@ -110,14 +111,14 @@ function Inputs() {
         name="username"
         autoComplete="username"
         placeholder="Search"
-        leftIcon={<MdSearch />}
+        leftIcon={MdSearch}
         fullWidth
         inputSize="md"
       />
       <DefaultInput
         autoComplete="username"
         placeholder="Search"
-        rightIcon={<MdCurrencyExchange />}
+        rightIcon={MdCurrencyExchange}
         fullWidth
         hint="Test the hint"
         inputSize="md"
@@ -126,8 +127,8 @@ function Inputs() {
         label="Test"
         autoComplete="username"
         placeholder="Search"
-        leftIcon={<MdEdit />}
-        rightIcon={<MdHideImage />}
+        leftIcon={MdEdit}
+        rightIcon={MdHideImage}
         fullWidth
         hint="Test the hint"
         inputSize="md"
@@ -136,11 +137,22 @@ function Inputs() {
         label="Disabled input"
         autoComplete="username"
         placeholder="Search"
-        leftIcon={<MdEdit />}
-        rightIcon={<MdHideImage />}
+        leftIcon={MdEdit}
+        rightIcon={MdHideImage}
         fullWidth
         inputSize="md"
         disabled
+      />
+      <DefaultInput
+        label="Input left right"
+        autoComplete="username"
+        placeholder="Search"
+        leftIcon={FiArrowLeft}
+        rightIcon={FiArrowRight}
+        onLeftIconClick={() => toast.info("Left Icon Clicked")}
+        onRightIconClick={() => toast.info("Right Icon Clicked")}
+        fullWidth
+        inputSize="md"
       />
 
       <DefaultTextarea
@@ -182,6 +194,9 @@ function Inputs() {
 function Buttons() {
   const verticalClass = "flex flex-col gap-5";
   const horizontalClass = "flex gap-4 items-center";
+
+  const [loading, setLoading] = useState(false);
+  const [iconLoading, setIconLoading] = useState(false);
 
   return (
     <div className={verticalClass}>
@@ -261,6 +276,16 @@ function Buttons() {
         />
       </div>
       <hr />
+
+      <DefaultSwitch label="Set loading" onValueChange={(l) => setLoading(l)} />
+      <DefaultButton
+        variant="primary"
+        icon={MdAdd}
+        fullWidth
+        label="Icon primary small"
+        textAlignment="center"
+        loading={loading}
+      />
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
@@ -268,6 +293,7 @@ function Buttons() {
           size="xs"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="primary"
@@ -275,6 +301,7 @@ function Buttons() {
           size="sm"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="primary"
@@ -282,6 +309,7 @@ function Buttons() {
           size="md"
           label="Icon primary medium"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="primary"
@@ -289,6 +317,7 @@ function Buttons() {
           size="lg"
           label="Icon primary large"
           textAlignment="start"
+          loading={loading}
         />
       </div>
       <div className={horizontalClass}>
@@ -298,6 +327,7 @@ function Buttons() {
           size="xs"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="secondary"
@@ -305,6 +335,7 @@ function Buttons() {
           size="sm"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="secondary"
@@ -312,6 +343,7 @@ function Buttons() {
           size="md"
           label="Icon primary medium"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="secondary"
@@ -319,6 +351,7 @@ function Buttons() {
           size="lg"
           label="Icon primary large"
           textAlignment="start"
+          loading={loading}
         />
       </div>
       <div className={horizontalClass}>
@@ -329,6 +362,7 @@ function Buttons() {
           size="sm"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="ghost"
@@ -337,6 +371,7 @@ function Buttons() {
           size="xs"
           label="Icon primary small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="ghost"
@@ -345,6 +380,7 @@ function Buttons() {
           size="md"
           label="Icon primary medium"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="ghost"
@@ -353,6 +389,7 @@ function Buttons() {
           size="lg"
           label="Icon primary large"
           textAlignment="start"
+          loading={loading}
         />
       </div>
       <div className={horizontalClass}>
@@ -363,6 +400,7 @@ function Buttons() {
           size="xs"
           label="Edit small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="text"
@@ -371,6 +409,7 @@ function Buttons() {
           size="sm"
           label="Edit small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="text"
@@ -379,6 +418,7 @@ function Buttons() {
           size="md"
           label="Icon primary medium"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="text"
@@ -387,6 +427,7 @@ function Buttons() {
           size="lg"
           label="Icon primary large"
           textAlignment="start"
+          loading={loading}
         />
       </div>
       <div className={horizontalClass}>
@@ -397,6 +438,7 @@ function Buttons() {
           size="xs"
           label="Delete small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="danger"
@@ -405,6 +447,7 @@ function Buttons() {
           size="sm"
           label="Delete small"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="danger"
@@ -413,6 +456,7 @@ function Buttons() {
           size="md"
           label="Icon primary medium"
           textAlignment="start"
+          loading={loading}
         />
         <DefaultButton
           variant="danger"
@@ -421,11 +465,13 @@ function Buttons() {
           size="lg"
           label="Icon primary large"
           textAlignment="start"
+          loading={loading}
         />
       </div>
       <hr />
 
       {/* Icon Only Button  */}
+      <DefaultSwitch label="Set loading" onValueChange={(l) => setIconLoading(l)} />
       <div className={horizontalClass}>
         <DefaultButton
           variant="primary"
@@ -433,6 +479,7 @@ function Buttons() {
           iconPosition="left"
           size="xs"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="primary"
@@ -440,6 +487,7 @@ function Buttons() {
           iconPosition="left"
           size="sm"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="primary"
@@ -447,6 +495,7 @@ function Buttons() {
           iconPosition="right"
           size="md"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="primary"
@@ -454,6 +503,7 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+          loading={iconLoading}
         />
       </div>
       <div className={horizontalClass}>
@@ -463,6 +513,7 @@ function Buttons() {
           iconPosition="left"
           size="xs"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="secondary"
@@ -470,6 +521,7 @@ function Buttons() {
           iconPosition="left"
           size="sm"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="secondary"
@@ -477,6 +529,7 @@ function Buttons() {
           iconPosition="right"
           size="md"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="secondary"
@@ -484,6 +537,7 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+          loading={iconLoading}
         />
       </div>
       <div className={horizontalClass}>
@@ -493,6 +547,7 @@ function Buttons() {
           iconPosition="left"
           size="xs"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="danger"
@@ -500,6 +555,7 @@ function Buttons() {
           iconPosition="left"
           size="sm"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="danger"
@@ -507,6 +563,7 @@ function Buttons() {
           iconPosition="right"
           size="md"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="danger"
@@ -514,6 +571,7 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+          loading={iconLoading}
         />
       </div>
       <div className={horizontalClass}>
@@ -522,18 +580,21 @@ function Buttons() {
           icon={MdDelete}
           size="xs"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="ghost"
           icon={MdDelete}
           size="sm"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="ghost"
           icon={MdStar}
           size="md"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="ghost"
@@ -541,6 +602,7 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+          loading={iconLoading}
         />
       </div>
       <div className={horizontalClass}>
@@ -549,18 +611,21 @@ function Buttons() {
           icon={MdDelete}
           size="xs"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="text"
           icon={MdDelete}
           size="sm"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="text"
           icon={MdStar}
           size="md"
           textAlignment="start"
+          loading={iconLoading}
         />
         <DefaultButton
           variant="text"
@@ -568,6 +633,7 @@ function Buttons() {
           iconPosition="right"
           size="lg"
           textAlignment="start"
+          loading={iconLoading}
         />
       </div>
     </div>
@@ -740,7 +806,7 @@ function Dialogs() {
       <DefaultDialog
         open={openDialog === "icon"}
         onClose={close}
-        icon={<MdGroup />}
+        icon={MdGroup}
         title="Discard draft? Discard draft? Discard draft? Discard draft?"
         primaryButtonLabel="Discard"
         secondaryButtonLabel="Cancel"
@@ -767,7 +833,7 @@ function Dialogs() {
         open={openDialog === "destructive"}
         onClose={close}
         destructive
-        icon={<MdDeleteForever />}
+        icon={MdDeleteForever}
         title="Delete account"
         primaryButtonLabel="Delete"
         secondaryButtonLabel="Cancel"
@@ -796,7 +862,7 @@ function Dialogs() {
           name="invite-email"
           type="email"
           placeholder="ada@everafter.dev"
-          leftIcon={<MdPerson />}
+          leftIcon={MdPerson}
           fullWidth
           inputSize="md"
         />
@@ -878,7 +944,7 @@ function InputSelects() {
       <div className={horizontalClass}>
         <InputSelect
           label="Input Select With Icon"
-          icon={<MdPerson />}
+          icon={MdPerson}
           fullWidth
           options={options}
           placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"
@@ -887,7 +953,7 @@ function InputSelects() {
         />
         <InputSelect
           label="Input Select With Icon Disabled"
-          icon={<MdGroup />}
+          icon={MdGroup}
           fullWidth
           disabled
           placeholder="Long text Long text Long text Long text Long text Long text Long text Long text Long text AA BB CC"

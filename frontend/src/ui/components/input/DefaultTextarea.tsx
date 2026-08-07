@@ -1,13 +1,13 @@
-import type { ReactNode, TextareaHTMLAttributes } from "react";
+import type { TextareaHTMLAttributes } from "react";
 import { forwardRef, useId } from "react";
 
 type Tone = "default";
 type Resize = "none" | "vertical";
 
 export type DefaultTextareaProps = {
-  label?: ReactNode;
-  hint?: ReactNode;
-  error?: ReactNode;
+  label?: string;
+  hint?: string;
+  error?: string;
   tone?: Tone;
   fullWidth?: boolean;
   resize?: Resize;

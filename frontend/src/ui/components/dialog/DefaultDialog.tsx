@@ -4,6 +4,7 @@ import { useDialog } from "@/src/lib/hooks/components/useDialog";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import type { ReactNode } from "react";
 import { useId } from "react";
+import { IconType } from "react-icons";
 import { MdClose } from "react-icons/md";
 
 export type DefaultDialogProps = {
@@ -13,7 +14,7 @@ export type DefaultDialogProps = {
   /** When false, clicking outside the dialog is ignored */
   dismissable?: boolean;
   destructive?: boolean;
-  icon?: ReactNode;
+  icon?: IconType;
   primaryButtonLabel: string;
   secondaryButtonLabel?: string;
   onPrimaryClick: () => void;
@@ -47,7 +48,7 @@ export default function DefaultDialog({
   title,
   destructive = false,
   dismissable = true,
-  icon,
+  icon: Icon,
   primaryButtonLabel,
   secondaryButtonLabel,
   onPrimaryClick,
@@ -85,8 +86,8 @@ export default function DefaultDialog({
         )}
 
         <div className="flex flex-col gap-lg">
-          {icon && (
-            <span className={`${iconWell} ${iconWellTone[tone]}`}>{icon}</span>
+          {Icon && (
+            <span className={`${iconWell} ${iconWellTone[tone]}`}><Icon /></span>
           )}
           <h2 id={titleId} className="pr-8 font-display text-h2 text-ink">
             {title}

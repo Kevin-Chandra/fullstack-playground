@@ -339,7 +339,7 @@ export default function GuestsPage() {
             className="flex-1"
             fullWidth
             placeholder="Search name..."
-            leftIcon={<MdSearch />}
+            leftIcon={MdSearch}
             onChange={handleSearchChange}
           />
           <DefaultButton
@@ -366,7 +366,7 @@ export default function GuestsPage() {
       <DefaultDialog
         open={isConfirmingNavigation}
         onClose={cancelPendingNavigation}
-        icon={<MdOutlineWarningAmber />}
+        icon={MdOutlineWarningAmber}
         title="Discard changes?"
         primaryButtonLabel="Discard"
         secondaryButtonLabel="Keep editing"

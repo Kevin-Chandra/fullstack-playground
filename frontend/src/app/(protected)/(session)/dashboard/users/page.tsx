@@ -303,7 +303,7 @@ export default function UsersPage() {
             className="flex-1"
             fullWidth
             placeholder="Search name or username..."
-            leftIcon={<MdSearch />}
+            leftIcon={MdSearch}
             value={searchInput}
             onChange={handleSearchChange}
           />
@@ -344,7 +344,7 @@ export default function UsersPage() {
       <DefaultDialog
         open={isConfirmingNavigation}
         onClose={cancelPendingNavigation}
-        icon={<MdOutlineWarningAmber />}
+        icon={MdOutlineWarningAmber}
         title="Discard changes?"
         primaryButtonLabel="Discard"
         secondaryButtonLabel="Keep editing"
