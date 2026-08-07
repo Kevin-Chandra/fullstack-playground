@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import type { ChangeEvent, SubmitEvent } from "react";
 import { LoginPayload } from "@/src/lib/types/Auth";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
-import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import ErrorBanner from "@/src/ui/components/error/ErrorBanner";
+import DefaultInput from "@/src/ui/components/input/DefaultInput";
+import type { ChangeEvent, SubmitEvent } from "react";
+import { useState } from "react";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 type LoginFormProps = {
   onSubmit: (payload: LoginPayload) => void;
@@ -20,6 +21,7 @@ export default function LoginForm({
 }: LoginFormProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = () => onSubmit({ username, password });
 
@@ -62,9 +64,12 @@ export default function LoginForm({
               id="login-password"
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder="password"
+              rightIcon={showPassword ? MdVisibilityOff : MdVisibility}
+              rightIconLabel={showPassword ? "Hide password" : "Show password"}
+              onRightIconClick={() => setShowPassword((prev) => !prev)}
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setPassword(e.target.value)
@@ -81,12 +86,10 @@ export default function LoginForm({
           <DefaultButton
             type="submit"
             variant="primary"
-            size="lg"
             fullWidth
             loading={submitting}
-          >
-            Sign in
-          </DefaultButton>
+            label="Login"
+          />
         </div>
       </form>
     </>
