@@ -204,6 +204,7 @@ export default function UsersPage() {
       case "add":
         return (
           <UserFormContent
+            mode="create"
             isLoading={createUserLoading}
             formMethods={formMethods}
             onSubmit={handleCreateUser}

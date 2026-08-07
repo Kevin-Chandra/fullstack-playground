@@ -4,7 +4,8 @@ import { CreateUserPayload } from "@/src/lib/types/User";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import { UseFormReturn } from "react-hook-form";
 import { MdClose, MdPerson, MdPersonAddAlt1 } from "react-icons/md";
-import UserForm, { UserFormMode } from "./UserForm";
+import { FormMode } from "../../components/form/Form";
+import UserForm from "./UserForm";
 
 const content = "flex min-h-0 flex-1 flex-col gap-2xl";
 const header = "flex items-center gap-lg";
@@ -27,7 +28,7 @@ const copyByMode = {
 } as const;
 
 type UserFormContentProps = {
-  mode?: UserFormMode;
+  mode?: FormMode;
   isLoading: boolean;
   formMethods: UseFormReturn<CreateUserPayload>;
   onSubmit: (payload: CreateUserPayload) => void;

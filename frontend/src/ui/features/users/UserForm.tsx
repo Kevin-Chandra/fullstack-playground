@@ -8,16 +8,15 @@ import DefaultInput from "@/src/ui/components/input/DefaultInput";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { FormMode } from "../../components/form/Form";
 import InputSelect from "../../components/input/InputSelect";
 
 const form = "flex min-h-0 flex-1 flex-col gap-2xl";
 const scrollArea = "flex min-h-0 flex-1 flex-col gap-xl overflow-y-auto";
 const footer = "flex justify-end gap-sm border-t border-edge pt-xl";
 
-export type UserFormMode = "create" | "edit";
-
 type UserFormProps = {
-  mode?: UserFormMode;
+  mode?: FormMode;
   formMethods: UseFormReturn<CreateUserPayload>;
   onSubmit: (userDetails: CreateUserPayload) => void;
   onCancel: () => void;
