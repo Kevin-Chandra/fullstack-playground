@@ -14,6 +14,7 @@ import { Paginate } from "nestjs-paginate";
 import { Public } from "../decorators/public.decorator";
 import { JwtGuard } from "../guards/jwt.guard";
 import { CreateGuestDto } from "./dto/create-guest.dto";
+import { GuestPublic } from "./dto/guest-public.dto";
 import { UpdateGuestDto } from "./dto/update-guest.dto";
 import { GuestService } from "./guest.service";
 
@@ -29,8 +30,8 @@ export class GuestController {
 
   @Public()
   @Get(":uuid")
-  getGuestByUuid(@Param("uuid") id: string) {
-    return this.guestService.getGuestByUuid(id);
+  getGuestByUuid(@Param("uuid") uuid: string): Promise<GuestPublic> {
+    return this.guestService.getPublicGuestByUuid(uuid);
   }
 
   @Get("id/:id")

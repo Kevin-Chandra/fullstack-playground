@@ -14,6 +14,7 @@ import { Guest } from "../libs/entity/guest.entity";
 import { Rsvp } from "../libs/entity/rsvp.entity";
 import { PaginationUtil } from "../libs/utils/pagination.util";
 import { CreateGuestDto } from "./dto/create-guest.dto";
+import { GuestPublic } from "./dto/guest-public.dto";
 import { GuestWithStatus } from "./dto/guest-with-status.dto";
 import { UpdateGuestDto } from "./dto/update-guest.dto";
 
@@ -55,6 +56,25 @@ export class GuestService {
   async getGuestByUuid(uuid: string): Promise<Guest> {
     const guest = await this.guestRepository.findOne({
       where: { guestUuid: uuid },
+      relations: { rsvp: true },
+    });
+
+    if (!guest) {
+      throw new NotFoundException("Guest not found");
+    }
+
+    return guest;
+  }
+
+  async getPublicGuestByUuid(uuid: string): Promise<GuestPublic> {
+    const guest = await this.guestRepository.findOne({
+      where: { guestUuid: uuid },
+      select: {
+        id: true, // Required for table join.
+        name: true,
+        pax: true,
+        rsvp: true,
+      },
       relations: { rsvp: true },
     });
 
