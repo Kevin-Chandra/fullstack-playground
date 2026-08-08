@@ -30,7 +30,7 @@ const base = [
 const variants: Record<Variant, string> = {
   // accent CTA — gradient fill + glow; accent-ink stays legible in both schemes
   primary: [
-    "bg-accent-gradient text-accent-ink shadow-glow",
+    "bg-accent-strong bg-accent-gradient text-accent-ink shadow-glow",
     "hover:shadow-glow-strong hover:brightness-105 active:brightness-95",
     "disabled:bg-none disabled:bg-muted disabled:text-accent-ink/50 disabled:shadow-none",
   ].join(" "),
@@ -136,19 +136,18 @@ export default function DefaultButton({
         {iconPosition === "right" ? getIcon() : null}
       </>
     );
-
-    if (loading) {
-      return (
-        <>
-          <span className={`${contentLayout} invisible`}>{content}</span>
+    return (
+      <>
+        <span className={`${contentLayout} ${loading ? "invisible" : ""}`}>
+          {content}
+        </span>
+        {loading && (
           <span className="absolute inset-0 flex items-center justify-center">
             <Spinner size={size} />
           </span>
-        </>
-      );
-    }
-
-    return content;
+        )}
+      </>
+    );
   }
 
   return (
