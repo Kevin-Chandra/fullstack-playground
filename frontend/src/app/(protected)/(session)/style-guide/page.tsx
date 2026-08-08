@@ -1,9 +1,11 @@
 "use client";
 
 import { MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
+import { Routes } from "@/src/lib/constants/routes";
 import InitialsAvatar from "@/src/ui/components/avatar/InitialsAvatar";
 import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
+import DefaultLinkButton from "@/src/ui/components/buttons/DefaultLinkButton";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import CheckboxGroup from "@/src/ui/components/input/CheckboxGroup";
 import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
@@ -28,6 +30,7 @@ import {
   MdEdit,
   MdGroup,
   MdHideImage,
+  MdOpenInNew,
   MdPerson,
   MdSave,
   MdSearch,
@@ -46,15 +49,16 @@ export default function StyleGuidePage() {
         </p>
       </div>
       <Section title={"01 · Button"} content={<Buttons />} />
-      <Section title={"02 · Input"} content={<Inputs />} />
-      <Section title={"03 · Input Select"} content={<InputSelects />} />
-      <Section title={"04 · Checkbox"} content={<Checkboxes />} />
-      <Section title={"05 · Radio Button"} content={<RadioButtons />} />
-      <Section title={"06 · Switch"} content={<Switches />} />
-      <Section title={"07 · Dialog"} content={<Dialogs />} />
-      <Section title={"08 · Pagination"} content={<PaginationBars />} />
-      <Section title={"09 · Badge"} content={<Badges />} />
-      <Section title={"10 · Toast"} content={<Toasts />} />
+      <Section title={"02 · Link Button"} content={<LinkButtons />} />
+      <Section title={"03 · Input"} content={<Inputs />} />
+      <Section title={"04 · Input Select"} content={<InputSelects />} />
+      <Section title={"05 · Checkbox"} content={<Checkboxes />} />
+      <Section title={"06 · Radio Button"} content={<RadioButtons />} />
+      <Section title={"07 · Switch"} content={<Switches />} />
+      <Section title={"08 · Dialog"} content={<Dialogs />} />
+      <Section title={"09 · Pagination"} content={<PaginationBars />} />
+      <Section title={"10 · Badge"} content={<Badges />} />
+      <Section title={"11 · Toast"} content={<Toasts />} />
     </div>
   );
 }
@@ -634,6 +638,169 @@ function Buttons() {
           size="lg"
           textAlignment="start"
           loading={iconLoading}
+        />
+      </div>
+    </div>
+  );
+}
+
+function LinkButtons() {
+  const verticalClass = "flex flex-col gap-5";
+  const horizontalClass = "flex flex-wrap gap-4 items-center";
+
+  return (
+    <div className={verticalClass}>
+      {/* Every variant, rendered as a real <Link> — these navigate */}
+      <div className={horizontalClass}>
+        <DefaultLinkButton
+          variant="primary"
+          size="md"
+          label="Primary link"
+          href={Routes.DASHBOARD}
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          size="md"
+          label="Secondary link"
+          href={Routes.DASHBOARD_GUESTS}
+        />
+        <DefaultLinkButton
+          variant="ghost"
+          size="md"
+          label="Ghost link"
+          href={Routes.DASHBOARD_USERS}
+        />
+        <DefaultLinkButton
+          variant="danger"
+          size="md"
+          label="Danger link"
+          href={Routes.STYLE_GUIDE}
+        />
+        <DefaultLinkButton
+          variant="text"
+          size="md"
+          label="Text link"
+          href={Routes.HOME}
+        />
+      </div>
+
+      {/* Sizes */}
+      <div className={horizontalClass}>
+        <DefaultLinkButton
+          variant="secondary"
+          size="xs"
+          label="Extra small"
+          href={Routes.STYLE_GUIDE}
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          size="sm"
+          label="Small"
+          href={Routes.STYLE_GUIDE}
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          size="md"
+          label="Medium"
+          href={Routes.STYLE_GUIDE}
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          size="lg"
+          label="Large"
+          href={Routes.STYLE_GUIDE}
+        />
+      </div>
+
+      {/* Icons: left, right, and icon-only */}
+      <div className={horizontalClass}>
+        <DefaultLinkButton
+          variant="primary"
+          icon={MdGroup}
+          size="md"
+          label="View guests"
+          href={Routes.DASHBOARD_GUESTS}
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          icon={FiArrowRight}
+          iconPosition="right"
+          size="md"
+          label="Go to dashboard"
+          href={Routes.DASHBOARD}
+        />
+        <DefaultLinkButton
+          variant="ghost"
+          icon={MdPerson}
+          size="md"
+          href={Routes.DASHBOARD_USERS}
+          aria-label="Users"
+        />
+      </div>
+
+      <div className={horizontalClass}>
+        <DefaultLinkButton
+          variant="secondary"
+          icon={MdOpenInNew}
+          iconPosition="right"
+          size="md"
+          label="Next.js docs (new tab)"
+          href="https://nextjs.org/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <DefaultLinkButton
+          variant="text"
+          icon={MdOpenInNew}
+          iconPosition="right"
+          size="md"
+          label="Guests (new tab)"
+          href={Routes.DASHBOARD_GUESTS}
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      </div>
+
+      <DefaultLinkButton
+        variant="primary"
+        icon={MdSave}
+        fullWidth
+        size="md"
+        label="Full width link"
+        href={Routes.STYLE_GUIDE}
+      />
+      <hr />
+
+      {/* Disabled drops the href, so none of these navigate */}
+      <div className={horizontalClass}>
+        <DefaultLinkButton
+          variant="primary"
+          size="md"
+          label="Disabled link"
+          href={Routes.STYLE_GUIDE}
+          disabled
+        />
+        <DefaultLinkButton
+          variant="secondary"
+          size="md"
+          label="Disabled link"
+          href={Routes.STYLE_GUIDE}
+          disabled
+        />
+        <DefaultLinkButton
+          variant="danger"
+          icon={MdDelete}
+          size="md"
+          label="Disabled link"
+          href={Routes.STYLE_GUIDE}
+          disabled
+        />
+        <DefaultLinkButton
+          variant="text"
+          size="md"
+          label="Disabled link"
+          href={Routes.STYLE_GUIDE}
+          disabled
         />
       </div>
     </div>
