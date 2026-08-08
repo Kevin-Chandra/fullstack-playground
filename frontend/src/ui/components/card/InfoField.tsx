@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-const container = "flex min-w-0 flex-1 gap-sm rounded-lg border border-edge bg-canvas p-xl"
+const container = "flex min-w-0 flex-1 flex-col gap-sm rounded-lg border border-edge bg-canvas p-xl md:flex-row"
 const field = "flex min-w-0 flex-col flex-1 gap-sm justify-center";
 const fieldLabel = "font-mono text-label uppercase text-muted text-wrap";
 const fieldValue = "text-wrap text-body text-ink overflow-hidden";

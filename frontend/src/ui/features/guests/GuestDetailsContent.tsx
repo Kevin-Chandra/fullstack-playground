@@ -1,6 +1,9 @@
+import { QueryParams } from "@/src/lib/constants/queryParams";
+import { Routes } from "@/src/lib/constants/routes";
 import { Guest } from "@/src/lib/types/Guest";
-import { MdCopyAll } from "react-icons/md";
+import { MdCopyAll, MdOpenInNew } from "react-icons/md";
 import DefaultButton from "../../components/buttons/DefaultButton";
+import DefaultLinkButton from "../../components/buttons/DefaultLinkButton";
 import InfoField from "../../components/card/InfoField";
 import { toast } from "../../components/toast/toast";
 import clipboardCopy from "../../utils/clipboard.util";
@@ -54,6 +57,14 @@ export default function GuestDetailsContent({
           </div>
           <InfoField label="Notes" value={guest.notes} placeholderText="No notes yet" />
           <InfoField label="Guest UUID" value={guest.guestUuid}>
+            <DefaultLinkButton
+              label="Guest preview"
+              href={Routes.HOME + `/?${QueryParams.GUEST_UUID}=${guest.guestUuid}`}
+              icon={MdOpenInNew}
+              iconPosition="right"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
             <DefaultButton
               icon={MdCopyAll}
               label="Copy"
