@@ -22,6 +22,13 @@ export interface Guest {
   rsvp?: Rsvp
 }
 
+export interface PublicGuest {
+  uuid: string;
+  name: string;
+  pax: number;
+  rsvp?: Rsvp
+}
+
 export type GetGuestParams = Partial<
   BasePaginationParam & {
     "filter.rsvp.attending": string
