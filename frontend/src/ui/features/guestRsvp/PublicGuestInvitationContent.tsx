@@ -7,7 +7,7 @@ const subline = "text-sm text-muted";
 const rsvpSection = "mt-lg flex w-full justify-center";
 
 type PublicGuestInvitationContentProps = {
-  guest?: PublicGuest;
+  guest?: PublicGuest | null;
 };
 
 export default function PublicGuestInvitationContent({

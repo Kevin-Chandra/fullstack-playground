@@ -1,6 +1,6 @@
 import { Guest as GuestPath } from "../constants/apiPaths";
 import { axiosInstance } from "../network/axiosInstance";
-import { CreateGuestPayload, GetGuestParams, Guest, GuestListItem, PublicGuest, UpdateGuestPayload } from "../types/Guest";
+import { CreateGuestPayload, GetGuestParams, Guest, GuestListItem, UpdateGuestPayload } from "../types/Guest";
 import { Paginated } from "../types/Paginated";
 
 export const getGuests = async (
@@ -14,11 +14,6 @@ export const getGuests = async (
 
 export const getGuestDetails = async (id: string): Promise<Guest> => {
   const response = await axiosInstance.get<Guest>(GuestPath.byId(id));
-  return response.data;
-};
-
-export const getGuestByUuid = async (uuid: string): Promise<PublicGuest> => {
-  const response = await axiosInstance.get<PublicGuest>(GuestPath.byBaseId(uuid));
   return response.data;
 };
 
