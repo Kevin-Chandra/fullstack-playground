@@ -33,7 +33,7 @@ export class RsvpService {
       .getRepository(Rsvp)
       .createQueryBuilder("rsvp")
       .leftJoinAndSelect("rsvp.guest", "guest")
-      .where("guest.guestUuid = :uuid", { uuid: guestUuid })
+      .where("guest.uuid = :uuid", { uuid: guestUuid })
       .getOne();
 
     if (existing) {

@@ -34,7 +34,7 @@ export class GuestService {
   async create(createGuestDto: CreateGuestDto): Promise<Guest> {
     const guest = this.guestRepository.create({
       ...createGuestDto,
-      guestUuid: generate(),
+      uuid: generate(),
     });
 
     return await this.guestRepository.save(guest);
@@ -55,7 +55,7 @@ export class GuestService {
 
   async getGuestByUuid(uuid: string): Promise<Guest> {
     const guest = await this.guestRepository.findOne({
-      where: { guestUuid: uuid },
+      where: { uuid: uuid },
       relations: { rsvp: true },
     });
 
@@ -68,9 +68,10 @@ export class GuestService {
 
   async getPublicGuestByUuid(uuid: string): Promise<GuestPublic> {
     const guest = await this.guestRepository.findOne({
-      where: { guestUuid: uuid },
+      where: { uuid: uuid },
       select: {
         id: true, // Required for table join.
+        uuid: true,
         name: true,
         pax: true,
         rsvp: true,
@@ -82,7 +83,8 @@ export class GuestService {
       throw new NotFoundException("Guest not found");
     }
 
-    return guest;
+    const { id: _id, ...guestPublic } = guest;
+    return guestPublic;
   }
 
   async getGuests(query: PaginateQuery): Promise<Paginated<GuestWithStatus>> {

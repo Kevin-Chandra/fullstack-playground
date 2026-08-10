@@ -14,4 +14,8 @@ export const Guest = {
   BASE: "/guest",
   byId: (id: string): string => `${Guest.BASE}/id/${id}`,
   byBaseId: (id: string): string => `${Guest.BASE}/${id}`,
-} as const 
+} as const
+
+export const Rsvp = {
+  BASE: "/rsvp"
+} as const

@@ -1,5 +1,8 @@
-import Link from "next/link";
 import { Routes } from "@/src/lib/constants/routes";
+import PublicGuestInvitationContainer from "@/src/ui/features/guestRsvp/PublicGuestInvitationContainer";
+import PublicGuestInvitationSkeleton from "@/src/ui/features/guestRsvp/PublicGuestInvitationSkeleton";
+import Link from "next/link";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -8,9 +11,13 @@ export default function Home() {
         <h1 className="text-4xl font-semibold tracking-tight text-black dark:text-zinc-50">
           Wedding Management Portal
         </h1>
-        <p className="text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-          Welcome! The public site is under construction — check back soon.
-        </p>
+        {/*
+          The invitation reads the `guest` query param on the client, so it is
+          client-side rendered while the rest of the page stays prerendered.
+        */}
+        <Suspense fallback={<PublicGuestInvitationSkeleton />}>
+          <PublicGuestInvitationContainer />
+        </Suspense>
       </main>
       <footer className="flex justify-center pb-8">
         <Link

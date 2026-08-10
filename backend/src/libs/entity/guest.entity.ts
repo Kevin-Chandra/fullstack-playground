@@ -11,7 +11,7 @@ export class Guest {
   name: string;
 
   @Column({ type: "text", unique: true })
-  guestUuid: string;
+  uuid: string;
 
   @Column({ type: "int" })
   pax: number;

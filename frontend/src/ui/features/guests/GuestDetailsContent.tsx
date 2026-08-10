@@ -33,7 +33,7 @@ export default function GuestDetailsContent({
 }: GuestDetailsContentProps) {
 
   async function handleOnCopyUuid() {
-    const result = await clipboardCopy(guest.guestUuid)
+    const result = await clipboardCopy(guest.uuid)
     if (result.success) {
       toast.success("Guest UUID copied to clipboard")
     } else {
@@ -56,10 +56,10 @@ export default function GuestDetailsContent({
             <InfoField label="Invitation Type" value={getGuestInvitationTypeLabel(guest.invitationType)} />
           </div>
           <InfoField label="Notes" value={guest.notes} placeholderText="No notes yet" />
-          <InfoField label="Guest UUID" value={guest.guestUuid}>
+          <InfoField label="Guest UUID" value={guest.uuid}>
             <DefaultLinkButton
               label="Guest preview"
-              href={Routes.HOME + `/?${QueryParams.GUEST_UUID}=${guest.guestUuid}`}
+              href={Routes.HOME + `/?${QueryParams.GUEST_UUID}=${guest.uuid}`}
               icon={MdOpenInNew}
               iconPosition="right"
               target="_blank"

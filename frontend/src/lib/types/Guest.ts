@@ -16,7 +16,7 @@ export interface Guest {
   email: string;
   phoneNumber: string;
   notes: string;
-  guestUuid: string;
+  uuid: string;
   pax: number;
   invitationType: GuestInvitationType;
   rsvp?: Rsvp

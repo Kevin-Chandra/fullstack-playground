@@ -64,3 +64,23 @@ export const GUEST_FORM_MESSAGES = {
     pattern: "Invalid phone number format (e.g. +60123456789)",
   },
 } as const;
+
+/*
+ * RSVP Form — filled in by the guest from their invitation link.
+ */
+export const RSVP_FORM_LIMITS = {
+  pax: { min: 1 },
+  notes: { max: 1000 },
+} as const;
+
+export const RSVP_FORM_MESSAGES = {
+  pax: {
+    required: "Let us know how many are coming",
+    min: `At least ${RSVP_FORM_LIMITS.pax.min} guest must attend`,
+    max: (seats: number) =>
+      `We only saved ${seats} ${seats === 1 ? "seat" : "seats"} for you`,
+  },
+  notes: {
+    max: `Message must be at most ${RSVP_FORM_LIMITS.notes.max} characters`,
+  },
+} as const;
