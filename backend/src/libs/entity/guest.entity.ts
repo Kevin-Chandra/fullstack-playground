@@ -1,6 +1,13 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { InvitationType } from "./enums/invitation-type.enum";
 import { Rsvp } from "./rsvp.entity";
+import { Wish } from "./wish.entity";
 
 @Entity({ name: "guests" })
 export class Guest {
@@ -34,4 +41,7 @@ export class Guest {
 
   @OneToOne(() => Rsvp, (rsvp) => rsvp.guest, { cascade: true })
   rsvp?: Rsvp | null;
+
+  @OneToMany(() => Wish, (wish) => wish.guest)
+  wishes: Wish[];
 }

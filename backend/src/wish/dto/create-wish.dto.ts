@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateWishDto {
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  guestUuid!: string;
 
   @IsString()
   @IsNotEmpty()
-  message!: string;
+  message: string;
 }
