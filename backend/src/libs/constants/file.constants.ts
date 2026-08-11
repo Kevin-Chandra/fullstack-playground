@@ -14,3 +14,8 @@ export const UploadLimits = {
     AudioFileConstants.MAX_SIZE_BYTES,
   ),
 };
+
+export const StoragePrefixes = {
+  WISH_IMAGE: "wish/images",
+  WISH_AUDIO: "wish/audios",
+};

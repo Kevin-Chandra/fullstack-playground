@@ -5,4 +5,7 @@ export const errorCodeConstants = {
   DELETION_OWN_ACCOUNT_RESTRICTED: "deletion_own_account_restricted",
   UPDATE_OWN_ACCOUNT_RESTRICTED: "update_own_account_restricted",
   USERNAME_CONFLICT: "username_conflict",
+
+  // File storage.
+  FILE_UPLOAD_FAILED: "file_upload_failed",
 };

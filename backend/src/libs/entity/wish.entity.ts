@@ -16,6 +16,12 @@ export class Wish {
   @Column()
   message: string;
 
+  @Column({ type: "text", nullable: true })
+  imageKey: string;
+
+  @Column({ type: "text", nullable: true })
+  audioKey: string;
+
   @CreateDateColumn({
     type: "timestamptz",
     default: () => "CURRENT_TIMESTAMP",

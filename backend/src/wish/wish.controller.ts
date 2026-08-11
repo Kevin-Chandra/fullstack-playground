@@ -9,6 +9,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import type { PaginateQuery } from "nestjs-paginate";
 import { Paginate } from "nestjs-paginate";
 import { FormDataJson } from "../decorators/form-data-json.decorator";
@@ -16,6 +17,7 @@ import { Public } from "../decorators/public.decorator";
 import { UploadedFileField } from "../decorators/uploaded-file-field.decorator";
 import { JwtGuard } from "../guards/jwt.guard";
 import { UploadLimits } from "../libs/constants/file.constants";
+import { throttlerConstants } from "../libs/constants/throttler.constants";
 import { AudioValidationPipe } from "../pipes/AudioFileValidationPipe";
 import { ImageValidationPipe } from "../pipes/ImageFileValidationPipe";
 import { CreateWishDto } from "./dto/create-wish.dto";
@@ -27,6 +29,13 @@ export class WishController {
   constructor(private readonly wishService: WishService) {}
 
   @Public()
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    default: {
+      ttl: throttlerConstants.UPLOAD_TTL_MS,
+      limit: throttlerConstants.UPLOAD_LIMIT,
+    },
+  })
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
