@@ -1,16 +1,23 @@
+/// <reference types="multer" />
 import {
-  Body,
   Controller,
   Delete,
   Get,
   Param,
   Post,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import type { PaginateQuery } from "nestjs-paginate";
 import { Paginate } from "nestjs-paginate";
+import { FormDataJson } from "../decorators/form-data-json.decorator";
 import { Public } from "../decorators/public.decorator";
+import { UploadedFileField } from "../decorators/uploaded-file-field.decorator";
 import { JwtGuard } from "../guards/jwt.guard";
+import { UploadLimits } from "../libs/constants/file.constants";
+import { AudioValidationPipe } from "../pipes/AudioFileValidationPipe";
+import { ImageValidationPipe } from "../pipes/ImageFileValidationPipe";
 import { CreateWishDto } from "./dto/create-wish.dto";
 import { WishService } from "./wish.service";
 
@@ -21,8 +28,23 @@ export class WishController {
 
   @Public()
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishService.create(createWishDto);
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: "image", maxCount: 1 },
+        { name: "audio", maxCount: 1 },
+      ],
+      { limits: { fileSize: UploadLimits.MAX_FILE_SIZE_BYTES, files: 2 } },
+    ),
+  )
+  create(
+    @UploadedFileField("image", new ImageValidationPipe({ isRequired: false }))
+    image: Express.Multer.File,
+    @UploadedFileField("audio", new AudioValidationPipe({ isRequired: false }))
+    audio: Express.Multer.File,
+    @FormDataJson("data", CreateWishDto) createWishDto: CreateWishDto,
+  ) {
+    return this.wishService.create(createWishDto, image, audio);
   }
 
   @Get()

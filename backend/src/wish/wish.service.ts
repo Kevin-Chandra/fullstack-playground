@@ -24,7 +24,11 @@ export class WishService {
     this.logger = new Logger("Wish Service");
   }
 
-  async create(createWishDto: CreateWishDto): Promise<Wish> {
+  async create(
+    createWishDto: CreateWishDto,
+    image?: Express.Multer.File,
+    audio?: Express.Multer.File,
+  ): Promise<Wish> {
     const guest = await this.guestService.getGuestByUuid(
       createWishDto.guestUuid,
     );
