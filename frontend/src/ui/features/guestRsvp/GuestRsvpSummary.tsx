@@ -3,7 +3,7 @@ import { formatFullDateRsvp } from "@/src/lib/utils/dateTimeFormatter";
 import { MdCheckCircleOutline, MdOutlineCancel } from "react-icons/md";
 
 const card =
-  "flex w-full max-w-dialog flex-col gap-lg rounded-lg border p-xl text-left";
+  "flex w-full max-w-dialog-sm flex-col gap-lg rounded-lg border p-xl text-left";
 const header = "flex items-center gap-lg";
 const iconWell =
   "flex shrink-0 items-center justify-center rounded-md border p-md [&_svg]:size-5.5";

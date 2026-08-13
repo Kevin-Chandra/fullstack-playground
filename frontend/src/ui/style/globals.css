@@ -120,9 +120,11 @@
 
   /* toast — scheme-static dark surface (stays dark in both light/dark
      schemes by design) + per-variant icon tints and hairline borders */
-  --color-toast-surface: #231b14; /* toast-specific; not in the palette */
+  --color-toast-surface: #231b14;
+  /* toast-specific; not in the palette */
   --color-toast-message: var(--neutral-100);
-  --color-toast-muted: var(--neutral-500); /* subline + close affordance */
+  --color-toast-muted: var(--neutral-500);
+  /* subline + close affordance */
   --color-toast-success: var(--hue-sage);
   --color-toast-success-bg: var(--hue-sage-soft);
   --color-toast-success-border: var(--hue-sage-edge);
@@ -133,7 +135,8 @@
   --color-toast-error-bg: var(--hue-rose-soft);
   --color-toast-error-border: var(--hue-rose-edge);
   --color-toast-loading: var(--neutral-500);
-  --color-toast-loading-bg: rgba(255, 255, 255, 0.07); /* white wash, not a hue */
+  --color-toast-loading-bg: rgba(255, 255, 255, 0.07);
+  /* white wash, not a hue */
   --color-toast-loading-border: rgba(255, 255, 255, 0.1);
 
   /* spacing — p-xs, gap-xl, … (the default numeric scale stays available) */
@@ -162,8 +165,13 @@
   --radius-btn-md: 10px;
   --radius-btn-lg: 12px;
 
-  /* dialog panel width — 400px cap that never touches the viewport edge */
-  --container-dialog: min(25rem, calc(100vw - 2rem));
+  /* dialog sizes — same viewport gutter, one cap per size prop */
+  /* 400px — confirmations */
+  --container-dialog-sm: min(25rem, calc(100vw - 2rem));
+  /* 544px — forms */
+  --container-dialog-md: min(34rem, calc(100vw - 2rem));
+  /* 736px — media, long content */
+  --container-dialog-lg: min(46rem, calc(100vw - 2rem));
 
   /* elevation (scheme-static; glow/focus live in @theme inline above) */
   --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.35);
@@ -195,6 +203,7 @@
       opacity: 0;
       transform: translateY(12px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -206,6 +215,7 @@
       opacity: 0;
       transform: translateY(12px) scale(0.97);
     }
+
     to {
       opacity: 1;
       transform: none;
@@ -215,27 +225,21 @@
 
 /* brand accent fill — checked controls, primary CTA (composes with variants) */
 @utility bg-accent-gradient {
-  background-image: linear-gradient(
-    145deg,
-    var(--ds-accent-soft),
-    var(--ds-accent-strong)
-  );
+  background-image: linear-gradient(145deg,
+      var(--ds-accent-soft),
+      var(--ds-accent-strong));
 }
 
 @utility bg-accent-wash {
-  background-image: radial-gradient(
-    90% 70% at 18% 10%,
-    var(--ds-accent-glow),
-    transparent 58%
-  );
+  background-image: radial-gradient(90% 70% at 18% 10%,
+      var(--ds-accent-glow),
+      transparent 58%);
 }
 
 @utility bg-accent-halo {
-  background-image: radial-gradient(
-    55% 45% at 50% 36%,
-    var(--ds-accent-glow),
-    transparent 70%
-  );
+  background-image: radial-gradient(55% 45% at 50% 36%,
+      var(--ds-accent-glow),
+      transparent 70%);
 }
 
 /* Users master–detail — list + details column tracks ease open/closed
@@ -265,11 +269,15 @@
    and the width clamp live here; the icon well, message and subline are
    Tailwind-styled inside ToastCard. */
 .Toastify .Toastify__toast {
-  width: auto; /* grow to fit copy… */
-  min-width: 21.25rem; /* …between a 340px floor… */
-  max-width: min(26.25rem, calc(100vw - 2rem)); /* …and a 420px cap */
+  width: auto;
+  /* grow to fit copy… */
+  min-width: 21.25rem;
+  /* …between a 340px floor… */
+  max-width: min(26.25rem, calc(100vw - 2rem));
+  /* …and a 420px cap */
   min-height: auto;
-  margin-bottom: 10px; /* stackGap */
+  margin-bottom: 10px;
+  /* stackGap */
   padding: 12px 14px;
   border-radius: 12px;
   box-shadow: var(--shadow-card);
@@ -282,9 +290,11 @@
 .Toastify .Toastify__toast--success {
   border-color: var(--color-toast-success-border);
 }
+
 .Toastify .Toastify__toast--info {
   border-color: var(--color-toast-info-border);
 }
+
 .Toastify .Toastify__toast--error {
   border-color: var(--color-toast-error-border);
 }

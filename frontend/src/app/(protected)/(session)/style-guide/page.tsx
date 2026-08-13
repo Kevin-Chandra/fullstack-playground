@@ -6,6 +6,7 @@ import InitialsAvatar from "@/src/ui/components/avatar/InitialsAvatar";
 import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultLinkButton from "@/src/ui/components/buttons/DefaultLinkButton";
+import BaseDialog from "@/src/ui/components/dialog/BaseDialog";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
 import CheckboxGroup from "@/src/ui/components/input/CheckboxGroup";
 import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
@@ -935,7 +936,15 @@ function Switches() {
   );
 }
 
-type DialogDemo = "icon" | "default" | "destructive" | "form";
+type DialogDemo =
+  | "icon"
+  | "default"
+  | "destructive"
+  | "form"
+  | "custom"
+  | "sm"
+  | "md"
+  | "lg";
 
 function Dialogs() {
   const horizontalClass = "flex flex-wrap gap-4 items-center";
@@ -946,6 +955,12 @@ function Dialogs() {
   return (
     <>
       <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="Custom Dialog"
+          onClick={() => setOpenDialog("custom")}
+        />
         <DefaultButton
           variant="secondary"
           size="md"
@@ -971,6 +986,36 @@ function Dialogs() {
           onClick={() => setOpenDialog("form")}
         />
       </div>
+
+      {/* size caps the panel width; every size keeps a 1rem viewport gutter */}
+      <hr className="my-6" />
+      <div className={horizontalClass}>
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="sm · 400px"
+          onClick={() => setOpenDialog("sm")}
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="md · 544px"
+          onClick={() => setOpenDialog("md")}
+        />
+        <DefaultButton
+          variant="secondary"
+          size="md"
+          label="lg · 736px"
+          onClick={() => setOpenDialog("lg")}
+        />
+      </div>
+
+      <BaseDialog
+        open={openDialog === "custom"}
+        onClose={close}>
+        Hello
+      </BaseDialog>
+
 
       <DefaultDialog
         open={openDialog === "icon"}
@@ -1035,6 +1080,72 @@ function Dialogs() {
           fullWidth
           inputSize="md"
         />
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "sm"}
+        onClose={close}
+        size="sm"
+        icon={MdDeleteForever}
+        title="Remove guest?"
+        primaryButtonLabel="Remove"
+        secondaryButtonLabel="Cancel"
+        onPrimaryClick={close}
+      >
+        sm · 400px — the default. Sized for a confirmation: one short question
+        and a pair of buttons.
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "md"}
+        onClose={close}
+        size="md"
+        title="Edit guest"
+        primaryButtonLabel="Save changes"
+        secondaryButtonLabel="Cancel"
+        onPrimaryClick={close}
+      >
+        <p>
+          md · 544px — enough room for a form to breathe without labels and
+          inputs feeling cramped.
+        </p>
+        <DefaultInput
+          label="Full name"
+          name="guest-name"
+          placeholder="Ada Lovelace"
+          fullWidth
+          inputSize="md"
+        />
+        <DefaultInput
+          label="Email"
+          name="guest-email"
+          type="email"
+          placeholder="ada@everafter.dev"
+          leftIcon={MdPerson}
+          fullWidth
+          inputSize="md"
+        />
+      </DefaultDialog>
+
+      <DefaultDialog
+        open={openDialog === "lg"}
+        onClose={close}
+        size="lg"
+        icon={MdGroup}
+        title="Wish from Ada Lovelace"
+        primaryButtonLabel="Close"
+        onPrimaryClick={close}
+      >
+        <p>
+          lg · 736px — for media and long-form content, where a narrow column
+          would force an awkward amount of scrolling.
+        </p>
+        <div className="aspect-[16/9] w-full rounded-md bg-canvas/40" />
+        <p>
+          Wishing you both a lifetime of small ordinary joys — slow mornings,
+          long drives, and the kind of laughter that makes the neighbours
+          wonder. Thank you for letting us be part of the day.
+        </p>
       </DefaultDialog>
     </>
   );

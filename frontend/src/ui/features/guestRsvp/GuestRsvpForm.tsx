@@ -11,7 +11,7 @@ import DefaultTextarea from "../../components/input/DefaultTextarea";
 import RadioGroup from "../../components/input/RadioGroup";
 
 const form =
-  "flex w-full max-w-dialog flex-col gap-xl rounded-lg border border-edge bg-raised p-xl text-left";
+  "flex w-full max-w-dialog-sm flex-col gap-xl rounded-lg border border-edge bg-raised p-xl text-left";
 const heading = "flex flex-col gap-xs";
 const title = "text-h3 text-ink";
 const description = "text-caption text-muted";

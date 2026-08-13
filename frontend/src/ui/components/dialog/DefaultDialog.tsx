@@ -1,38 +1,22 @@
 "use client";
 
-import { useDialog } from "@/src/lib/hooks/components/useDialog";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import type { ReactNode } from "react";
 import { useId } from "react";
 import { IconType } from "react-icons";
 import { MdClose } from "react-icons/md";
+import BaseDialog, { BaseDialogProps } from "./BaseDialog";
 
 export type DefaultDialogProps = {
-  open: boolean;
-  onClose: () => void;
   title: ReactNode;
-  /** When false, clicking outside the dialog is ignored */
-  dismissable?: boolean;
-  destructive?: boolean;
   icon?: IconType;
   primaryButtonLabel: string;
   secondaryButtonLabel?: string;
   onPrimaryClick: () => void;
   onSecondaryClick?: () => void;
   loading?: boolean;
-  children?: ReactNode;
   showCloseButton?: boolean;
-};
-
-const panel = [
-  "m-auto w-full max-w-dialog rounded-xl bg-raised text-ink-body shadow-modal",
-  "backdrop:bg-black/45 open:animate-dialog-in",
-].join(" ");
-
-const border = {
-  base: "border border-edge-strong",
-  destructive: "border border-error/20",
-};
+} & BaseDialogProps;
 
 const iconWell =
   "flex size-10.5 shrink-0 items-center justify-center rounded-btn-lg border [&_svg]:size-5";
@@ -56,33 +40,31 @@ export default function DefaultDialog({
   loading = false,
   children,
   showCloseButton = true,
+  size = "sm",
 }: DefaultDialogProps) {
   const titleId = useId();
-  const { dialogRef, onCancel, onNativeClose, onPointerDown, onBackdropClick } =
-    useDialog({ open, onClose, dismissable });
   const tone = destructive ? "destructive" : "base";
 
   return (
-    <dialog
-      ref={dialogRef}
-      aria-labelledby={titleId}
-      onCancel={onCancel}
-      onClose={onNativeClose}
-      onPointerDown={onPointerDown}
-      onClick={onBackdropClick}
-      className={`${panel} ${border[tone]}`}
+    <BaseDialog
+      open={open}
+      onClose={onClose}
+      dismissable={dismissable}
+      destructive={destructive}
+      size={size}
     >
       <div className="relative p-2xl">
         {showCloseButton && (
-          <DefaultButton
-            variant="ghost"
-            size="sm"
-            icon={MdClose}
-            aria-label="Close dialog"
-            onClick={onClose}
-            disabled={loading}
-            className="absolute top-5 right-5"
-          />
+          <span className="absolute top-5 right-5">
+            <DefaultButton
+              variant="ghost"
+              size="sm"
+              icon={MdClose}
+              aria-label="Close dialog"
+              onClick={onClose}
+              disabled={loading}
+            />
+          </span>
         )}
 
         <div className="flex flex-col gap-lg">
@@ -122,6 +104,6 @@ export default function DefaultDialog({
           </div>
         </div>
       </div>
-    </dialog>
+    </BaseDialog >
   );
 }
