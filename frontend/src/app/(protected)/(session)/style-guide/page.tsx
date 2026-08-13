@@ -16,6 +16,7 @@ import DefaultTextarea from "@/src/ui/components/input/DefaultTextarea";
 import InputSelect from "@/src/ui/components/input/InputSelect";
 import RadioGroup from "@/src/ui/components/input/RadioGroup";
 import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
+import Spinner from "@/src/ui/components/spinner/Spinner";
 import { toast } from "@/src/ui/components/toast/toast";
 import { ReactNode, useState } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
@@ -59,6 +60,7 @@ export default function StyleGuidePage() {
       <Section title={"09 · Pagination"} content={<PaginationBars />} />
       <Section title={"10 · Badge"} content={<Badges />} />
       <Section title={"11 · Toast"} content={<Toasts />} />
+      <Section title={"12 · Spinner"} content={<Spinners />} />
     </div>
   );
 }
@@ -1176,6 +1178,77 @@ function Badges() {
         <DefaultBadge icon={MdArchive} variant="neutral" label="Draft" iconPosition="end" />
         <DefaultBadge icon={MdDelete} variant="danger" label="Archived" iconPosition="end" />
       </div>
+    </div>
+  );
+}
+
+function Spinners() {
+  const verticalClass = "flex flex-col gap-8";
+  const horizontalClass = "flex flex-wrap items-center gap-8";
+  const cellClass = "flex flex-col items-center gap-2";
+  const captionClass = "text-caption text-muted";
+
+  return (
+    <div className={verticalClass}>
+      {/* Size is the only prop that changes the shape */}
+      <div className={horizontalClass}>
+        <div className={cellClass}>
+          <Spinner size="sm" />
+          <span className={captionClass}>sm · 16px</span>
+        </div>
+        <div className={cellClass}>
+          <Spinner size="md" />
+          <span className={captionClass}>md · 24px (default)</span>
+        </div>
+        <div className={cellClass}>
+          <Spinner size="lg" />
+          <span className={captionClass}>lg · 36px</span>
+        </div>
+      </div>
+      <hr />
+
+      {/* No colour prop: the ring is currentColor, so the parent sets the tint */}
+      <div className={horizontalClass}>
+        <div className={`${cellClass} text-ink`}>
+          <Spinner size="md" />
+          <span className={captionClass}>text-ink</span>
+        </div>
+        <div className={`${cellClass} text-muted`}>
+          <Spinner size="md" />
+          <span className={captionClass}>text-muted</span>
+        </div>
+        <div className={`${cellClass} text-accent`}>
+          <Spinner size="md" />
+          <span className={captionClass}>text-accent</span>
+        </div>
+        <div className={`${cellClass} text-error`}>
+          <Spinner size="md" />
+          <span className={captionClass}>text-error</span>
+        </div>
+      </div>
+
+      {/* Same component on an accent fill — inherits accent-ink, no override */}
+      <div className="flex items-center gap-4 rounded-xl bg-accent-strong bg-accent-gradient px-6 py-5 text-accent-ink">
+        <Spinner size="md" />
+        <span className="text-body-sm">Publishing your invitation…</span>
+      </div>
+      <hr />
+
+      {/* In context: beside a line of text, and centred in an empty panel */}
+      <div className="flex items-center gap-3 text-muted">
+        <Spinner size="sm" ariaLabel="Loading more wishes" />
+        <span className={captionClass}>Loading more wishes…</span>
+      </div>
+      <div className="flex h-40 items-center justify-center rounded-xl border border-edge">
+        <Spinner size="lg" ariaLabel="Loading wishes" className="text-muted" />
+      </div>
+      <p className={captionClass}>
+        <code className="font-mono text-code">label</code> is the accessible name
+        announced by screen readers (role=status),
+        never visible text — pass what is loading, e.g. &quot;Loading wishes&quot;.
+        Buttons do not use this component; they render their own spinner sized off
+        the button scale, shown in section 01.
+      </p>
     </div>
   );
 }

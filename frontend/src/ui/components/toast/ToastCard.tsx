@@ -1,3 +1,4 @@
+import Spinner from "../spinner/Spinner";
 import { TOAST_VARIANTS, ToastVariant } from "./toast";
 
 type ToastCardProps = {
@@ -19,7 +20,7 @@ export default function ToastCard({
   return (
     <div className="flex items-center gap-3">
       <span className={`${iconWell} ${well}`}>
-        {variant === "loading" ? <ToastSpinner /> : <Icon />}
+        {variant === "loading" ? <Spinner size="sm" /> : <Icon />}
       </span>
       <div className="flex min-w-0 flex-1 justify-start flex-col gap-0.5">
         <p className="text-body-sm text-toast-message">{message}</p>
@@ -28,7 +29,3 @@ export default function ToastCard({
     </div>
   );
 }
-
-const ToastSpinner = () => (
-  <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-);

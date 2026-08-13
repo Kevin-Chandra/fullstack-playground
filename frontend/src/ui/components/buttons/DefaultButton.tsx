@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { IconType } from "react-icons";
+import Spinner from "../spinner/Spinner";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "text";
 type Size = "xs" | "sm" | "md" | "lg";
@@ -143,7 +144,7 @@ export default function DefaultButton({
         </span>
         {loading && (
           <span className="absolute inset-0 flex items-center justify-center">
-            <Spinner size={size} />
+            <Spinner size="sm" />
           </span>
         )}
       </>
@@ -162,9 +163,3 @@ export default function DefaultButton({
     </button>
   );
 }
-
-const Spinner = ({ size }: { size: Size }) => (
-  <span
-    className={`animate-spin rounded-full border-2 border-current border-t-transparent ${spinnerSizes[size]}`}
-  />
-);
