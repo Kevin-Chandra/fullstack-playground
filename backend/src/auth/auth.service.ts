@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { type StringValue as MsStringValue } from "ms";
+import { Repository } from "typeorm";
+import { UserStatus } from "../libs/entity/enums/user-status.enum";
+import { User } from "../libs/entity/user.entity";
 import { PasswordUtil } from "../libs/utils/password.util";
 import { LoginDto } from "./dto/login.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "../libs/entity/user.entity";
-import ms, { type StringValue as MsStringValue } from "ms";
-import { UserStatus } from "../libs/entity/enums/user-status.enum";
 
 @Injectable()
 export class AuthService {
@@ -94,11 +94,11 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: jwtSecret,
-        expiresIn: ms(accessTokenExpiresIn as MsStringValue),
+        expiresIn: accessTokenExpiresIn as MsStringValue,
       }),
       this.jwtService.signAsync(payload, {
         secret: refreshTokenSecret,
-        expiresIn: ms(refreshTokenExpiresIn as MsStringValue),
+        expiresIn: refreshTokenExpiresIn as MsStringValue,
       }),
     ]);
 
