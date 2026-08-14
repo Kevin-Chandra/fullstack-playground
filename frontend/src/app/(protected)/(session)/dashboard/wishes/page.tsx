@@ -18,7 +18,8 @@ import Spinner from "@/src/ui/components/spinner/Spinner";
 import { toast } from "@/src/ui/components/toast/toast";
 import WishListEmpty from "@/src/ui/features/wishes/WishListEmpty";
 import WishMasonryGrid from "@/src/ui/features/wishes/WishMasonryGrid";
-import { ChangeEvent, useMemo, useState } from "react";
+import Image from "next/image";
+import { ChangeEvent, SyntheticEvent, useMemo, useState } from "react";
 import { MdClose, MdEdit, MdFormatQuote, MdOutlineDelete, MdRefresh, MdSearch } from "react-icons/md";
 
 const contentContainer = "flex min-h-0 flex-1 flex-col pt-xl";
@@ -26,6 +27,13 @@ const centered = "flex flex-1 items-center justify-center";
 
 const wishDetailsContainer = "flex flex-col gap-xl"
 const wishHeaderLabel = "font-mono text-muted uppercase"
+// the frame's aspect ratio comes from the loaded photo, so it hugs the image;
+// max-h keeps a very tall portrait from pushing the rest of the dialog offscreen
+const photoFrame =
+  "relative w-full max-h-[60vh] overflow-hidden rounded-md bg-canvas/40";
+// collapsed until the photo reports its dimensions, so it reserves no space
+const photoFrameLoading = "hidden";
+const photo = "object-contain";
 const message = "text-body-lg text-ink";
 const quote = "flex flex-col items-start gap-md";
 const quoteMarkOpen = "rotate-180 self-start text-accent/40";
@@ -36,6 +44,8 @@ const guestName = "text-h4 text-ink";
 const guestMeta = "flex gap-xs text-label text-muted";
 
 const QUOTE_SIZE = 20;
+// the dialog caps at max-w-dialog-lg (46rem) minus its p-2xl gutters
+const PHOTO_SIZES = "(min-width: 46rem) 42rem, 100vw";
 
 export default function WishesPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -45,6 +55,7 @@ export default function WishesPage() {
 
   const [wishDetails, setWishDetails] = useState<Wish>()
   const [deleteWishId, setDeleteWishId] = useState<string>()
+  const [photoRatio, setPhotoRatio] = useState<number>()
 
   const params = useMemo<GetWishParams>(
     () => ({ page: BASE_PAGINATION_PAGE, limit: PAGINATION_LIMIT, search }),
@@ -100,12 +111,42 @@ export default function WishesPage() {
   }
 
   function handleWishClicked(wish: Wish) {
+    setPhotoRatio(undefined)
     setWishDetails(wish)
   }
 
   function handleWishDetailDialogClose() {
     setDeleteWishId(undefined)
     setWishDetails(undefined)
+    setPhotoRatio(undefined)
+  }
+
+  function handlePhotoLoad(event: SyntheticEvent<HTMLImageElement>) {
+    const { naturalWidth, naturalHeight } = event.currentTarget;
+
+    if (naturalHeight > 0) {
+      setPhotoRatio(naturalWidth / naturalHeight);
+    }
+  }
+
+  function renderWishPhoto(wish: Wish) {
+    if (wish.imageUrl) {
+      return (
+        <div
+          className={`${photoFrame} ${photoRatio ? "" : photoFrameLoading}`}
+          style={{ aspectRatio: photoRatio }}>
+          <Image
+            className={photo}
+            src={wish.imageUrl}
+            alt={`Photo from ${wish.guest.name}`}
+            fill
+            sizes={PHOTO_SIZES}
+            loading="eager"
+            onLoad={handlePhotoLoad}
+          />
+        </div>
+      );
+    }
   }
 
   function renderWishDetailsFooterContent(wishDetails: Wish) {
@@ -171,6 +212,7 @@ export default function WishesPage() {
           </span>
           <div className={wishDetailsContainer}>
             <span className={wishHeaderLabel}>A wish for you</span>
+            {renderWishPhoto(wishDetails)}
             <div className={quote}>
               <MdFormatQuote size={QUOTE_SIZE} className={quoteMarkOpen} />
               <p className={message}>{wishDetails.message}</p>
