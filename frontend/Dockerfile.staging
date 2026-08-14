@@ -1,0 +1,57 @@
+# Production image. The development counterpart (Dockerfile.development) runs
+# `next dev` against a bind mount; this one builds once and ships Next's
+# standalone server output.
+
+FROM node:24-slim AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# NEXT_PUBLIC_* values are inlined into the browser bundle at build time, so
+# they must be present *here* rather than in the runtime environment. Changing
+# one means rebuilding the image, not restarting the container.
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_REQUEST_TIMEOUT=20000
+ARG NEXT_PUBLIC_SHOW_LOGGER=false
+
+# Fail the build rather than ship a bundle whose axios instance has no
+# baseURL — that failure mode is a silent 404 against the frontend's own
+# origin, which is a lot harder to diagnose than a failed build. Checked
+# before the source copy so a missing argument fails in seconds.
+RUN test -n "$NEXT_PUBLIC_API_URL" \
+  || (echo "ERROR: NEXT_PUBLIC_API_URL build argument is required" && false)
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_REQUEST_TIMEOUT=$NEXT_PUBLIC_API_REQUEST_TIMEOUT
+ENV NEXT_PUBLIC_SHOW_LOGGER=$NEXT_PUBLIC_SHOW_LOGGER
+ENV NEXT_OUTPUT_STANDALONE=true
+
+COPY . .
+
+RUN npm run build
+
+
+FROM node:24-slim AS runtime
+
+ENV NODE_ENV=production
+# Next's standalone server binds localhost by default, which the platform's
+# health check cannot reach from outside the container.
+ENV HOSTNAME=0.0.0.0
+
+WORKDIR /app
+
+# Standalone splits the output three ways: the traced server bundle, the
+# static assets it does not copy itself, and public/.
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/public ./public
+
+USER node
+
+# server.js reads PORT; the platform injects it and routes to whatever the
+# process binds. EXPOSE is documentation only.
+EXPOSE 3000
+
+CMD ["node", "server.js"]

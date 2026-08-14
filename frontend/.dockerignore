@@ -1,7 +1,9 @@
 node_modules/
 .git/
 *.log
-.env
+# next build reads .env.local / .env.production too, and NEXT_PUBLIC_* values
+# found there get inlined into the client bundle.
+.env*
 dist/
 .next/
 coverage/
