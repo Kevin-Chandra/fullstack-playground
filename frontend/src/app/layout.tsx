@@ -27,7 +27,7 @@ export const metadata = {
   title: "Wedding Management Portal",
   description: "Fullstack Project",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
   },
 };
 

@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import {
   ACCESS_TOKEN_COOKIE,
   REFRESH_TOKEN_COOKIE,
 } from "@/src/lib/constants/cookies";
+import { Routes } from "@/src/lib/constants/routes";
 import {
   isProtectedPath,
   resolveAccessRedirect,
 } from "@/src/lib/guards/accessPolicy";
 import { refreshSession } from "@/src/lib/network/refreshSession";
-import { Routes } from "@/src/lib/constants/routes";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 /**
  * Route gate (Next 16 "proxy", formerly middleware). Redirects based only on
@@ -67,5 +67,5 @@ async function refreshAndRetry(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.svg).*)"],
 };
