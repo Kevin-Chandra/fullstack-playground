@@ -46,7 +46,8 @@
   --ds-accent: #b97e58;
   --ds-accent-strong: #a86c47;
   --ds-accent-soft: #d9a284;
-  --ds-accent-ink: #2b1a10; /* text on accent fills; stays dark in both schemes */
+  --ds-accent-ink: #2b1a10;
+  /* text on accent fills; stays dark in both schemes */
   --ds-accent-glow: #b97e5840;
   --ds-accent-glow-strong: #b97e5859;
   --ds-focus: #b97e582e;
@@ -63,34 +64,34 @@
   --ds-badge-danger-bg: #c25b5b1f;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ds-canvas: #14100c;
-    --ds-raised: #1d1712;
-    --ds-field: #120d09;
-    --ds-brand: #2a1c14;
-    --ds-edge: #ffffff14;
-    --ds-edge-strong: #ffffff1a;
-    --ds-ink: #f7f2ec;
-    --ds-ink-body: var(--neutral-100);
-    --ds-muted: var(--neutral-500);
-    --ds-accent: var(--hue-peach);
-    --ds-accent-strong: #d9a284;
-    --ds-accent-soft: #f3d8c4;
-    --ds-accent-glow: #e2b1904d;
-    --ds-accent-glow-strong: #e2b1906b;
-    --ds-focus: #e8b99626;
-    --ds-error: var(--hue-rose);
+:root {
+  color-scheme: dark;
 
-    --ds-badge-active: var(--hue-sage);
-    --ds-badge-active-bg: #a9bd9b24;
-    --ds-badge-warning: var(--hue-peach);
-    --ds-badge-warning-bg: #e2b19024;
-    --ds-badge-neutral: var(--neutral-500);
-    --ds-badge-neutral-bg: #ffffff12;
-    --ds-badge-danger: var(--hue-rose);
-    --ds-badge-danger-bg: #f0a3a31f;
-  }
+  --ds-canvas: #14100c;
+  --ds-raised: #1d1712;
+  --ds-field: #120d09;
+  --ds-brand: #2a1c14;
+  --ds-edge: #ffffff14;
+  --ds-edge-strong: #ffffff1a;
+  --ds-ink: #f7f2ec;
+  --ds-ink-body: var(--neutral-100);
+  --ds-muted: var(--neutral-500);
+  --ds-accent: var(--hue-peach);
+  --ds-accent-strong: #d9a284;
+  --ds-accent-soft: #f3d8c4;
+  --ds-accent-glow: #e2b1904d;
+  --ds-accent-glow-strong: #e2b1906b;
+  --ds-focus: #e8b99626;
+  --ds-error: var(--hue-rose);
+
+  --ds-badge-active: var(--hue-sage);
+  --ds-badge-active-bg: #a9bd9b24;
+  --ds-badge-warning: var(--hue-peach);
+  --ds-badge-warning-bg: #e2b19024;
+  --ds-badge-neutral: var(--neutral-500);
+  --ds-badge-neutral-bg: #ffffff12;
+  --ds-badge-danger: var(--hue-rose);
+  --ds-badge-danger-bg: #f0a3a31f;
 }
 
 body {
