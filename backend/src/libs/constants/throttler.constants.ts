@@ -12,5 +12,5 @@ export const throttlerConstants = {
    * request and writes it to paid object storage.
    */
   UPLOAD_TTL_MS: 60_000,
-  UPLOAD_LIMIT: 1,
+  UPLOAD_LIMIT: 4,
 };
