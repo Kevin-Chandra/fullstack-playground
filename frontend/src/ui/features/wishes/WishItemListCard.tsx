@@ -4,15 +4,15 @@ import Image from "next/image";
 import { MdFormatQuote } from "react-icons/md";
 
 const card =
-  "flex flex-col gap-lg rounded-md border border-edge bg-raised p-lg shadow-card";
+  "flex w-full flex-col gap-lg rounded-md border border-edge bg-raised p-lg text-left shadow-card";
 const photoFrame =
   "relative aspect-[4/3] w-full overflow-hidden rounded-md bg-canvas/40";
 const photo = "object-cover";
-const quote = "flex flex-col gap-md px-sm";
+const quote = "flex flex-col items-start gap-md px-sm";
 const quoteMarkOpen = "rotate-180 self-start text-accent/40";
 const quoteMarkClose = "self-end text-accent/40";
 const message = "text-body-lg text-ink";
-const footer = "flex flex-col gap-xs";
+const footer = "flex flex-col gap-xs items-start";
 const guestName = "text-h4 text-ink";
 const guestMeta = "text-label text-muted";
 
@@ -22,10 +22,12 @@ const PHOTO_SIZES = "(min-width: 64rem) 33vw, (min-width: 40rem) 50vw, 100vw";
 
 type WishItemListCardProps = {
   wish: Wish;
+  onClick: () => void;
 };
 
 export default function WishItemListCard({
   wish,
+  onClick,
 }: WishItemListCardProps) {
   const guest = wish.guest;
 
@@ -46,7 +48,10 @@ export default function WishItemListCard({
   }
 
   return (
-    <article className={card}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={card}>
       {renderPhoto()}
 
       <div className={quote}>
@@ -61,6 +66,6 @@ export default function WishItemListCard({
         <span className={guestName}>{guest.name}</span>
         <span className={guestMeta}>{formatFullDateRsvp(wish.createdAt)}</span>
       </div>
-    </article>
+    </button>
   );
 }

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import type { MouseEvent, PointerEvent, SyntheticEvent } from "react";
+import { useEffect, useRef } from "react";
 
 type UseDialogParams = {
   open: boolean;
@@ -26,7 +26,7 @@ export function useDialog({
 
   const onCancel = (event: SyntheticEvent<HTMLDialogElement>) => {
     event.preventDefault();
-    onClose();
+    if (dismissable) onClose();
   };
 
   // native dismissals onCancel doesn't cover, e.g. form method="dialog";

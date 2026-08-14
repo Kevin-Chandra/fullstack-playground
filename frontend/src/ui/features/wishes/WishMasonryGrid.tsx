@@ -15,6 +15,7 @@ const footerBanner = "w-full max-w-lg";
 
 type WishMasonryGridProps = {
   wishes: Wish[];
+  onWishClick: (wish: Wish) => void;
   hasNextPage: boolean;
   loadingNextPage: boolean;
   nextPageError?: ErrorEntity;
@@ -24,6 +25,7 @@ type WishMasonryGridProps = {
 
 export default function WishMasonryGrid({
   wishes,
+  onWishClick,
   hasNextPage,
   loadingNextPage,
   nextPageError,
@@ -71,7 +73,7 @@ export default function WishMasonryGrid({
           useBalancedLayout: true,
         }}
         render={(wish) => (
-          <WishItemListCard wish={wish} />
+          <WishItemListCard wish={wish} onClick={() => onWishClick(wish)} />
         )} />
 
       <div className={footer}>
