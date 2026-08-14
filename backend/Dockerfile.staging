@@ -1,0 +1,37 @@
+# Production image. The development counterpart (Dockerfile.development) runs
+# `nest start --watch` against a bind mount; this one compiles once and ships
+# only the build output plus production dependencies.
+
+FROM node:24-slim AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# Drop dev dependencies in place so the runtime stage can copy node_modules
+# without a second registry install.
+RUN npm prune --omit=dev
+
+
+FROM node:24-slim AS runtime
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+
+USER node
+
+# main.ts binds PORT (injected by the hosting platform) and falls back to
+# BACKEND_PORT locally. EXPOSE is documentation only — the platform routes to
+# whatever port the process actually binds.
+EXPOSE 3001
+
+CMD ["node", "dist/main"]
