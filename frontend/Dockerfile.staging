@@ -16,16 +16,27 @@ ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_API_REQUEST_TIMEOUT=20000
 ARG NEXT_PUBLIC_SHOW_LOGGER=false
 
+# Also required at build time, despite not being a NEXT_PUBLIC_ value: Next
+# evaluates next.config's rewrites() during `next build` and freezes the result
+# into routes-manifest.json. An absent value here yields an empty rewrite table
+# and every /api/backend/* call 404s at runtime, no matter what the container's
+# environment says. It is *additionally* needed as a runtime variable, for
+# serverApiFetch and refreshSession.
+ARG BACKEND_API_URL
+
 # Fail the build rather than ship a bundle whose axios instance has no
 # baseURL — that failure mode is a silent 404 against the frontend's own
 # origin, which is a lot harder to diagnose than a failed build. Checked
 # before the source copy so a missing argument fails in seconds.
 RUN test -n "$NEXT_PUBLIC_API_URL" \
   || (echo "ERROR: NEXT_PUBLIC_API_URL build argument is required" && false)
+RUN test -n "$BACKEND_API_URL" \
+  || (echo "ERROR: BACKEND_API_URL build argument is required" && false)
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_REQUEST_TIMEOUT=$NEXT_PUBLIC_API_REQUEST_TIMEOUT
 ENV NEXT_PUBLIC_SHOW_LOGGER=$NEXT_PUBLIC_SHOW_LOGGER
+ENV BACKEND_API_URL=$BACKEND_API_URL
 ENV NEXT_OUTPUT_STANDALONE=true
 
 COPY . .
