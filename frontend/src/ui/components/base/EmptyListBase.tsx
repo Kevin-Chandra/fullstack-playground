@@ -41,7 +41,7 @@ export default function EmptyListBase({
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 self-center text-center">
+    <div className="flex flex-1 flex-col p-xl items-center justify-center gap-4 self-center text-center">
       <Icon size={ICON_SIZE} />
       <h2>{heading}</h2>
       <p>{message}</p>
