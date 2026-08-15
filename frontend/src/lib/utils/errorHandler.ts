@@ -1,10 +1,5 @@
 import { AxiosError } from "axios";
 import {
-  CustomErrorCode,
-  ErrorAction,
-  ErrorEntity,
-} from "../types/ErrorEntity";
-import {
   customErrorDescription,
   customErrorTitle,
   DEFAULT_ERROR,
@@ -12,6 +7,11 @@ import {
   GENERIC_ERROR_TITLE,
 } from "../constants/error";
 import { ApiErrorBody } from "../types/ApiErrorBody";
+import {
+  CustomErrorCode,
+  ErrorAction,
+  ErrorEntity,
+} from "../types/ErrorEntity";
 
 function normalizeMessage(message?: string | string[]): string {
   return Array.isArray(message)

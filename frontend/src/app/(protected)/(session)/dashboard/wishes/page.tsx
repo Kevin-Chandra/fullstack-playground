@@ -9,6 +9,7 @@ import { useWishList } from "@/src/lib/hooks/wish/useWishList";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
 import { GetWishParams, Wish } from "@/src/lib/types/Wish";
 import { formatFullDateRsvp } from "@/src/lib/utils/dateTimeFormatter";
+import AudioPlayer from "@/src/ui/components/audio/AudioPlayer";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import ScrollToTopButton from "@/src/ui/components/buttons/ScrollToTopButton";
 import BaseDialog from "@/src/ui/components/dialog/BaseDialog";
@@ -129,16 +130,27 @@ export default function WishesPage() {
     }
   }
 
-  function renderWishPhoto(wish: Wish) {
-    if (wish.imageUrl) {
+  function renderAudioPlayer(audioUrl?: string) {
+    if (audioUrl) {
+      return (
+        <AudioPlayer
+          audioUrl={audioUrl}
+          className="mt-lg"
+        />
+      )
+    }
+  }
+
+  function renderWishPhoto(imageUrl?: string) {
+    if (imageUrl) {
       return (
         <div
           className={`${photoFrame} ${photoRatio ? "" : photoFrameLoading}`}
           style={{ aspectRatio: photoRatio }}>
           <Image
             className={photo}
-            src={wish.imageUrl}
-            alt={`Photo from ${wish.guest.name}`}
+            src={imageUrl}
+            alt={`Wish Photo`}
             fill
             sizes={PHOTO_SIZES}
             loading="eager"
@@ -212,7 +224,8 @@ export default function WishesPage() {
           </span>
           <div className={wishDetailsContainer}>
             <span className={wishHeaderLabel}>A wish for you</span>
-            {renderWishPhoto(wishDetails)}
+            {renderWishPhoto(wishDetails.imageUrl)}
+            {renderAudioPlayer(wishDetails.audioUrl)}
             <div className={quote}>
               <MdFormatQuote size={QUOTE_SIZE} className={quoteMarkOpen} />
               <p className={message}>{wishDetails.message}</p>

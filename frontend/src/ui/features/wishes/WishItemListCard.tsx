@@ -1,7 +1,8 @@
 import { Wish } from "@/src/lib/types/Wish";
 import { formatFullDateRsvp } from "@/src/lib/utils/dateTimeFormatter";
 import Image from "next/image";
-import { MdFormatQuote } from "react-icons/md";
+import { MdFormatQuote, MdMicNone } from "react-icons/md";
+import DefaultBadge from "../../components/badge/DefaultBadge";
 
 const card =
   "flex w-full flex-col gap-lg rounded-md border border-edge bg-raised p-lg text-left shadow-card";
@@ -40,6 +41,7 @@ export default function WishItemListCard({
             src={wish.imageUrl}
             alt={`Photo from ${guest.name}`}
             fill
+            loading="eager"
             sizes={PHOTO_SIZES}
           />
         </div>
@@ -53,6 +55,14 @@ export default function WishItemListCard({
       onClick={onClick}
       className={card}>
       {renderPhoto()}
+
+      {wish.audioUrl &&
+        <DefaultBadge
+          icon={MdMicNone}
+          label="Voice note attached"
+          variant="warning"
+          className="mt-md self-start"
+        />}
 
       <div className={quote}>
         <MdFormatQuote size={QUOTE_SIZE} className={quoteMarkOpen} />
