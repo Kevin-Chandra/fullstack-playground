@@ -46,11 +46,6 @@ RUN npm run build
 
 FROM node:24-slim AS runtime
 
-ENV NODE_ENV=production
-# Next's standalone server binds localhost by default, which the platform's
-# health check cannot reach from outside the container.
-ENV HOSTNAME=0.0.0.0
-
 WORKDIR /app
 
 # Standalone splits the output three ways: the traced server bundle, the

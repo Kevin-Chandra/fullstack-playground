@@ -51,6 +51,7 @@ out
 # env files
 .env
 .development.env
+.staging.env
 
 .idea/
 .vscode/
