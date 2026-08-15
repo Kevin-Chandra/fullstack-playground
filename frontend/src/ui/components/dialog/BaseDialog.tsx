@@ -16,7 +16,7 @@ export type BaseDialogProps = {
 };
 
 const panel = [
-  "m-auto w-full rounded-xl bg-raised text-ink-body shadow-modal",
+  "m-auto max-h-[calc(100%-8rem)] w-full rounded-xl bg-raised text-ink-body shadow-modal",
   "backdrop:bg-black/45 open:animate-dialog-in",
 ].join(" ");
 
