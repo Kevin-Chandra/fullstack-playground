@@ -65,6 +65,48 @@ export class StorageService implements OnModuleInit {
     }
   }
 
+  async copyObject(objectKey: string, copyPath: string): Promise<string> {
+    const ext = this.getExtensionFromKey(objectKey);
+    const key = this.buildObjectKey(copyPath, ext);
+    try {
+      await this.bucket.copyObject(objectKey, key);
+      return key;
+    } catch (error) {
+      this.logger.error(`Failed to upload object ${key}`, error);
+      throw new InternalServerErrorException(
+        "Failed to upload file.",
+        errorCodeConstants.FILE_UPLOAD_FAILED,
+      );
+    }
+  }
+
+  async renameObject(
+    objectKey: string,
+    newPrefixPath: string,
+  ): Promise<string> {
+    const filename = objectKey.split("/").pop() ?? objectKey;
+    const key = `${newPrefixPath}/${filename}`;
+
+    if (key === objectKey) {
+      return key;
+    }
+
+    try {
+      await this.bucket.copyObject(objectKey, key);
+    } catch (error) {
+      this.logger.error(`Failed to copy object ${objectKey} to ${key}`, error);
+
+      throw new InternalServerErrorException(
+        "Failed to move file.",
+        errorCodeConstants.FILE_UPLOAD_FAILED,
+      );
+    }
+
+    await this.remove(objectKey);
+
+    return key;
+  }
+
   async remove(key: string): Promise<void> {
     if (!key) {
       return;
@@ -109,5 +151,16 @@ export class StorageService implements OnModuleInit {
    */
   private buildObjectKey(prefixPath: string, ext?: string): string {
     return `${prefixPath}/${generate()}.${ext ?? "bin"}`;
+  }
+
+  private getExtensionFromKey(key: string): string | undefined {
+    const filename = key.split("/").pop() ?? "";
+    const dotIndex = filename.lastIndexOf(".");
+
+    if (dotIndex <= 0 || dotIndex === filename.length - 1) {
+      return undefined;
+    }
+
+    return filename.slice(dotIndex + 1);
   }
 }

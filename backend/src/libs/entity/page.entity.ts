@@ -2,32 +2,26 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { UserStatus } from "./enums/user-status.enum";
-import { PagePublication } from "./page-publication.entity";
 
-@Entity({ name: "users" })
-export class User {
+/**
+ * A server-driven page. Rows are seeded from `SeededPages` at boot rather than
+ * authored: adding a page also needs a frontend route and renderer, so it is a
+ * code change either way.
+ */
+@Entity({ name: "pages" })
+export class Page {
   @PrimaryGeneratedColumn({ type: "bigint" })
   id: number;
 
+  /** URL segment the API addresses this page by — `/page/home`. */
   @Column({ type: "text", unique: true })
-  username: string;
-
-  @Column({ type: "text", select: false })
-  passwordHash: string;
+  slug: string;
 
   @Column({ type: "text" })
   name: string;
-
-  @Column({ type: "enum", enum: UserStatus })
-  userStatus: UserStatus;
-
-  @OneToMany(() => PagePublication, (publication) => publication.publishedBy)
-  pagePublications: PagePublication[];
 
   @CreateDateColumn({
     type: "timestamptz",

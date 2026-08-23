@@ -18,4 +18,11 @@ export const UploadLimits = {
 export const StoragePrefixes = {
   WISH_IMAGE: "wish/images",
   WISH_AUDIO: "wish/audios",
+  HOME_PAGE: "page/home",
+};
+
+export const StorageTypePath = {
+  IMAGE: "/images",
+  AUDIO: "/audios",
+  VIDEO: "/videos",
 };
