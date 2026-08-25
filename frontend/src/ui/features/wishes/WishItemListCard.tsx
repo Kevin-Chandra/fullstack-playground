@@ -41,7 +41,6 @@ export default function WishItemListCard({
             src={wish.imageUrl}
             alt={`Photo from ${guest.name}`}
             fill
-            loading="eager"
             sizes={PHOTO_SIZES}
           />
         </div>
