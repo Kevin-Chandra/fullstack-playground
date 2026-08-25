@@ -12,7 +12,7 @@ export class PageController {
     return this.pageService.findAll();
   }
 
-  @Get(":id")
+  @Get("id/:id")
   getPageDetails(@Param("id") id: string) {
     return this.pageService.findPageDetails(+id);
   }

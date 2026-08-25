@@ -32,6 +32,12 @@ export type PublishedSection = {
  */
 @Entity({ name: "page_publications" })
 @Index(["pageId", "id"])
+/**
+ * A version identifies a snapshot within its page, so two rows may never share
+ * one. The service serialises publishes on the page row, and this is the
+ * backstop that makes a duplicate impossible even if that lock is ever lost.
+ */
+@Index(["pageId", "version"], { unique: true })
 export class PagePublication {
   @PrimaryGeneratedColumn({ type: "bigint" })
   id: number;

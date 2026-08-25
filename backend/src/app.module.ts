@@ -9,6 +9,10 @@ import { validateEnv } from "./config/env.validation";
 import { typeOrmAsyncConfig } from "./config/typeorm.config";
 import { GuestModule } from "./guest/guest.module";
 import { throttlerConstants } from "./libs/constants/throttler.constants";
+import { MediaModule } from "./media/media.module";
+import { PageConfigsModule } from "./page-configs/page-configs.module";
+import { PagePublicationModule } from "./page-publication/page-publication.module";
+import { PageModule } from "./page/page.module";
 import { RsvpModule } from "./rsvp/rsvp.module";
 import { UserModule } from "./user/user.module";
 import { WishModule } from "./wish/wish.module";
@@ -31,6 +35,10 @@ import { WishModule } from "./wish/wish.module";
     AuthModule,
     GuestModule,
     RsvpModule,
+    MediaModule,
+    PageModule,
+    PageConfigsModule,
+    PagePublicationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

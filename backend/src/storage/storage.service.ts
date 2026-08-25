@@ -1,5 +1,6 @@
 /// <reference types="multer" />
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -43,15 +44,23 @@ export class StorageService implements OnModuleInit {
    *   which is derived from it via {@link getPublicUrl}.
    */
   async upload(file: Express.Multer.File, prefixPath: string): Promise<string> {
-    const { ext, mime } = await this.detectFileType(file);
-    const key = this.buildObjectKey(prefixPath, ext);
+    const detected = await this.detectFileType(file);
+
+    if (!detected) {
+      throw new BadRequestException(
+        "Could not determine this file's type from its contents.",
+        { description: errorCodeConstants.FILE_TYPE_UNSUPPORTED },
+      );
+    }
+
+    const key = this.buildObjectKey(prefixPath, detected.ext);
 
     try {
       const result = await this.bucket.upload(
         file.buffer,
         key,
         undefined,
-        mime ?? "application/octet-stream",
+        detected.mime,
       );
 
       return result.objectKey;

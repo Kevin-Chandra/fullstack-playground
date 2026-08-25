@@ -4,23 +4,22 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { paginate, Paginated, PaginateQuery } from "nestjs-paginate";
 import { isDeepStrictEqual } from "node:util";
-import { Repository } from "typeorm";
+import { DataSource, EntityManager, Repository } from "typeorm";
 import { errorCodeConstants } from "../libs/constants/error-code.constants";
+import { paginationConstants } from "../libs/constants/pagination.constants";
 import {
   PagePublication,
   PublishedSection,
 } from "../libs/entity/page-publication.entity";
 import { Page } from "../libs/entity/page.entity";
-import {
-  collectMediaKeys,
-  resolveMediaRefs,
-} from "../libs/utils/media-ref.util";
-import { PageSectionService } from "../page-section/page-section.service";
-import { PageMediaService } from "../page/page-media.service";
+import { User } from "../libs/entity/user.entity";
+import { resolveMediaRefs } from "../libs/utils/media-ref.util";
+import { PaginationUtil } from "../libs/utils/pagination.util";
+import { PageConfigsService } from "../page-configs/page-configs.service";
 import { PageService } from "../page/page.service";
 import { StorageService } from "../storage/storage.service";
-import { UserService } from "../user/user.service";
 import { CreatePublicationDto } from "./dto/create-publication.dto";
 import { PagePublicationListItem } from "./dto/page-publication-response.dto";
 import { PublishedSectionResponse } from "./dto/published-section-response.dto";
@@ -44,13 +43,11 @@ export class PagePublicationService {
 
     private readonly pageService: PageService,
 
-    private readonly pageSectionService: PageSectionService,
-
-    private readonly pageMediaService: PageMediaService,
+    private readonly pageConfigsService: PageConfigsService,
 
     private readonly storageService: StorageService,
 
-    private readonly userService: UserService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findLive(slug: string): Promise<PublishedSectionResponse[]> {
@@ -64,123 +61,110 @@ export class PagePublicationService {
     const page = await this.pageService.findBySlugOrFail(slug);
 
     return this.toPublicResponse(
-      await this.pageSectionService.projectToSnapshot(page.id),
+      await this.pageConfigsService.projectToSnapshot(page.id),
     );
   }
 
   async publicationPreview(
+    slug: string,
     publicationId: number,
   ): Promise<PublishedSectionResponse[]> {
+    const page = await this.pageService.findBySlugOrFail(slug);
     const publication = await this.publicationRepository.findOneBy({
       id: publicationId,
+      pageId: page.id,
     });
 
     if (!publication) {
-      throw new NotFoundException("Publication not found");
+      throw new NotFoundException(
+        `Publication ${publicationId} not found for page "${slug}".`,
+        { description: errorCodeConstants.PUBLICATION_NOT_FOUND },
+      );
     }
 
     return this.toPublicResponse(publication.sections);
   }
 
   /**
-   * How the draft compares to what is live, without shipping either payload.
+   * Appends the draft as the newest publication.
    *
-   * Shares `differs` with {@link publish}, so the editor's Publish button and
-   * the no-op rejection can never disagree about whether there are changes.
+   * The whole decision runs inside one transaction, holding the page row: read
+   * the draft, compare it to what is live, number the new row. Unlocked, two
+   * publishes fired at once (a double-clicked button, two open tabs) both read
+   * the same newest version and both write it, and both pass the "nothing new"
+   * guard that exists to stop exactly that.
    */
-  // async status(slug: string): Promise<PageStatusResponse> {
-  //   const page = await this.pageService.findBySlugOrFail(slug);
-  //   const [draft, publication] = await Promise.all([
-  //     this.pageSectionService.projectToSnapshot(page.id),
-  //     this.findNewest(page.id),
-  //   ]);
-
-  //   return {
-  //     hasUnpublishedChanges: this.differs(draft, publication?.sections),
-  //     lastPublishedAt: publication?.publishedAt ?? null,
-  //     publicationId: publication?.id ?? null,
-  //     draftSectionCount: draft.length,
-  //   };
-  // }
-
   async publish(
     slug: string,
     createPublicationDto: CreatePublicationDto,
     publishedBy: number,
   ): Promise<PagePublication> {
     const page = await this.pageService.findBySlugOrFail(slug);
-    const [draft, newest] = await Promise.all([
-      this.pageSectionService.projectToSnapshot(page.id),
-      this.findNewest(page.id),
-    ]);
 
-    // Keeps history free of snapshots identical to the one already live.
-    if (!this.differs(draft, newest?.sections)) {
-      throw new ConflictException("There is nothing new to publish.", {
-        description: errorCodeConstants.NO_UNPUBLISHED_CHANGES,
-      });
-    }
+    return this.dataSource.transaction(async (manager) => {
+      await this.lockPage(manager, page.id);
 
-    let version: number = 1;
-    if (newest) {
-      const latestVersion = newest.version;
-      version = latestVersion + 1;
-    }
+      // Read after the lock: a save that was in flight has either committed
+      // before it, or is waiting behind it.
+      const [draft, newest] = await Promise.all([
+        this.pageConfigsService.projectToSnapshot(page.id),
+        this.findNewest(page.id, manager),
+      ]);
 
-    const publication = await this.saveNewPublication(
-      page,
-      publishedBy,
-      createPublicationDto.description,
-      version,
-      draft,
-    );
+      // Keeps history free of snapshots identical to the one already live.
+      if (!this.differs(draft, newest?.sections)) {
+        throw new ConflictException("There is nothing new to publish.", {
+          description: errorCodeConstants.NO_UNPUBLISHED_CHANGES,
+        });
+      }
 
-    return publication;
+      return this.saveNewPublication(
+        manager,
+        page,
+        publishedBy,
+        createPublicationDto.description,
+        draft,
+      );
+    });
   }
 
   /**
-   * Throws the draft away and restores it from what is live.
+   * The page's publication history, newest first.
    *
-   * Images that only ever existed in the discarded draft become unreferenced
-   * here, which is the one place they are expected to be collected.
+   * Ordered by `id`, not `publishedAt`: `findNewest` decides what is *live* by
+   * id, and two publications a millisecond apart tie on the timestamp — so
+   * sorting by it could put a row at the top of the history that is not the one
+   * being served. `id` is monotonic and covered by the `(pageId, id)` index.
+   *
+   * Paginated because history is never trimmed: an unbounded list grows with
+   * every publish, forever.
    */
-  async discard(slug: string): Promise<PublishedSectionResponse[]> {
-    const page = await this.pageService.findBySlugOrFail(slug);
-    const [draft, newest] = await Promise.all([
-      this.pageSectionService.projectToSnapshot(page.id),
-      this.findNewest(page.id),
-    ]);
-
-    const discardedKeys = collectMediaKeys(draft);
-
-    await this.pageSectionService.replaceAllSections(
-      page.id,
-      newest?.sections ?? [],
-    );
-    await this.pageMediaService.pruneUnreferenced(discardedKeys);
-
-    return this.toPublicResponse(newest?.sections ?? []);
-  }
-
-  async listPublications(slug: string): Promise<PagePublicationListItem[]> {
+  async listPublications(
+    slug: string,
+    query: PaginateQuery,
+  ): Promise<Paginated<PagePublicationListItem>> {
     const page = await this.pageService.findBySlugOrFail(slug);
 
-    const publications = await this.publicationRepository
-      .createQueryBuilder("publication")
-      .leftJoin("publication.publishedBy", "user")
-      .select([
-        "publication.id",
-        "publication.version",
-        "publication.description",
-        "publication.publishedAt",
-        "user.id",
-        "user.name",
-      ])
-      .where("publication.pageId = :pageId", { pageId: page.id })
-      .orderBy("publication.publishedAt", "DESC")
-      .getMany();
+    const result = await paginate(query, this.publicationRepository, {
+      select: [
+        "id",
+        "version",
+        "description",
+        "publishedAt",
+        "publishedBy.id",
+        "publishedBy.name",
+      ],
+      relations: { publishedBy: true },
+      where: { pageId: page.id },
+      defaultLimit: paginationConstants.ITEM_PER_PAGE,
+      maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
+      sortableColumns: ["id", "version", "publishedAt"],
+      defaultSortBy: [["id", "DESC"]],
+    });
 
-    return publications;
+    PaginationUtil.assertPageInRange(query, result);
+
+    return result as unknown as Paginated<PagePublicationListItem>;
   }
 
   /**
@@ -208,44 +192,82 @@ export class PagePublicationService {
       );
     }
 
-    const publication = await this.saveNewPublication(
-      page,
-      publishedBy,
-      `Rolled back from version ${source.version}`,
-      source.version + 1,
-      source.sections,
-    );
+    return this.dataSource.transaction(async (manager) => {
+      await this.lockPage(manager, page.id);
 
-    return publication;
+      return this.saveNewPublication(
+        manager,
+        page,
+        publishedBy,
+        `Rolled back from version ${source.version}`,
+        source.sections,
+      );
+    });
+  }
+
+  /**
+   * Serialises writers on one page.
+   *
+   * Publishing is a read-then-insert — read the newest version, add one, write
+   * — which is only safe if nobody else is doing it at the same time. The page
+   * row is the token for that, the same one `PageConfigsService.save` takes.
+   */
+  private async lockPage(
+    manager: EntityManager,
+    pageId: number,
+  ): Promise<void> {
+    await manager.findOne(Page, {
+      where: { id: pageId },
+      lock: { mode: "pessimistic_write" },
+    });
   }
 
   private async saveNewPublication(
+    manager: EntityManager,
     page: Page,
     publishedBy: number,
     description: string,
-    version: number,
     draft: PublishedSection[],
   ): Promise<PagePublication> {
-    const user = await this.userService.findOne(publishedBy);
+    const [author, newest] = await Promise.all([
+      this.findAuthor(manager, publishedBy),
+      this.findNewest(page.id, manager),
+    ]);
+    const version = (newest?.version ?? 0) + 1;
 
-    const publication = await this.publicationRepository.save(
-      this.publicationRepository.create({
+    return manager.save(
+      manager.create(PagePublication, {
         pageId: page.id,
         sections: draft,
         version: version,
         description: description,
-        publishedBy: user,
+        publishedBy: author,
       }),
     );
-
-    return publication;
   }
 
-  private findNewest(pageId: number): Promise<PagePublication | null> {
-    return this.publicationRepository.findOne({
-      where: { pageId },
-      order: { id: "DESC" },
+  private async findAuthor(
+    manager: EntityManager,
+    userId: number,
+  ): Promise<User | null> {
+    return manager.findOne(User, {
+      where: { id: userId },
+      select: { id: true },
     });
+  }
+
+  private findNewest(
+    pageId: number,
+    manager?: EntityManager,
+  ): Promise<PagePublication | null> {
+    const options = {
+      where: { pageId },
+      order: { id: "DESC" as const },
+    };
+
+    return manager
+      ? manager.findOne(PagePublication, options)
+      : this.publicationRepository.findOne(options);
   }
 
   private differs(draft: PublishedSection[], published?: PublishedSection[]) {

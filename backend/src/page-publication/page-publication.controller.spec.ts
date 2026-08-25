@@ -1,8 +1,8 @@
-import { Reflector } from "@nestjs/core";
+import type { PaginateQuery } from "nestjs-paginate";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ThrottlerGuard } from "@nestjs/throttler";
-import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 import { JwtGuard } from "../guards/jwt.guard";
+import { isPublicRoute } from "../libs/testing/is-public-route";
 import { CreatePublicationDto } from "./dto/create-publication.dto";
 import { PagePublicationController } from "./page-publication.controller";
 import { PagePublicationService } from "./page-publication.service";
@@ -19,7 +19,6 @@ describe("PagePublicationController", () => {
       preview: jest.fn(),
       publicationPreview: jest.fn(),
       publish: jest.fn(),
-      discard: jest.fn(),
       listPublications: jest.fn(),
       rollback: jest.fn(),
     };
@@ -49,17 +48,8 @@ describe("PagePublicationController", () => {
    * exposes unpublished work, and neither shows up in a delegation test.
    */
   describe("access control", () => {
-    const isPublicRoute = (route: keyof PagePublicationController): boolean => {
-      const handler = Object.getOwnPropertyDescriptor(
-        PagePublicationController.prototype,
-        route,
-      ).value as (...args: never[]) => unknown;
-
-      return new Reflector().get<boolean>(IS_PUBLIC_KEY, handler);
-    };
-
     it("leaves the live page open to visitors", () => {
-      expect(isPublicRoute("findLive")).toBe(true);
+      expect(isPublicRoute(PagePublicationController, "findLive")).toBe(true);
     });
 
     it("keeps preview and every publishing action authenticated", () => {
@@ -67,23 +57,26 @@ describe("PagePublicationController", () => {
         "preview",
         "publicationPreview",
         "publish",
-        "discard",
         "listPublications",
         "rollback",
       ];
 
-      guarded.forEach((route) => expect(isPublicRoute(route)).toBeUndefined());
+      guarded.forEach((route) =>
+        expect(isPublicRoute(PagePublicationController, route)).toBe(false),
+      );
     });
   });
 
   it("passes the slug through to each read", () => {
+    const query = { path: "/page/home/publications" } as PaginateQuery;
+
     void controller.findLive("home");
     void controller.preview("home");
-    void controller.listPublications("home");
+    void controller.listPublications("home", query);
 
     expect(service.findLive).toHaveBeenCalledWith("home");
     expect(service.preview).toHaveBeenCalledWith("home");
-    expect(service.listPublications).toHaveBeenCalledWith("home");
+    expect(service.listPublications).toHaveBeenCalledWith("home", query);
   });
 
   it("records who published, as a number", () => {
@@ -94,21 +87,16 @@ describe("PagePublicationController", () => {
     expect(service.publish).toHaveBeenCalledWith("home", body, 42);
   });
 
-  it("converts the publication id on preview", () => {
-    void controller.publicationPreview("7");
+  /** The slug is what scopes the lookup, so it has to reach the service. */
+  it("passes the slug alongside the publication id on preview", () => {
+    void controller.publicationPreview("home", 7);
 
-    expect(service.publicationPreview).toHaveBeenCalledWith(7);
+    expect(service.publicationPreview).toHaveBeenCalledWith("home", 7);
   });
 
-  it("converts the publication id on rollback", () => {
-    void controller.rollback("home", "7", "42");
+  it("converts the user id on rollback", () => {
+    void controller.rollback("home", 7, "42");
 
     expect(service.rollback).toHaveBeenCalledWith("home", 7, 42);
-  });
-
-  it("discards without needing a user", () => {
-    void controller.discard("home");
-
-    expect(service.discard).toHaveBeenCalledWith("home");
   });
 });

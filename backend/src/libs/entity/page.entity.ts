@@ -23,6 +23,9 @@ export class Page {
   @Column({ type: "text" })
   name: string;
 
+  @Column({ type: "int", default: 0 })
+  draftVersion: number;
+
   @CreateDateColumn({
     type: "timestamptz",
     default: () => "CURRENT_TIMESTAMP",

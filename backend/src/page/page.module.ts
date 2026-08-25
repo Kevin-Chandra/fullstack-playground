@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { Media } from "../libs/entity/media.entity";
 import { PagePublication } from "../libs/entity/page-publication.entity";
 import { PageSection } from "../libs/entity/page-section.entity";
 import { Page } from "../libs/entity/page.entity";
@@ -10,7 +11,7 @@ import { PageService } from "./page.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Page, PageSection, PagePublication]),
+    TypeOrmModule.forFeature([Page, PageSection, PagePublication, Media]),
     StorageModule,
   ],
   controllers: [PageController],

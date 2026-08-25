@@ -37,7 +37,12 @@ export class PageService implements OnModuleInit {
   }
 
   async findPageDetails(id: number): Promise<Page> {
-    return this.pageRepository.findOneBy({ id: id });
+    const result = await this.pageRepository.findOneBy({ id: id });
+    if (!result) {
+      throw new NotFoundException(`Page with id ${id} not found`);
+    }
+
+    return result;
   }
 
   async findBySlugOrFail(slug: string): Promise<Page> {
