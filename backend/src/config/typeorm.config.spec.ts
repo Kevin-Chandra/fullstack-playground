@@ -11,7 +11,12 @@ const optionsFor = (env: Env) => {
 
   const factory = typeOrmAsyncConfig.useFactory as (
     configService: ConfigService,
-  ) => { ssl: unknown; synchronize: boolean };
+  ) => {
+    ssl: unknown;
+    synchronize: boolean;
+    migrationsRun: boolean;
+    migrations: string[];
+  };
 
   return factory(configService);
 };
@@ -78,12 +83,34 @@ describe("typeOrmAsyncConfig ssl", () => {
       }).ssl,
     ).toEqual({ rejectUnauthorized: true });
   });
+});
 
-  /** An unset NODE_ENV must not switch schema sync on. */
-  it("treats a missing NODE_ENV as production", () => {
-    expect(optionsFor({ DATABASE_SSL: false }).synchronize).toBe(false);
-    expect(
-      optionsFor({ NODE_ENV: "development", DATABASE_SSL: false }).synchronize,
-    ).toBe(true);
+describe("typeOrmAsyncConfig schema management", () => {
+  /**
+   * `synchronize` was on outside production, so the schema was whatever the
+   * entity files said at boot — it drops columns and rewrites types to match,
+   * with no record and no way back — while production was excluded and had no
+   * path to a schema change at all. Migrations are now the only mechanism, in
+   * every environment.
+   */
+  it("never synchronizes, whatever NODE_ENV says", () => {
+    expect(optionsFor({ NODE_ENV: "development" }).synchronize).toBe(false);
+    expect(optionsFor({ NODE_ENV: "production" }).synchronize).toBe(false);
+    expect(optionsFor({}).synchronize).toBe(false);
+  });
+
+  it("loads migrations so the CLI and the app see the same set", () => {
+    expect(optionsFor({}).migrations).toEqual([
+      expect.stringContaining("migrations"),
+    ]);
+  });
+
+  it("leaves running them to DATABASE_MIGRATIONS_RUN", () => {
+    expect(optionsFor({ DATABASE_MIGRATIONS_RUN: true }).migrationsRun).toBe(
+      true,
+    );
+    expect(optionsFor({ DATABASE_MIGRATIONS_RUN: false }).migrationsRun).toBe(
+      false,
+    );
   });
 });

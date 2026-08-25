@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions } from "@nestjs/typeorm";
-import { isProductionEnv } from "./env.validation";
+import { DataSourceOptions } from "typeorm";
 
 const logger = new Logger("TypeOrmConfig");
 
@@ -32,31 +32,41 @@ function resolveSsl(configService: ConfigService) {
   return ca ? { rejectUnauthorized, ca } : { rejectUnauthorized };
 }
 
+/**
+ * The one description of this database, shared by the running app and the
+ * migration CLI.
+ *
+ * They have to agree on more than the host: a CLI pointed at different
+ * `migrations` globs, or connecting without the TLS the app uses, generates
+ * migrations for a schema nobody runs. `data-source.ts` wraps this for the CLI;
+ * `typeOrmAsyncConfig` wraps it for Nest.
+ */
+export function dataSourceOptions(
+  configService: ConfigService,
+): DataSourceOptions {
+  const port = configService.get<string>("POSTGRES_PORT", "5432");
+
+  return {
+    type: "postgres",
+    url: configService.get<string>("DATABASE_URL") ?? undefined,
+    host: configService.get<string>("POSTGRES_HOST", "localhost"),
+    port: parseInt(port, 10),
+    username: configService.get<string>("POSTGRES_USER", "postgres"),
+    password: configService.get<string>("POSTGRES_PASSWORD", "your_password"),
+    database: configService.get<string>("POSTGRES_DB", "my_project_db"),
+    ssl: resolveSsl(configService),
+    entities: [`${__dirname}/../libs/entity/*.entity{.ts,.js}`],
+    migrations: [`${__dirname}/../migrations/*{.ts,.js}`],
+    synchronize: false,
+    migrationsRun: configService.get<boolean>("DATABASE_MIGRATIONS_RUN"),
+  };
+}
+
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   inject: [ConfigService],
-  useFactory: (configService: ConfigService) => {
-    const url = configService.get<string>("DATABASE_URL") ?? undefined;
-    const isProduction = isProductionEnv(configService.get<string>("NODE_ENV"));
-    const host = configService.get<string>("POSTGRES_HOST", "localhost");
-    const port = configService.get<string>("POSTGRES_PORT", "5432");
-    const username = configService.get<string>("POSTGRES_USER", "postgres");
-    const password = configService.get<string>(
-      "POSTGRES_PASSWORD",
-      "your_password",
-    );
-    const database = configService.get<string>("POSTGRES_DB", "my_project_db");
-
-    return {
-      type: "postgres" as const,
-      host,
-      url,
-      port: parseInt(port, 10),
-      username,
-      password,
-      database,
-      ssl: resolveSsl(configService),
-      autoLoadEntities: true,
-      synchronize: !isProduction,
-    };
-  },
+  useFactory: (configService: ConfigService) => ({
+    ...dataSourceOptions(configService),
+    /** Nest collects entities from the modules that register them. */
+    autoLoadEntities: true,
+  }),
 };

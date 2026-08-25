@@ -20,6 +20,7 @@ import { Page } from "./page.entity";
  */
 @Entity({ name: "page_sections" })
 @Index(["pageId", "uuid"])
+@Index("page_sections_data_gin", ["data"], { type: "gin" })
 export class PageSection {
   @PrimaryGeneratedColumn({ type: "bigint" })
   id: number;

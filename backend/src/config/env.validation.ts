@@ -23,6 +23,7 @@ const envSchema = z.object({
   DATABASE_SSL: booleanFromEnv("false"),
   DATABASE_SSL_REJECT_UNAUTHORIZED: booleanFromEnv("true"),
   DATABASE_SSL_CA: z.string().min(1).optional(),
+  DATABASE_MIGRATIONS_RUN: booleanFromEnv("true"),
 });
 
 /**

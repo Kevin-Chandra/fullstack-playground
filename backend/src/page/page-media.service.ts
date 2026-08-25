@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   DataSource,
@@ -24,7 +24,9 @@ import { StorageService } from "../storage/storage.service";
  * `$.** ? (@.key == "...")` matches a media ref at any depth, arrays included,
  * and only a `key` *member* — never a substring, never a field of that name.
  * The key goes through `to_json`, which escapes it, and `@?` against a literal
- * jsonpath is what lets the GIN indexes serve the lookup.
+ * jsonpath is what lets the GIN indexes on `page_sections.data` and
+ * `page_publications.sections` serve the lookup — both declared on their
+ * entities, so a migration creates them.
  */
 const REFERENCED_KEYS_SQL = `
   SELECT c.key
@@ -40,18 +42,8 @@ const REFERENCED_KEYS_SQL = `
             WHERE p.sections @? ('$.** ? (@.key == ' || to_json(c.key)::text || ')')::jsonpath
          )`;
 
-/**
- * The indexes that predicate relies on. Created at boot because the schema
- * follows the entity files (`synchronize`) and TypeORM cannot declare a GIN
- * index, so there is nowhere else to put them.
- */
-const REFERENCE_INDEX_SQL = [
-  `CREATE INDEX IF NOT EXISTS page_sections_data_gin ON page_sections USING gin (data)`,
-  `CREATE INDEX IF NOT EXISTS page_publications_sections_gin ON page_publications USING gin (sections)`,
-];
-
 @Injectable()
-export class PageMediaService implements OnModuleInit {
+export class PageMediaService {
   private readonly logger = new Logger(PageMediaService.name);
 
   constructor(
@@ -62,25 +54,6 @@ export class PageMediaService implements OnModuleInit {
 
     private readonly dataSource: DataSource,
   ) {}
-
-  /**
-   * Adds the GIN indexes the reference lookup relies on.
-   *
-   * Failure is logged rather than thrown: without them the same query still
-   * returns the right answer, just by scanning.
-   */
-  async onModuleInit(): Promise<void> {
-    for (const statement of REFERENCE_INDEX_SQL) {
-      try {
-        await this.dataSource.query(statement);
-      } catch (error) {
-        this.logger.error(
-          "Failed to create a media reference index; pruning will scan instead.",
-          error,
-        );
-      }
-    }
-  }
 
   /**
    * Collects the given objects, plus any abandoned upload, unless something

@@ -29,6 +29,11 @@ npm test -- -t "creates a wish"  # single case by name
 npm run test:e2e               # separate config: test/jest-e2e.json
 npm run lint                   # eslint --fix
 npm run build
+
+npm run migration:show         # [X] applied, [ ] pending
+npm run migration:generate -- src/migrations/AddSomething
+npm run migration:run
+npm run migration:revert       # one step back
 ```
 
 **Frontend** (`cd frontend`):
@@ -41,7 +46,7 @@ npm run build
 
 ## Backend architecture
 
-Standard Nest module-per-domain (`wish/`, `guest/`, `rsvp/`, `user/`, `auth/`), each a controller + service + `dto/`. Shared code sits in `libs/` (`entity/`, `constants/`, `utils/`), with cross-cutting `guards/`, `decorators/`, `pipes/`, and `config/` at `src/` root. Entities live in `libs/entity/` rather than beside their module, and TypeORM runs `autoLoadEntities` with **`synchronize: true`** — the schema follows the entity files, and there are no migrations.
+Standard Nest module-per-domain (`wish/`, `guest/`, `rsvp/`, `user/`, `auth/`), each a controller + service + `dto/`. Shared code sits in `libs/` (`entity/`, `constants/`, `utils/`), with cross-cutting `guards/`, `decorators/`, `pipes/`, and `config/` at `src/` root. Entities live in `libs/entity/` rather than beside their module, and TypeORM runs `autoLoadEntities` with **`synchronize: false`** — the schema is owned by `src/migrations/`, applied at boot when `DATABASE_MIGRATIONS_RUN` is true. Changing an entity means generating a migration (`npm run migration:generate -- src/migrations/Name`); see `backend/src/migrations/README.md`, which also covers baselining a database built by the old `synchronize` behaviour. Indexes TypeORM cannot infer still belong on the entity — `@Index(name, [cols], { type: "gin" })` — because an index outside entity metadata is one the next generated migration will try to drop.
 
 **Auth** is JWT-in-httpOnly-cookies with access/refresh rotation, via three Passport strategies (`local`, `jwt`, `refresh`) and matching guards. Controllers are guarded class-wide with `@UseGuards(JwtGuard)`, and individual routes opt out with `@Public()` — `JwtGuard` reads that metadata through the `Reflector`. This inversion matters: a new route on an existing controller is authenticated unless you say otherwise, and public routes (like wish submission) should also carry an explicit `@Throttle`.
 

@@ -38,6 +38,7 @@ export type PublishedSection = {
  * backstop that makes a duplicate impossible even if that lock is ever lost.
  */
 @Index(["pageId", "version"], { unique: true })
+@Index("page_publications_sections_gin", ["sections"], { type: "gin" })
 export class PagePublication {
   @PrimaryGeneratedColumn({ type: "bigint" })
   id: number;
