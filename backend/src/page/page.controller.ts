@@ -12,8 +12,8 @@ export class PageController {
     return this.pageService.findAll();
   }
 
-  @Get("id/:id")
-  getPageDetails(@Param("id") id: string) {
-    return this.pageService.findPageDetails(+id);
+  @Get(":slug/details")
+  getPageDetails(@Param("slug") slug: string) {
+    return this.pageService.findPageDetails(slug);
   }
 }

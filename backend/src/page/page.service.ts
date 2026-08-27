@@ -8,7 +8,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { errorCodeConstants } from "../libs/constants/error-code.constants";
 import { DynamicPages } from "../libs/constants/page.constants";
+import { PagePublication } from "../libs/entity/page-publication.entity";
 import { Page } from "../libs/entity/page.entity";
+import { PageDetailsResponse } from "./dto/page-details-response.dto";
 
 @Injectable()
 export class PageService implements OnModuleInit {
@@ -17,6 +19,9 @@ export class PageService implements OnModuleInit {
   constructor(
     @InjectRepository(Page)
     private readonly pageRepository: Repository<Page>,
+
+    @InjectRepository(PagePublication)
+    private readonly publicationRepository: Repository<PagePublication>,
   ) {
     this.logger = new Logger("Page Service");
   }
@@ -36,13 +41,40 @@ export class PageService implements OnModuleInit {
     return this.pageRepository.find({ order: { id: "ASC" } });
   }
 
-  async findPageDetails(id: number): Promise<Page> {
-    const result = await this.pageRepository.findOneBy({ id: id });
-    if (!result) {
-      throw new NotFoundException(`Page with id ${id} not found`);
+  async findPageDetails(slug: string): Promise<PageDetailsResponse> {
+    const page = await this.pageRepository.findOneBy({ slug: slug });
+    if (!page) {
+      throw new NotFoundException(`Page with slug ${slug} not found`);
     }
 
-    return result;
+    const publication = await this.publicationRepository.findOne({
+      where: { pageId: page.id },
+      order: { id: "DESC" },
+      select: {
+        id: true,
+        version: true,
+        description: true,
+        publishedAt: true,
+        publishedBy: { id: true, name: true },
+      },
+      relations: { publishedBy: true },
+    });
+
+    return {
+      id: page.id,
+      slug: page.slug,
+      name: page.name,
+      draftVersion: page.draftVersion,
+      livePublication: publication
+        ? {
+            id: publication.id,
+            version: publication.version,
+            description: publication.description,
+            publishedAt: publication.publishedAt,
+            publishedBy: publication.publishedBy,
+          }
+        : null,
+    };
   }
 
   async findBySlugOrFail(slug: string): Promise<Page> {
