@@ -7,6 +7,7 @@ export const Routes = {
   DASHBOARD_USERS: "/dashboard/users",
   DASHBOARD_GUESTS: "/dashboard/guests",
   DASHBOARD_WISHES: "/dashboard/wishes",
+  DASHBOARD_PAGES: "/dashboard/pages",
   STYLE_GUIDE: "/style-guide",
 
   // Route Handler

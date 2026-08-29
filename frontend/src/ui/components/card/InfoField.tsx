@@ -9,12 +9,14 @@ type InfoFieldProps = {
   label: string;
   value: string;
   placeholderText?: string;
+  className?: string;
   children?: ReactNode;
 };
 
 export default function InfoField({ label,
   value,
   placeholderText = "-",
+  className = "",
   children = null
 }: InfoFieldProps) {
 
@@ -22,7 +24,7 @@ export default function InfoField({ label,
   const valueTextColor = value ? "text-ink" : "text-muted"
 
   return (
-    <div className={container}>
+    <div className={`${container} ${className}`}>
       <div className={field}>
         <span className={fieldLabel}>{label}</span>
         <span className={`${fieldValue} ${valueTextColor}`}>{valueText}</span>

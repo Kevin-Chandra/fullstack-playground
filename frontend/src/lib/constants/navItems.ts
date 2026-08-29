@@ -1,11 +1,12 @@
+import { Routes } from "@/src/lib/constants/routes";
 import type { IconType } from "react-icons";
 import {
-  MdOutlineHome,
-  MdOutlineFavoriteBorder,
   MdOutlineAccountCircle,
+  MdOutlineFavoriteBorder,
   MdOutlineGroups,
+  MdOutlineHome,
 } from "react-icons/md";
-import { Routes } from "@/src/lib/constants/routes";
+import { RiLayout3Line } from "react-icons/ri";
 
 export type NavItemConfig = {
   key: string;
@@ -41,5 +42,11 @@ export const navItems: NavItemConfig[] = [
     label: "Users",
     href: Routes.DASHBOARD_USERS,
     Icon: MdOutlineAccountCircle,
+  },
+  {
+    key: "pages",
+    label: "Pages",
+    href: Routes.DASHBOARD_PAGES,
+    Icon: RiLayout3Line,
   },
 ];

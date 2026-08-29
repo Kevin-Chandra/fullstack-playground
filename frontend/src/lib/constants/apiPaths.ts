@@ -24,3 +24,8 @@ export const Wish = {
   BASE: "/wish",
   byId: (id: string): string => `${Wish.BASE}/${id}`,
 } as const
+
+export const Page = {
+  BASE: "/page",
+  detailsBySlug: (slug: string): string => `${Page.BASE}/${slug}/details`,
+} as const
