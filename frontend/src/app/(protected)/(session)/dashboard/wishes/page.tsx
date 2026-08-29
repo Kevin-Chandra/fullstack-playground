@@ -141,18 +141,19 @@ export default function WishesPage() {
     }
   }
 
-  function renderWishPhoto(imageUrl?: string) {
-    if (imageUrl) {
+  function renderWishPhoto(wish: Wish) {
+    if (wish.imageUrl) {
       return (
         <div
           className={`${photoFrame} ${photoRatio ? "" : photoFrameLoading}`}
           style={{ aspectRatio: photoRatio }}>
           <Image
             className={photo}
-            src={imageUrl}
-            alt={`Wish Photo`}
+            src={wish.imageUrl}
+            alt={`Photo from ${wish.guest.name}`}
             fill
             sizes={PHOTO_SIZES}
+            /* Above the fold in a dialog opened to see this image. */
             loading="eager"
             onLoad={handlePhotoLoad}
           />
@@ -224,7 +225,7 @@ export default function WishesPage() {
           </span>
           <div className={wishDetailsContainer}>
             <span className={wishHeaderLabel}>A wish for you</span>
-            {renderWishPhoto(wishDetails.imageUrl)}
+            {renderWishPhoto(wishDetails)}
             {renderAudioPlayer(wishDetails.audioUrl)}
             <div className={quote}>
               <MdFormatQuote size={QUOTE_SIZE} className={quoteMarkOpen} />

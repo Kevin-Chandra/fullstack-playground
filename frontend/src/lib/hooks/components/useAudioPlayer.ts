@@ -35,6 +35,7 @@ export function useAudioPlayer({ audioUrl }: UseAudioPlayerParams) {
     if (!wavesurfer) return;
 
     const unsubscribe = [
+      wavesurfer.on("load", () => setError(undefined)),
       wavesurfer.on("error", (e) => setError(handleSystemError(e))),
     ];
 
@@ -51,7 +52,6 @@ export function useAudioPlayer({ audioUrl }: UseAudioPlayerParams) {
   const retry = () => {
     if (!wavesurfer) return;
 
-    setError(undefined);
     wavesurfer.load(audioUrl).catch(() => undefined);
   };
 

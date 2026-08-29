@@ -19,7 +19,21 @@ const skeleton = "h-2.5 w-full animate-pulse rounded-full bg-edge-strong";
 const errorMessage = "min-w-0 flex-1 truncate text-body-sm text-error";
 const time = "shrink-0 font-mono text-body-sm text-muted tabular-nums";
 
-export default function AudioPlayer({ audioUrl, className = "" }: AudioPlayerProps) {
+/**
+ * A player belongs to one clip, so a new url gets a new component rather than
+ * a reset.
+ *
+ * The `key` is here and not on the caller for two reasons: nothing carries over
+ * that a future field would have to remember to clear — a failed voice note
+ * cannot hand its error to the next wish opened in the same dialog — and a
+ * caller cannot forget to do it. It costs nothing either: `useWavesurfer`
+ * already destroys and recreates the WaveSurfer instance when `url` changes.
+ */
+export default function AudioPlayer(props: AudioPlayerProps) {
+  return <AudioPlayerView key={props.audioUrl} {...props} />;
+}
+
+function AudioPlayerView({ audioUrl, className = "" }: AudioPlayerProps) {
   const { containerRef, isReady, error, isPlaying, timeLabel, togglePlay, retry } =
     useAudioPlayer({ audioUrl });
 
