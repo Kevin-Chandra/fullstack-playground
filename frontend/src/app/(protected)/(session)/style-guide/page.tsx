@@ -8,6 +8,10 @@ import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultLinkButton from "@/src/ui/components/buttons/DefaultLinkButton";
 import BaseDialog from "@/src/ui/components/dialog/BaseDialog";
 import DefaultDialog from "@/src/ui/components/dialog/DefaultDialog";
+import IconWell, {
+  IconWellSize,
+  IconWellTone,
+} from "@/src/ui/components/icon/IconWell";
 import CheckboxGroup from "@/src/ui/components/input/CheckboxGroup";
 import DefaultCheckbox from "@/src/ui/components/input/DefaultCheckbox";
 import DefaultInput from "@/src/ui/components/input/DefaultInput";
@@ -20,11 +24,14 @@ import PaginationBar from "@/src/ui/components/pagination/PaginationBar";
 import Spinner from "@/src/ui/components/spinner/Spinner";
 import { toast } from "@/src/ui/components/toast/toast";
 import { ReactNode, useState } from "react";
+import { IconType } from "react-icons";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import {
   MdAdd,
   MdAnchor,
   MdArchive,
+  MdCheck,
+  MdClose,
   MdCopyAll,
   MdCurrencyExchange,
   MdDelete,
@@ -35,6 +42,7 @@ import {
   MdOpenInNew,
   MdPerson,
   MdSave,
+  MdSchedule,
   MdSearch,
   MdStar
 } from "react-icons/md";
@@ -62,6 +70,7 @@ export default function StyleGuidePage() {
       <Section title={"10 · Badge"} content={<Badges />} />
       <Section title={"11 · Toast"} content={<Toasts />} />
       <Section title={"12 · Spinner"} content={<Spinners />} />
+      <Section title={"13 · Icon Well"} content={<IconWells />} />
     </div>
   );
 }
@@ -1359,6 +1368,87 @@ function Spinners() {
         never visible text — pass what is loading, e.g. &quot;Loading wishes&quot;.
         Buttons do not use this component; they render their own spinner sized off
         the button scale, shown in section 01.
+      </p>
+    </div>
+  );
+}
+
+function IconWells() {
+  const verticalClass = "flex flex-col gap-8";
+  const horizontalClass = "flex flex-wrap items-center gap-8";
+  const cellClass = "flex flex-col items-center gap-2";
+  const captionClass = "text-caption text-muted";
+
+  const tones: { tone: IconWellTone; icon: IconType }[] = [
+    { tone: "active", icon: MdCheck },
+    { tone: "warning", icon: MdSchedule },
+    { tone: "neutral", icon: MdArchive },
+    { tone: "danger", icon: MdClose },
+  ];
+
+  const sizes: { size: IconWellSize; caption: string }[] = [
+    { size: "xs", caption: "xs · 24px" },
+    { size: "sm", caption: "sm · 32px" },
+    { size: "md", caption: "md · 42px (default)" },
+    { size: "lg", caption: "lg · 60px" },
+    { size: "xl", caption: "xl · 80px" },
+  ];
+
+  return (
+    <div className={verticalClass}>
+      {/* Every tone at the default size */}
+      <div className={horizontalClass}>
+        {tones.map(({ tone, icon }) => (
+          <div key={tone} className={cellClass}>
+            <IconWell icon={icon} tone={tone} />
+            <span className={captionClass}>{tone}</span>
+          </div>
+        ))}
+      </div>
+      <hr />
+
+      {/* Every size — the icon is sized by the well, not by the caller */}
+      <div className={horizontalClass}>
+        {sizes.map(({ size, caption }) => (
+          <div key={size} className={cellClass}>
+            <IconWell icon={MdStar} size={size} />
+            <span className={captionClass}>{caption}</span>
+          </div>
+        ))}
+      </div>
+      <hr />
+
+      {/* The full grid: every tone at every size */}
+      <div className={verticalClass}>
+        {sizes.map(({ size }) => (
+          <div key={size} className="flex flex-wrap items-center gap-4">
+            <span className={`${captionClass} w-16`}>{size}</span>
+            {tones.map(({ tone, icon }) => (
+              <IconWell key={tone} icon={icon} tone={tone} size={size} />
+            ))}
+          </div>
+        ))}
+      </div>
+      <hr />
+
+      {/* In context: the shape these wells were pulled out of */}
+      <div className="flex items-center gap-lg rounded-lg border border-edge p-xl">
+        <IconWell icon={MdCheck} tone="active" size="lg" />
+        <span className="flex min-w-0 flex-col gap-xs">
+          <span className="font-mono text-label uppercase text-muted">
+            Attending
+          </span>
+          <span className="text-h3">Ada Lovelace</span>
+        </span>
+        <DefaultBadge icon={MdGroup} variant="active" label="5 pax" />
+      </div>
+      <p className={captionClass}>
+        The well is <code className="font-mono text-code">aria-hidden</code>: it
+        is decoration beside a label, never the label itself. Tones past{" "}
+        <code className="font-mono text-code">base</code> and{" "}
+        <code className="font-mono text-code">destructive</code> reuse the badge
+        palette from section 10, so a well and a badge showing the same status
+        match.
       </p>
     </div>
   );
