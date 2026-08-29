@@ -1431,6 +1431,27 @@ function IconWells() {
       </div>
       <hr />
 
+      {/* bordered defaults to true; false drops the hairline, keeps the fill */}
+      <div className={verticalClass}>
+        {([true, false] as const).map((bordered) => (
+          <div key={String(bordered)} className="flex flex-wrap items-center gap-4">
+            <span className={`${captionClass} w-32`}>
+              bordered={String(bordered)}
+            </span>
+            {tones.map(({ tone, icon }) => (
+              <IconWell
+                key={tone}
+                icon={icon}
+                tone={tone}
+                size="lg"
+                bordered={bordered}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+      <hr />
+
       {/* In context: the shape these wells were pulled out of */}
       <div className="flex items-center gap-lg rounded-lg border border-edge p-xl">
         <IconWell icon={MdCheck} tone="active" size="lg" />

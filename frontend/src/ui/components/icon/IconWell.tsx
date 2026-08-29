@@ -3,7 +3,8 @@ import { IconType } from "react-icons";
 export type IconWellTone = "active" | "warning" | "neutral" | "danger";
 export type IconWellSize = "xs" | "sm" | "md" | "lg" | "xl";
 
-const iconWell = "flex shrink-0 items-center justify-center border";
+const iconWell = "flex shrink-0 items-center justify-center";
+const iconWellBordered = "border";
 
 const tones: Record<IconWellTone, string> = {
   active: "border-badge-active/25 bg-badge-active/10 text-badge-active",
@@ -24,6 +25,7 @@ export type IconWellProps = {
   icon: IconType;
   tone?: IconWellTone;
   size?: IconWellSize;
+  bordered?: boolean;
   className?: string;
 };
 
@@ -31,12 +33,13 @@ export default function IconWell({
   icon: Icon,
   tone = "neutral",
   size = "md",
+  bordered = true,
   className = "",
 }: IconWellProps) {
   return (
     <span
       aria-hidden
-      className={`${iconWell} ${sizes[size]} ${tones[tone]} ${className}`}
+      className={`${iconWell} ${bordered ? iconWellBordered : ""} ${sizes[size]} ${tones[tone]} ${className}`}
     >
       <Icon />
     </span>
