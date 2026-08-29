@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { UserStatus } from "./enums/user-status.enum";
+import { PagePublication } from "./page-publication.entity";
 
 @Entity({ name: "users" })
 export class User {
@@ -23,6 +25,9 @@ export class User {
 
   @Column({ type: "enum", enum: UserStatus })
   userStatus: UserStatus;
+
+  @OneToMany(() => PagePublication, (publication) => publication.publishedBy)
+  pagePublications: PagePublication[];
 
   @CreateDateColumn({
     type: "timestamptz",

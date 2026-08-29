@@ -3,16 +3,20 @@ import {
   Controller,
   Delete,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { FormDataJson } from "../decorators/form-data-json.decorator";
 import { UploadedFileField } from "../decorators/uploaded-file-field.decorator";
 import { JwtGuard } from "../guards/jwt.guard";
-import { ImageFileConstants } from "../libs/constants/file.constants";
+import { MediaFileConstants } from "../libs/constants/file.constants";
 import { throttlerConstants } from "../libs/constants/throttler.constants";
-import { ImageValidationPipe } from "../pipes/ImageFileValidationPipe";
+import { MediaValidationPipe } from "../pipes/MediaFileValidationPipe";
+import { MediaDeleteDto } from "./dto/media-delete.dto";
+import { MediaUploadDto } from "./dto/media-upload.dto";
 import { MediaService } from "./media.service";
 
 @UseGuards(JwtGuard)
@@ -30,18 +34,19 @@ export class MediaController {
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "file", maxCount: 1 }], {
-      limits: { fileSize: ImageFileConstants.MAX_SIZE_BYTES, files: 1 },
+      limits: { fileSize: MediaFileConstants.MAX_SIZE_BYTES, files: 1 },
     }),
   )
   upload(
-    @UploadedFileField("file", new ImageValidationPipe())
+    @UploadedFileField("file", new MediaValidationPipe())
     file: Express.Multer.File,
+    @FormDataJson("data", MediaUploadDto) mediaUploadDto: MediaUploadDto,
   ) {
-    return this.mediaService.upload(file);
+    return this.mediaService.upload(file, mediaUploadDto);
   }
 
   @Delete()
-  delete(key: string) {
-    return this.mediaService.delete(key);
+  delete(@Query() mediaDeleteDto: MediaDeleteDto) {
+    return this.mediaService.delete(mediaDeleteDto.key);
   }
 }
