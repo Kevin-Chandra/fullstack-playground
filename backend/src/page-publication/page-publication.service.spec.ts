@@ -391,8 +391,31 @@ describe("PagePublicationService", () => {
 
       const history = await service.listPublications("home", query);
 
-      expect(history.data).toEqual(paginated.data);
+      expect(history.data).toEqual([{ id: 1, version: 1, isLive: true }]);
       expect(history.meta).toBe(paginated.meta);
+    });
+
+    /**
+     * Position cannot answer this: the caller may sort the list any way the
+     * config allows, and the live row can land on any page.
+     */
+    it("flags the newest publication as live, and only that one", async () => {
+      publish([section(SectionType.HERO)]);
+      publish([section(SectionType.GALLERY)]);
+      paginated = {
+        data: [
+          { id: 1, version: 1 },
+          { id: 2, version: 2 },
+        ],
+        meta: { totalPages: 1 },
+      };
+
+      const history = await service.listPublications("home", query);
+
+      expect(history.data).toEqual([
+        { id: 1, version: 1, isLive: false },
+        { id: 2, version: 2, isLive: true },
+      ]);
     });
 
     /**

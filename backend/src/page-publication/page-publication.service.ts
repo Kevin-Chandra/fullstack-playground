@@ -138,6 +138,9 @@ export class PagePublicationService {
    *
    * Paginated because history is never trimmed: an unbounded list grows with
    * every publish, forever.
+   *
+   * `isLive` is resolved against the newest id rather than the row's position,
+   * so it stays correct on any page and under any sort the caller asks for.
    */
   async listPublications(
     slug: string,
@@ -145,26 +148,35 @@ export class PagePublicationService {
   ): Promise<Paginated<PagePublicationListItem>> {
     const page = await this.pageService.findBySlugOrFail(slug);
 
-    const result = await paginate(query, this.publicationRepository, {
-      select: [
-        "id",
-        "version",
-        "description",
-        "publishedAt",
-        "publishedBy.id",
-        "publishedBy.name",
-      ],
-      relations: { publishedBy: true },
-      where: { pageId: page.id },
-      defaultLimit: paginationConstants.ITEM_PER_PAGE,
-      maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
-      sortableColumns: ["id", "version", "publishedAt"],
-      defaultSortBy: [["id", "DESC"]],
-    });
+    const [result, live] = await Promise.all([
+      paginate(query, this.publicationRepository, {
+        select: [
+          "id",
+          "version",
+          "description",
+          "publishedAt",
+          "publishedBy.id",
+          "publishedBy.name",
+        ],
+        relations: { publishedBy: true },
+        where: { pageId: page.id },
+        defaultLimit: paginationConstants.ITEM_PER_PAGE,
+        maxLimit: paginationConstants.MAX_ITEM_PER_PAGE,
+        sortableColumns: ["id", "version", "publishedAt"],
+        defaultSortBy: [["id", "DESC"]],
+      }),
+      this.findNewestId(page.id),
+    ]);
 
     PaginationUtil.assertPageInRange(query, result);
 
-    return result as unknown as Paginated<PagePublicationListItem>;
+    return {
+      ...result,
+      data: result.data.map((publication) => ({
+        ...publication,
+        isLive: publication.id === live?.id,
+      })),
+    } as unknown as Paginated<PagePublicationListItem>;
   }
 
   /**
@@ -252,6 +264,15 @@ export class PagePublicationService {
   ): Promise<User | null> {
     return manager.findOne(User, {
       where: { id: userId },
+      select: { id: true },
+    });
+  }
+
+  /** The live publication's id, without dragging its snapshot along. */
+  private findNewestId(pageId: number): Promise<PagePublication | null> {
+    return this.publicationRepository.findOne({
+      where: { pageId },
+      order: { id: "DESC" },
       select: { id: true },
     });
   }
