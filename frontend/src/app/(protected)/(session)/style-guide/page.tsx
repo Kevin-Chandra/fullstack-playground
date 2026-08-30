@@ -3,7 +3,7 @@
 import { MAX_PAGE_BUTTONS } from "@/src/lib/constants/pagination";
 import { Routes } from "@/src/lib/constants/routes";
 import InitialsAvatar from "@/src/ui/components/avatar/InitialsAvatar";
-import DefaultBadge from "@/src/ui/components/badge/DefaultBadge";
+import DefaultBadge, { BadgeSize } from "@/src/ui/components/badge/DefaultBadge";
 import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import DefaultLinkButton from "@/src/ui/components/buttons/DefaultLinkButton";
 import BaseDialog from "@/src/ui/components/dialog/BaseDialog";
@@ -1271,6 +1271,15 @@ function PaginationBars() {
 }
 
 function Badges() {
+  const cellClass = "flex flex-col items-center gap-2";
+  const captionClass = "text-caption text-muted";
+
+  const badgeSizes: { size: BadgeSize; caption: string }[] = [
+    { size: "sm", caption: "sm · 12px (default)" },
+    { size: "md", caption: "md · 13px" },
+    { size: "lg", caption: "lg · 14px" },
+  ];
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center gap-3">
@@ -1297,6 +1306,43 @@ function Badges() {
         <DefaultBadge icon={MdGroup} variant="warning" label="Pending" />
         <DefaultBadge icon={MdArchive} variant="neutral" label="Draft" iconPosition="end" />
         <DefaultBadge icon={MdDelete} variant="danger" label="Archived" iconPosition="end" />
+      </div>
+      <hr />
+
+      {/* Every size — the icon scales with the badge */}
+      <div className="flex flex-wrap items-center gap-8">
+        {badgeSizes.map(({ size, caption }) => (
+          <div key={size} className={cellClass}>
+            <DefaultBadge variant="active" size={size} label="Attending" />
+            <span className={captionClass}>{caption}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-8">
+        {badgeSizes.map(({ size, caption }) => (
+          <div key={size} className={cellClass}>
+            <DefaultBadge
+              icon={MdGroup}
+              variant="warning"
+              size={size}
+              label="5 pax"
+            />
+            <span className={captionClass}>{caption}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* The full grid: every variant at every size */}
+      <div className="flex flex-col gap-4">
+        {badgeSizes.map(({ size }) => (
+          <div key={size} className="flex flex-wrap items-center gap-4">
+            <span className={`${captionClass} w-8`}>{size}</span>
+            <DefaultBadge variant="active" size={size} label="Attending" />
+            <DefaultBadge variant="warning" size={size} label="Pending" />
+            <DefaultBadge variant="neutral" size={size} label="Draft" />
+            <DefaultBadge variant="danger" size={size} label="Archived" />
+          </div>
+        ))}
       </div>
     </div>
   );
