@@ -1,5 +1,6 @@
 "use client";
 
+import { Routes } from "@/src/lib/constants/routes";
 import { DynamicPageDetails } from "@/src/lib/types/DynamicPage";
 import {
   formatFullDateAndTime
@@ -70,7 +71,7 @@ export default function PageDetailsContent({
         icon={IoSettingsOutline}
       />
       <DefaultLinkButton
-        href={"#"}
+        href={Routes.dashboardPagePublications(pageDetails.slug)}
         variant="secondary"
         size="lg"
         label="Publications"

@@ -30,11 +30,15 @@ export const DEFAULT_ERROR: ErrorEntity = {
 
 export const customErrorTitle: Record<CustomErrorCode, string> = {
   [CustomErrorCode.PAGINATION_OUT_OF_BOUND]: "Page not found",
+  [CustomErrorCode.PAGE_NOT_FOUND]: "Page not found",
+  [CustomErrorCode.PUBLICATION_NOT_FOUND]: "Publication not found",
 };
 
 export const customErrorDescription: Record<CustomErrorCode, string> = {
   [CustomErrorCode.PAGINATION_OUT_OF_BOUND]:
     "Page number out of bound. Please check again",
+  [CustomErrorCode.PAGE_NOT_FOUND]: "Please try again later",
+  [CustomErrorCode.PUBLICATION_NOT_FOUND]: "Please refresh the page and try again",
 };
 
 export const customErrorActionLabel: Record<ErrorAction, string> = {

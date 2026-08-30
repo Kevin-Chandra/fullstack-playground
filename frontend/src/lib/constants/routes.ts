@@ -8,6 +8,8 @@ export const Routes = {
   DASHBOARD_GUESTS: "/dashboard/guests",
   DASHBOARD_WISHES: "/dashboard/wishes",
   DASHBOARD_PAGES: "/dashboard/pages",
+  dashboardPagePublications: (slug: string): string =>
+    `${Routes.DASHBOARD_PAGES}/${slug}/publications`,
   STYLE_GUIDE: "/style-guide",
 
   // Route Handler

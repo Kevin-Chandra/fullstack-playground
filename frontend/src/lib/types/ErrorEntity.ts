@@ -14,4 +14,6 @@ export enum ErrorAction {
 
 export enum CustomErrorCode {
   PAGINATION_OUT_OF_BOUND = "pagination-out-of-bound",
+  PAGE_NOT_FOUND = "page_not_found",
+  PUBLICATION_NOT_FOUND = "publication_not_found"
 }

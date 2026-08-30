@@ -1,3 +1,5 @@
+import { BasePaginationParam } from "./BasePaginationParam";
+
 export interface DynamicPage {
   id: string,
   slug: string,
@@ -21,4 +23,15 @@ export interface PagePublication {
 export interface PagePublicationAuthor {
   id: string;
   name: string;
+}
+
+export type GetPagePublicationParams = Partial<BasePaginationParam>;
+
+export interface PagePublicationItem {
+  id: string;
+  version: number;
+  description: string;
+  publishedAt: string;
+  publishedBy: PagePublicationAuthor | null;
+  isLive: boolean;
 }

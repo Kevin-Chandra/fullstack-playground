@@ -27,31 +27,18 @@ function toCustomErrorCode(value?: string): CustomErrorCode | undefined {
 }
 
 function getErrorTitle(customErrorCode: CustomErrorCode): string {
-  switch (customErrorCode) {
-    case CustomErrorCode.PAGINATION_OUT_OF_BOUND:
-      return customErrorTitle[customErrorCode];
-    default:
-      return GENERIC_ERROR_TITLE;
-  }
+  return customErrorTitle[customErrorCode] ?? GENERIC_ERROR_TITLE;
 }
 
-function getErrorDescription(
-  customErrorCode: CustomErrorCode,
-  dynamicMessage?: string,
-): string {
-  switch (customErrorCode) {
-    case CustomErrorCode.PAGINATION_OUT_OF_BOUND:
-      return dynamicMessage ?? customErrorDescription[customErrorCode];
-    default:
-      return GENERIC_ERROR_DESCRIPTION;
-  }
+function getErrorDescription(customErrorCode: CustomErrorCode): string {
+  return customErrorDescription[customErrorCode] ?? GENERIC_ERROR_DESCRIPTION;
 }
 
 function getDefaultAction(
   customErrorCode: CustomErrorCode,
 ): ErrorAction | undefined {
   switch (customErrorCode) {
-    case CustomErrorCode.PAGINATION_OUT_OF_BOUND:
+    case CustomErrorCode.PAGINATION_OUT_OF_BOUND, CustomErrorCode.PAGE_NOT_FOUND:
       return ErrorAction.RETURN_TO_MAIN;
     default:
       return undefined;
