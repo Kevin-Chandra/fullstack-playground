@@ -38,7 +38,8 @@ function getDefaultAction(
   customErrorCode: CustomErrorCode,
 ): ErrorAction | undefined {
   switch (customErrorCode) {
-    case CustomErrorCode.PAGINATION_OUT_OF_BOUND, CustomErrorCode.PAGE_NOT_FOUND:
+    case CustomErrorCode.PAGINATION_OUT_OF_BOUND:
+    case CustomErrorCode.PAGE_NOT_FOUND:
       return ErrorAction.RETURN_TO_MAIN;
     default:
       return undefined;

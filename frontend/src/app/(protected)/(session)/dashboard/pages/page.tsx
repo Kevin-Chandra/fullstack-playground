@@ -4,6 +4,7 @@ import { usePageDetails } from "@/src/lib/hooks/pages/usePageDetails";
 import { usePageList } from "@/src/lib/hooks/pages/usePageList";
 import { usePagePanel } from "@/src/lib/hooks/pages/usePagePanel";
 import { ErrorAction } from "@/src/lib/types/ErrorEntity";
+import DefaultButton from "@/src/ui/components/buttons/DefaultButton";
 import ErrorState from "@/src/ui/components/error/ErrorState";
 import SidePanel from "@/src/ui/components/layout/SidePanel";
 import ListCard from "@/src/ui/components/list/ListCard";
@@ -12,6 +13,7 @@ import PageDetailsSkeleton from "@/src/ui/features/pages/PageDetailsSkeleton";
 import PageListEmpty from "@/src/ui/features/pages/PageListEmpty";
 import PageListRow from "@/src/ui/features/pages/PageListRow";
 import PageListSkeleton from "@/src/ui/features/pages/PageListSkeleton";
+import { MdClose } from "react-icons/md";
 
 const workspace =
   "flex min-h-0 flex-1 flex-col gap-y-xl lg:grid lg:grid-rows-1 lg:user-workspace";
@@ -26,6 +28,8 @@ const listColumnState = {
 };
 const detailColumn = "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden";
 const centered = "flex flex-1 items-center justify-center";
+const panelError = "flex min-h-0 flex-1 flex-col gap-2xl";
+const panelErrorHeader = "flex shrink-0 items-center justify-end";
 const listHeader = "font-mono text-label uppercase text-muted";
 const listHeaderCount = "ml-sm tabular-nums text-accent";
 
@@ -124,13 +128,24 @@ export default function PagesPage() {
 
         if (!pageDetailResult.success) {
           return (
-            <div className={centered}>
-              <ErrorState
-                error={pageDetailResult.error}
-                onErrorActionClick={(action) =>
-                  handleErrorAction(refetchPageDetails, action)
-                }
-              />
+            <div className={panelError}>
+              <div className={panelErrorHeader}>
+                <DefaultButton
+                  variant="ghost"
+                  size="md"
+                  icon={MdClose}
+                  aria-label="Close details"
+                  onClick={handleClosePanel}
+                />
+              </div>
+              <div className={centered}>
+                <ErrorState
+                  error={pageDetailResult.error}
+                  onErrorActionClick={(action) =>
+                    handleErrorAction(refetchPageDetails, action)
+                  }
+                />
+              </div>
             </div>
           );
         }

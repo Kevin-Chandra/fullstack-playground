@@ -20,6 +20,7 @@ import PublicationListEmpty from "@/src/ui/features/page-publication/Publication
 import PublicationListRow from "@/src/ui/features/page-publication/PublicationListRow";
 import PublicationListSkeleton from "@/src/ui/features/page-publication/PublicationListSkeleton";
 import PublicationLiveCard from "@/src/ui/features/page-publication/PublicationLiveCard";
+import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { MdChevronLeft, MdRefresh, MdRestore } from "react-icons/md";
 
@@ -41,6 +42,7 @@ export default function PagePublicationsPage({
   params,
 }: PagePublicationsPageProps) {
   const { slug } = use(params);
+  const router = useRouter();
   const [page, setPage] = useState(BASE_PAGINATION_PAGE);
 
   const [restoreTarget, setRestoreTarget] = useState<PagePublicationItem>();
@@ -52,7 +54,7 @@ export default function PagePublicationsPage({
   function handleErrorAction(action?: ErrorAction) {
     switch (action) {
       case ErrorAction.RETURN_TO_MAIN:
-        setPage(BASE_PAGINATION_PAGE);
+        router.push(Routes.DASHBOARD_PAGES);
         break;
 
       // ErrorState labels an undefined action as "Try again"
@@ -186,7 +188,7 @@ export default function PagePublicationsPage({
     <>
       <div className={header}>
         <DefaultLinkButton
-          href={Routes.DASHBOARD_PAGES}
+          href={Routes.dashboardPages(slug)}
           variant="secondary"
           size="md"
           icon={MdChevronLeft}
