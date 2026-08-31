@@ -16,6 +16,8 @@ export const Routes = {
       : Routes.DASHBOARD_PAGES,
   dashboardPagePublications: (slug: string): string =>
     `${Routes.DASHBOARD_PAGES}/${slug}/publications`,
+  dashboardPageConfigurations: (slug: string): string =>
+    `${Routes.DASHBOARD_PAGES}/${slug}/configurations`,
   STYLE_GUIDE: "/style-guide",
 
   // Route Handler

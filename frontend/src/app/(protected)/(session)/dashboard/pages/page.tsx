@@ -182,19 +182,6 @@ export default function PagesPage() {
           </div>
         )}
       </div>
-      {/* <DefaultDialog
-        open={isConfirmingNavigation}
-        onClose={cancelPendingNavigation}
-        icon={MdOutlineWarningAmber}
-        title="Discard changes?"
-        primaryButtonLabel="Discard"
-        secondaryButtonLabel="Keep editing"
-        onPrimaryClick={confirmPendingNavigation}
-        onSecondaryClick={cancelPendingNavigation}
-      >
-        The details you filled in have not been saved yet. Closing now will
-        discard them.
-      </DefaultDialog> */}
     </>
   );
 }

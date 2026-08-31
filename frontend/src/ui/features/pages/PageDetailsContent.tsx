@@ -64,7 +64,7 @@ export default function PageDetailsContent({
       <hr />
 
       <DefaultLinkButton
-        href={"#"}
+        href={Routes.dashboardPageConfigurations(pageDetails.slug)}
         variant="primary"
         size="lg"
         label="Page configurations"
