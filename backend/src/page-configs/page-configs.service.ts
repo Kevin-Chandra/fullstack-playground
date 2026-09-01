@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { generate } from "short-uuid";
+import { randomUUID } from "node:crypto";
 import { DataSource, EntityManager, In, Repository } from "typeorm";
 import * as z from "zod";
 import { errorCodeConstants } from "../libs/constants/error-code.constants";
@@ -236,6 +236,10 @@ export class PageConfigsService {
    * snapshot stores content, not identity, so each restored row is minted a
    * fresh one. `uuid` is NOT NULL, so leaving it unset fails the insert.
    *
+   * The mint has to be canonical UUIDs, not the short base58 ids used for
+   * user-facing handles elsewhere: the editor posts these uuids straight back
+   * on its next save, where `PageSectionDto` validates them with `@IsUUID()`.
+   *
    * `draftVersion` moves with the rewrite, so an editor holding the discarded
    * draft is refused on its next save rather than restoring it by accident.
    */
@@ -252,7 +256,7 @@ export class PageConfigsService {
         .map((section, index) =>
           manager.create(PageSection, {
             pageId,
-            uuid: generate(),
+            uuid: randomUUID(),
             type: section.type,
             data: section.data,
             isVisible: section.isVisible,

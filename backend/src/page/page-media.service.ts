@@ -71,10 +71,25 @@ export class PageMediaService {
    */
   async pruneUnreferenced(candidateKeys: string[]): Promise<void> {
     const abandoned = await this.findAbandonedUploads();
-    const candidates = [...new Set([...candidateKeys, ...abandoned])];
 
+    await this.collectUnreferenced([
+      ...new Set([...candidateKeys, ...abandoned]),
+    ]);
+  }
+
+  /**
+   * Collects exactly the given keys that nothing points at, and reports which
+   * ones went. Unlike {@link pruneUnreferenced} it sweeps nothing else in, so a
+   * caller acting on one key can tell whether that key was the one collected.
+   *
+   * A key missing from the returned list survived for one of three reasons: a
+   * draft or a retained publication still references it, it was already
+   * collected, or this service has no record of it at all. All three mean the
+   * same thing to a caller — the object is still there and must stay.
+   */
+  async collectUnreferenced(candidates: string[]): Promise<string[]> {
     if (candidates.length === 0) {
-      return;
+      return [];
     }
 
     const collected = await this.dataSource.transaction(async (manager) => {
@@ -117,6 +132,8 @@ export class PageMediaService {
         }),
       ),
     );
+
+    return collected;
   }
 
   /**

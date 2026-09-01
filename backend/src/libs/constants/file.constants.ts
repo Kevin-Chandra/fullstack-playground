@@ -13,11 +13,6 @@ export const VideoFileConstants = {
   ACCEPTED_TYPE: /^video\//,
 };
 
-/**
- * Anything the media route will take, for the pipe that cannot yet know which
- * of the three it is: the declared `mediaType` rides in the JSON blob beside
- * the file, so the per-type check happens in the service.
- */
 export const MediaFileConstants = {
   MAX_SIZE_BYTES: Math.max(
     ImageFileConstants.MAX_SIZE_BYTES,

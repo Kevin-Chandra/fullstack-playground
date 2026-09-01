@@ -9,7 +9,10 @@ export const errorCodeConstants = {
   // File storage.
   FILE_UPLOAD_FAILED: "file_upload_failed",
   MEDIA_UNAVAILABLE: "media_unavailable",
+  MEDIA_NOT_FOUND: "media_not_found",
+  MEDIA_IN_USE: "media_in_use",
   FILE_TYPE_UNSUPPORTED: "file_type_unsupported",
+  FILE_TOO_LARGE: "file_too_large",
 
   // Page sections.
   SECTION_PAYLOAD_INVALID: "section_payload_invalid",

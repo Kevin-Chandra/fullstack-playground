@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { isUUID } from "class-validator";
 import { DataSource, FindOperator } from "typeorm";
 import { errorCodeConstants } from "../libs/constants/error-code.constants";
 import { MediaType } from "../libs/entity/enums/media-type.enum";
@@ -919,6 +920,26 @@ describe("PageConfigsService", () => {
         [SectionType.GALLERY, 0],
         [SectionType.HERO, 1],
       ]);
+    });
+
+    /**
+     * The editor posts these uuids back on its next save, where
+     * `PageSectionDto` runs the very same check. A short base58 id would be
+     * accepted here and then rejected there, leaving the draft unsavable.
+     */
+    it("mints uuids that pass the save DTO's own validator", async () => {
+      await service.replaceAllSections(HOME, [
+        {
+          type: SectionType.HERO,
+          sortOrder: 0,
+          isVisible: true,
+          data: heroData,
+        },
+      ]);
+
+      const [restored] = store.find({ where: { pageId: HOME } });
+
+      expect(isUUID(restored.uuid)).toBe(true);
     });
 
     it("restores hidden sections rather than silently dropping them", async () => {

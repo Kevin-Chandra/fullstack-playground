@@ -1,5 +1,11 @@
 /// <reference types="multer" />
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import {
@@ -9,12 +15,18 @@ import {
   StorageTypePath,
   VideoFileConstants,
 } from "../libs/constants/file.constants";
+import { errorCodeConstants } from "../libs/constants/error-code.constants";
 import { MediaType } from "../libs/entity/enums/media-type.enum";
 import { MediaUploadPath } from "../libs/entity/enums/media-upload-path";
 import { Media } from "../libs/entity/media.entity";
+import { PageMediaService } from "../page/page-media.service";
 import { StorageService } from "../storage/storage.service";
 import { MediaResponse } from "./dto/media-response.dto";
 import { MediaUploadDto } from "./dto/media-upload.dto";
+
+function toMegabytes(bytes: number): number {
+  return Math.round(bytes / (1024 * 1024));
+}
 
 @Injectable()
 export class MediaService {
@@ -28,6 +40,20 @@ export class MediaService {
     [MediaType.VIDEO]: StorageTypePath.VIDEO,
   };
 
+  /**
+   * The real per-type limits. The route's pipe can only enforce the largest of
+   * the three, because the declared type is not visible to it — so this is the
+   * only place a 20MB image is ever refused.
+   */
+  private static readonly CONSTRAINTS_BY_TYPE: Record<
+    MediaType,
+    { MAX_SIZE_BYTES: number; ACCEPTED_TYPE: RegExp }
+  > = {
+    [MediaType.IMAGE]: ImageFileConstants,
+    [MediaType.AUDIO]: AudioFileConstants,
+    [MediaType.VIDEO]: VideoFileConstants,
+  };
+
   private readonly logger = new Logger(MediaService.name);
 
   constructor(
@@ -35,6 +61,8 @@ export class MediaService {
     private readonly mediaRepository: Repository<Media>,
 
     private readonly storageService: StorageService,
+
+    private readonly pageMediaService: PageMediaService,
   ) {}
 
   /**
@@ -81,37 +109,76 @@ export class MediaService {
   /**
    * Removes an object and tombstones its row, so nothing can go on to
    * reference a key whose object is gone.
+   *
+   * The reference check is the whole point of routing this through
+   * `PageMediaService` rather than deleting outright: the caller only knows the
+   * draft it is editing, while a key can also be held by a **retained
+   * publication** — the snapshot the live page is served from. Deleting one of
+   * those breaks the live page immediately and every rollback to it
+   * permanently. Dropping a still-referenced file is not this endpoint's job:
+   * remove the ref, save, and the save's own prune collects it once nothing
+   * points at it.
+   *
+   * A key with no `media` row is refused rather than deleted. Every upload this
+   * module records has one, so an unrecorded key belongs to a module whose
+   * references this one cannot see.
    */
   async delete(key: string): Promise<void> {
-    await this.mediaRepository.update(
-      { key },
-      { deletedFromStorageAt: new Date() },
-    );
+    const media = await this.mediaRepository.findOne({ where: { key } });
 
-    return this.storageService.remove(key);
+    if (!media) {
+      throw new NotFoundException(`No media recorded for ${key}.`, {
+        description: errorCodeConstants.MEDIA_NOT_FOUND,
+      });
+    }
+
+    // Already collected. The object is gone and the row says so, which is the
+    // state the caller asked for.
+    if (media.deletedFromStorageAt !== null) {
+      return;
+    }
+
+    const collected = await this.pageMediaService.collectUnreferenced([key]);
+
+    if (!collected.includes(key)) {
+      throw new ConflictException(
+        `${key} is still used by a page and cannot be deleted.`,
+        { description: errorCodeConstants.MEDIA_IN_USE },
+      );
+    }
   }
 
   /**
-   * Checks the bytes against the `mediaType` the caller declared.
+   * Checks the bytes against the `mediaType` the caller declared — both what
+   * kind of file it is and how big it is allowed to be.
    *
-   * The route's pipe can only ask "is this media at all", because the declared
-   * type arrives in the JSON blob beside the file rather than in the file. This
-   * is where the two are reconciled — otherwise an mp3 could be filed under
-   * `/images` and served as one.
+   * The route's pipe can only ask "is this media at all, and is it under the
+   * largest limit of the three", because the declared type arrives in the JSON
+   * blob beside the file rather than in the file. This is where the two are
+   * reconciled — otherwise an mp3 could be filed under `/images` and served as
+   * one, and a 24MB JPEG would pass under the video allowance.
+   *
+   * Runs before the object is uploaded, so a refused file never reaches
+   * storage.
    */
   private assertFileMatchesType(
     file: Express.Multer.File,
     mediaType: MediaType,
   ): void {
-    const accepted: Record<MediaType, RegExp> = {
-      [MediaType.IMAGE]: ImageFileConstants.ACCEPTED_TYPE,
-      [MediaType.AUDIO]: AudioFileConstants.ACCEPTED_TYPE,
-      [MediaType.VIDEO]: VideoFileConstants.ACCEPTED_TYPE,
-    };
+    const { ACCEPTED_TYPE, MAX_SIZE_BYTES } =
+      MediaService.CONSTRAINTS_BY_TYPE[mediaType];
 
-    if (!accepted[mediaType].test(file.mimetype)) {
+    if (!ACCEPTED_TYPE.test(file.mimetype)) {
       throw new BadRequestException(
         `A ${mediaType} upload cannot be a ${file.mimetype} file.`,
+        { description: errorCodeConstants.FILE_TYPE_UNSUPPORTED },
+      );
+    }
+
+    if (file.size > MAX_SIZE_BYTES) {
+      throw new BadRequestException(
+        `A ${mediaType} file must be ${toMegabytes(MAX_SIZE_BYTES)}MB or smaller.`,
+        { description: errorCodeConstants.FILE_TOO_LARGE },
       );
     }
   }

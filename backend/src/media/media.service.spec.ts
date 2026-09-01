@@ -1,13 +1,21 @@
-import { BadRequestException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import {
+  ImageFileConstants,
   StoragePrefixes,
   StorageTypePath,
+  VideoFileConstants,
 } from "../libs/constants/file.constants";
+import { errorCodeConstants } from "../libs/constants/error-code.constants";
 import { MediaType } from "../libs/entity/enums/media-type.enum";
 import { MediaUploadPath } from "../libs/entity/enums/media-upload-path";
 import { Media } from "../libs/entity/media.entity";
+import { PageMediaService } from "../page/page-media.service";
 import { StorageService } from "../storage/storage.service";
 import { MediaService } from "./media.service";
 
@@ -16,6 +24,8 @@ describe("MediaService", () => {
   let upload: jest.Mock;
   let recordUpload: jest.Mock;
   let removeObject: jest.Mock;
+  let findMedia: jest.Mock;
+  let collectUnreferenced: jest.Mock;
   const mockDto = {
     mediaType: MediaType.AUDIO,
     mediaUploadPath: MediaUploadPath.HOME,
@@ -25,6 +35,8 @@ describe("MediaService", () => {
     upload = jest.fn().mockResolvedValue("page/home/images/abc.jpg");
     recordUpload = jest.fn((row: unknown) => Promise.resolve(row));
     removeObject = jest.fn().mockResolvedValue(undefined);
+    findMedia = jest.fn().mockResolvedValue(null);
+    collectUnreferenced = jest.fn().mockResolvedValue([]);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -35,7 +47,12 @@ describe("MediaService", () => {
             create: jest.fn((row: unknown) => row),
             save: recordUpload,
             update: jest.fn(() => Promise.resolve(undefined)),
+            findOne: findMedia,
           },
+        },
+        {
+          provide: PageMediaService,
+          useValue: { collectUnreferenced },
         },
         {
           provide: StorageService,
@@ -129,6 +146,36 @@ describe("MediaService", () => {
     expect(upload).not.toHaveBeenCalled();
   });
 
+  /**
+   * The route's pipe caps at the largest of the three limits, because the
+   * declared type is not visible to it. Without this check a 24MB JPEG would
+   * pass under the video allowance.
+   */
+  it("refuses a file over the limit for the type it was declared as", async () => {
+    const file = {
+      mimetype: "image/jpeg",
+      size: ImageFileConstants.MAX_SIZE_BYTES + 1,
+    } as Express.Multer.File;
+
+    await expect(
+      service.upload(file, { ...mockDto, mediaType: MediaType.IMAGE }),
+    ).rejects.toMatchObject({
+      response: { error: errorCodeConstants.FILE_TOO_LARGE },
+    });
+    expect(upload).not.toHaveBeenCalled();
+  });
+
+  it("accepts a file the size of its type's limit", async () => {
+    const file = {
+      mimetype: "video/mp4",
+      size: VideoFileConstants.MAX_SIZE_BYTES,
+    } as Express.Multer.File;
+
+    await service.upload(file, { ...mockDto, mediaType: MediaType.VIDEO });
+
+    expect(upload).toHaveBeenCalled();
+  });
+
   it.each([
     [MediaType.IMAGE, "image/jpeg"],
     [MediaType.AUDIO, "audio/mpeg"],
@@ -140,5 +187,61 @@ describe("MediaService", () => {
     await service.upload(file, { ...mockDto, mediaType });
 
     expect(upload).toHaveBeenCalled();
+  });
+
+  describe("delete", () => {
+    const KEY = "page/home/images/abc.jpg";
+    const recorded = { id: 1, key: KEY, deletedFromStorageAt: null };
+
+    /**
+     * The caller only knows the draft it is editing. A key can also be held by
+     * a retained publication — the snapshot the live page is served from — so
+     * the decision has to come from the service that sees every reference.
+     */
+    it("refuses a key something still references", async () => {
+      findMedia.mockResolvedValue(recorded);
+      collectUnreferenced.mockResolvedValue([]);
+
+      await expect(service.delete(KEY)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      await expect(service.delete(KEY)).rejects.toMatchObject({
+        response: { error: errorCodeConstants.MEDIA_IN_USE },
+      });
+      expect(removeObject).not.toHaveBeenCalled();
+    });
+
+    it("collects a key nothing references", async () => {
+      findMedia.mockResolvedValue(recorded);
+      collectUnreferenced.mockResolvedValue([KEY]);
+
+      await expect(service.delete(KEY)).resolves.toBeUndefined();
+      expect(collectUnreferenced).toHaveBeenCalledWith([KEY]);
+    });
+
+    /** An unrecorded key belongs to a module whose references this one cannot see. */
+    it("refuses a key it has no record of", async () => {
+      findMedia.mockResolvedValue(null);
+
+      await expect(service.delete(KEY)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+      await expect(service.delete(KEY)).rejects.toMatchObject({
+        response: { error: errorCodeConstants.MEDIA_NOT_FOUND },
+      });
+      expect(collectUnreferenced).not.toHaveBeenCalled();
+    });
+
+    /** Already collected is the state the caller asked for, so it is not an error. */
+    it("succeeds without collecting again when the row is tombstoned", async () => {
+      findMedia.mockResolvedValue({
+        ...recorded,
+        deletedFromStorageAt: new Date(),
+      });
+
+      await expect(service.delete(KEY)).resolves.toBeUndefined();
+      expect(collectUnreferenced).not.toHaveBeenCalled();
+      expect(removeObject).not.toHaveBeenCalled();
+    });
   });
 });
