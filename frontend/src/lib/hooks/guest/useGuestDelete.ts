@@ -1,30 +1,13 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { deleteGuest } from "../../services/guestService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function useGuestDelete() {
-  const [loading, setLoading] = useState(false);
-
-  const remove = useCallback(
-    async (guestId: string): Promise<Result<null, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        await deleteGuest(guestId);
-        return { success: true, data: null };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const { loading, mutate } = useMutation(deleteGuest);
 
   return {
     loading,
-    remove,
+    remove: mutate,
   };
 }

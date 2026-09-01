@@ -1,31 +1,14 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { discardPageConfigs } from "../../services/pageService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function usePageConfigDiscard(slug: string) {
-  const [loading, setLoading] = useState(false);
-
   /** Resets the draft to the live publication, dropping every pending edit. */
-  const discard = useCallback(
-    async (): Promise<Result<null, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        await discardPageConfigs(slug);
-        return { success: true, data: null };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [slug],
-  );
+  const { loading, mutate } = useMutation(() => discardPageConfigs(slug));
 
   return {
     loading,
-    discard,
+    discard: mutate,
   };
 }

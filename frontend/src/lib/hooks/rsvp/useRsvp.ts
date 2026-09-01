@@ -1,31 +1,13 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { createRsvp } from "../../services/rsvpService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { CreateRsvpPayload, Rsvp } from "../../types/Rsvp";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function useRsvp() {
-  const [loading, setLoading] = useState(false)
-
-  const create = useCallback(
-    async (payload: CreateRsvpPayload): Promise<Result<Rsvp, ErrorEntity>> => {
-      setLoading(true)
-
-      try {
-        const result = await createRsvp(payload);
-        return { success: true, data: result };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  )
+  const { loading, mutate } = useMutation(createRsvp);
 
   return {
     loading,
-    create
-  }
+    create: mutate,
+  };
 }

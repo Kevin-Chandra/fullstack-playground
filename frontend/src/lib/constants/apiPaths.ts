@@ -27,7 +27,7 @@ export const Wish = {
 
 export const Media = {
   BASE: "/media",
-}
+} as const
 
 export const Page = {
   BASE: "/page",

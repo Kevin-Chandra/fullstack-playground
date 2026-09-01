@@ -1,31 +1,13 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { updateGuest } from "../../services/guestService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Guest, UpdateGuestPayload } from "../../types/Guest";
-import { Result } from "../../types/result";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function useGuestUpdate() {
-  const [loading, setLoading] = useState(false);
-
-  const update = useCallback(
-    async (guestId: string, payload: UpdateGuestPayload): Promise<Result<Guest, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        const result = await updateGuest(guestId, payload);
-        return { success: true, data: result };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const { loading, mutate } = useMutation(updateGuest);
 
   return {
     loading,
-    update,
+    update: mutate,
   };
 }

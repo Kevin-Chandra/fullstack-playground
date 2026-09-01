@@ -1,30 +1,22 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { deleteMedia } from "../../services/mediaService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
+/**
+ * Deletes an uploaded object outright — for an upload the editor is discarding
+ * before it was ever saved.
+ *
+ * Not the way to remove a file from a page. The backend refuses a key any draft
+ * or published snapshot still references, because deleting one breaks the live
+ * page. Drop the ref from the section and save instead: the save collects the
+ * object once nothing points at it.
+ */
 export function useMediaDelete() {
-  const [loading, setLoading] = useState(false);
-
-  const remove = useCallback(
-    async (key: string): Promise<Result<null, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        await deleteMedia(key);
-        return { success: true, data: null };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const { loading, mutate } = useMutation(deleteMedia);
 
   return {
     loading,
-    remove,
+    remove: mutate,
   };
 }

@@ -30,8 +30,11 @@ export enum CustomErrorCode {
 
   // File storage.
   MEDIA_UNAVAILABLE = "media_unavailable",
+  MEDIA_NOT_FOUND = "media_not_found",
+  MEDIA_IN_USE = "media_in_use",
   FILE_UPLOAD_FAILED = "file_upload_failed",
   FILE_TYPE_UNSUPPORTED = "file_type_unsupported",
+  FILE_TOO_LARGE = "file_too_large",
 
   // Client-only: raised without a response, never sent by the backend.
   UPLOAD_CANCELLED = "upload_cancelled",

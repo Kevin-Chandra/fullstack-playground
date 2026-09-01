@@ -1,30 +1,15 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { rollbackPublication } from "../../services/pageService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function usePagePublicationRollback(slug: string) {
-  const [loading, setLoading] = useState(false);
-
-  const rollback = useCallback(
-    async (publicationId: string): Promise<Result<null, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        await rollbackPublication(slug, publicationId);
-        return { success: true, data: null };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [slug],
+  const { loading, mutate } = useMutation((publicationId: string) =>
+    rollbackPublication(slug, publicationId),
   );
 
   return {
     loading,
-    rollback,
+    rollback: mutate,
   };
 }

@@ -37,8 +37,11 @@ export const customErrorTitle: Record<CustomErrorCode, string> = {
   [CustomErrorCode.SECTION_UUID_TAKEN]: "Section belongs to another page",
   [CustomErrorCode.DRAFT_OUT_OF_DATE]: "This draft has changed",
   [CustomErrorCode.MEDIA_UNAVAILABLE]: "Files no longer available",
+  [CustomErrorCode.MEDIA_NOT_FOUND]: "File not found",
+  [CustomErrorCode.MEDIA_IN_USE]: "File still in use",
   [CustomErrorCode.FILE_UPLOAD_FAILED]: "Upload failed",
   [CustomErrorCode.FILE_TYPE_UNSUPPORTED]: "File type not supported",
+  [CustomErrorCode.FILE_TOO_LARGE]: "File too large",
   [CustomErrorCode.UPLOAD_CANCELLED]: "Upload cancelled",
 };
 
@@ -57,10 +60,16 @@ export const customErrorDescription: Record<CustomErrorCode, string> = {
     "Someone else saved changes since you opened this draft. Please reload before saving",
   [CustomErrorCode.MEDIA_UNAVAILABLE]:
     "Some of the files used here have been removed. Please reload and upload them again",
+  [CustomErrorCode.MEDIA_NOT_FOUND]:
+    "That file is no longer stored here. Please reload and try again",
+  [CustomErrorCode.MEDIA_IN_USE]:
+    "This file is still used by a published page. Remove it from the page and save — it is cleaned up once nothing points at it",
   [CustomErrorCode.FILE_UPLOAD_FAILED]:
     "We couldn't upload that file. Please try again",
   [CustomErrorCode.FILE_TYPE_UNSUPPORTED]:
     "That file type isn't supported. Please choose a different file",
+  [CustomErrorCode.FILE_TOO_LARGE]:
+    "That file is over the size limit for its type. Please choose a smaller one",
   [CustomErrorCode.UPLOAD_CANCELLED]:
     "The upload was stopped before it finished",
 };

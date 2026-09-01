@@ -18,6 +18,11 @@ function toMegabytes(bytes: number): number {
 /**
  * Rejects a file the backend would refuse anyway, so nothing oversized leaves
  * the browser. Returns undefined when the file is acceptable.
+ *
+ * These limits mirror `MediaService.assertFileMatchesType`, which applies the
+ * per-type caps in `file.constants.ts` — the route's own pipe only knows the
+ * largest of the three. Changing a limit here without changing it there makes
+ * this a lie in one direction or the other.
  */
 function validateMediaFile(file: File, mediaType: MediaType): ErrorEntity | undefined {
   if (!MEDIA_ACCEPTED_MIME[mediaType].test(file.type)) {

@@ -1,31 +1,13 @@
-import { useCallback, useState } from "react";
+"use client"
+
 import { updateUser } from "../../services/userService";
-import { ErrorEntity } from "../../types/ErrorEntity";
-import { Result } from "../../types/result";
-import { UpdateUserPayload, User } from "../../types/User";
-import { handleSystemError } from "../../utils/errorHandler";
+import { useMutation } from "../useMutation";
 
 export function useUserUpdate() {
-  const [loading, setLoading] = useState(false);
-
-  const update = useCallback(
-    async (id: string, payload: UpdateUserPayload): Promise<Result<User, ErrorEntity>> => {
-      setLoading(true);
-
-      try {
-        const user = await updateUser(id, payload);
-        return { success: true, data: user };
-      } catch (e) {
-        return { success: false, error: handleSystemError(e) };
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const { loading, mutate } = useMutation(updateUser);
 
   return {
     loading,
-    update,
+    update: mutate,
   };
 }
