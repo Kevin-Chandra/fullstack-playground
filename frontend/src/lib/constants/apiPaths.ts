@@ -25,9 +25,15 @@ export const Wish = {
   byId: (id: string): string => `${Wish.BASE}/${id}`,
 } as const
 
+export const Media = {
+  BASE: "/media",
+}
+
 export const Page = {
   BASE: "/page",
   detailsBySlug: (slug: string): string => `${Page.BASE}/${slug}/details`,
   publications: (slug: string): string => `${Page.BASE}/${slug}/publications`,
   rollbackPublication: (slug: string, id: string): string => `${Page.BASE}/${slug}/publications/${id}/rollback`,
+  configs: (slug: string): string => `${Page.BASE}/${slug}/configs`,
+  discardConfig: (slug: string): string => `${Page.BASE}/${slug}/configs/discard`,
 } as const

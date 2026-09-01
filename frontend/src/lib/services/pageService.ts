@@ -1,6 +1,7 @@
 import { Page } from "../constants/apiPaths";
 import { axiosInstance } from "../network/axiosInstance";
 import { DynamicPage, DynamicPageDetails, GetPagePublicationParams, PagePublicationItem } from "../types/DynamicPage";
+import { PageDraft, SavePageConfigPayload } from "../types/PageConfig";
 import { Paginated } from "../types/Paginated";
 
 export const getPages = async (): Promise<DynamicPage[]> => {
@@ -29,4 +30,20 @@ export const rollbackPublication = async (
 ): Promise<void> => {
   const response = await axiosInstance.post(Page.rollbackPublication(slug, publicationId));
   return response.data;
+};
+
+export const getPageConfigs = async (slug: string): Promise<PageDraft> => {
+  const response = await axiosInstance.get<PageDraft>(Page.configs(slug));
+  return response.data;
+};
+
+export const savePageConfigs = async (
+  slug: string,
+  payload: SavePageConfigPayload,
+): Promise<void> => {
+  await axiosInstance.post(Page.configs(slug), payload);
+};
+
+export const discardPageConfigs = async (slug: string): Promise<void> => {
+  await axiosInstance.post(Page.discardConfig(slug));
 };

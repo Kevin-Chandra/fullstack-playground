@@ -41,6 +41,12 @@ function getDefaultAction(
     case CustomErrorCode.PAGINATION_OUT_OF_BOUND:
     case CustomErrorCode.PAGE_NOT_FOUND:
       return ErrorAction.RETURN_TO_MAIN;
+    case CustomErrorCode.DRAFT_OUT_OF_DATE:
+    case CustomErrorCode.SECTION_UUID_TAKEN:
+    case CustomErrorCode.MEDIA_UNAVAILABLE:
+      return ErrorAction.RELOAD;
+    case CustomErrorCode.FILE_UPLOAD_FAILED:
+      return ErrorAction.TRY_AGAIN;
     default:
       return undefined;
   }
